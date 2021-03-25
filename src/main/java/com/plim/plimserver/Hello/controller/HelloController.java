@@ -9,12 +9,10 @@ public class HelloController {
 
     @GetMapping("/hello")
     public Hello getHello(){
-
-        return Hello
-                .builder()
+        return Hello.builder()
                 .name("PLIM")
-                .age(24)
-                .say("Hello Test Controller!! - PLIM")
+                .age(15)
+                .say("Hi")
                 .build();
     }
 }
