@@ -4,6 +4,8 @@ import com.plim.plimserver.Hello.domain.Hello;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+
 @RestController
 public class HelloController {
 
@@ -13,6 +15,7 @@ public class HelloController {
                 .name("PLIM")
                 .age(15)
                 .say("Hi")
+                .date(LocalDate.of(2021, 3,26))
                 .build();
     }
 }
