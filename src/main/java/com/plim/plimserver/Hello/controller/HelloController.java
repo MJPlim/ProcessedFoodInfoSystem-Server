@@ -18,4 +18,14 @@ public class HelloController {
                 .date(LocalDate.of(2021, 3,26))
                 .build();
     }
+
+    @GetMapping("/test")
+    public Hello getTest() {
+        return Hello.builder()
+                .name("PLIM")
+                .age(15)
+                .say("Hi")
+                .date(LocalDate.of(2021, 3,26))
+                .build();
+    }
 }
