@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @RestController
 public class HelloController {
 
-    @GetMapping("/demo")
+    @GetMapping("/hello")
     public Hello getHello(){
         return Hello.builder()
                 .name("PLIM")
