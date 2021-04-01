@@ -23,7 +23,6 @@ public class FoodServiceImpl implements FoodService{
     private final RestTemplate restTemplate;
     private String rawMaterialURL = "http://openapi.foodsafetykorea.go.kr/api/";
     private String apiCode = "C002";
-    private String rawMaterialKey;
 
     @Autowired
     public FoodServiceImpl(ApiKeyRepository apiKeyRepository, RestTemplate restTemplate) {
@@ -39,7 +38,7 @@ public class FoodServiceImpl implements FoodService{
         Random r = new Random();
         int id = r.nextInt(3)+1;
         Optional<ApiKey> optionRawKey = this.apiKeyRepository.findById(id);
-        this.rawMaterialKey = optionRawKey.orElseThrow(NoSuchElementException::new).getKeyValue();
+        String rawMaterialKey = optionRawKey.orElseThrow(NoSuchElementException::new).getKeyValue();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
