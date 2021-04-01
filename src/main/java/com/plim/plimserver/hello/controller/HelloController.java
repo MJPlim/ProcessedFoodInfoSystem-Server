@@ -1,6 +1,6 @@
-package com.plim.plimserver.Hello.controller;
+package com.plim.plimserver.hello.controller;
 
-import com.plim.plimserver.Hello.domain.Hello;
+import com.plim.plimserver.hello.domain.Hello;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
