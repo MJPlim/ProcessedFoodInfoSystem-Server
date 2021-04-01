@@ -1,4 +1,4 @@
-package com.plim.plimserver.Hello.domain;
+package com.plim.plimserver.hello.domain;
 
 import lombok.Builder;
 
