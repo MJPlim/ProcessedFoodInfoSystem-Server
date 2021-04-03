@@ -1,4 +1,4 @@
-package com.plim.plimserver.food.api;
+package com.plim.plimserver.api.domain;
 
 import lombok.AccessLevel;
 import lombok.Getter;
