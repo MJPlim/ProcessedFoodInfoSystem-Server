@@ -23,8 +23,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(responseError);
     }
 
-    @ExceptionHandler(EmailDuplicateException.class)
-    public ResponseEntity<Map<String, String>> handleEmailDuplicateException(EmailDuplicateException e) {
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> handleEmailDuplicateException(IllegalArgumentException e) {
         Map<String, String> error = new HashMap<>();
         error.put("error-message", e.getMessage());
         return ResponseEntity.badRequest().body(error);
