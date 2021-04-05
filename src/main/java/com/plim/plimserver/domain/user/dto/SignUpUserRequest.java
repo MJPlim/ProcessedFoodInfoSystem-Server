@@ -5,6 +5,7 @@ import com.plim.plimserver.domain.user.domain.StateType;
 import com.plim.plimserver.domain.user.domain.User;
 import lombok.Getter;
 import lombok.ToString;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -30,10 +31,10 @@ public class SignUpUserRequest {
 
     private String profileImageAddress;
 
-    public User toEntity() {
+    public User toEntity(PasswordEncoder passwordEncoder) {
         return User.builder()
                 .email(this.email)
-                .password(this.password)
+                .password(passwordEncoder.encode(this.password))
                 .name(this.name)
                 .birth(this.birth)
                 .address(this.address)

@@ -1,7 +1,7 @@
 package com.plim.plimserver.domain.user.api;
 
-import com.plim.plimserver.domain.user.dto.SignUpUserRequest;
 import com.plim.plimserver.domain.user.domain.User;
+import com.plim.plimserver.domain.user.dto.SignUpUserRequest;
 import com.plim.plimserver.domain.user.dto.SignUpUserResponse;
 import com.plim.plimserver.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
