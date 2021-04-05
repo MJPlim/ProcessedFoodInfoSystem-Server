@@ -63,4 +63,8 @@ public class User {
         this.state = state;
     }
 
+    public void withdraw() {
+        this.state = StateType.DELETED;
+    }
+
 }
