@@ -14,11 +14,13 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex){
+    public ResponseEntity<Map<String, Map<String, String>>> handleValidationExceptions(MethodArgumentNotValidException ex){
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors()
                 .forEach(c -> errors.put(((FieldError) c).getField(), c.getDefaultMessage()));
-        return ResponseEntity.badRequest().body(errors);
+        Map<String, Map<String, String>> responseError = new HashMap<>();
+        responseError.put("error-message", errors);
+        return ResponseEntity.badRequest().body(responseError);
     }
 
     @ExceptionHandler(EmailDuplicateException.class)
