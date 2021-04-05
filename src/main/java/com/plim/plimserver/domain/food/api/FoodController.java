@@ -13,9 +13,14 @@ import java.util.ArrayList;
 public class FoodController {
     private final FoodService foodService;
 
-    @GetMapping("/findFood/list")
-    public ArrayList<FoodDTO> getFoodInfo(@RequestParam(name = "foodName") String foodName, @RequestParam(name = "pageNo") int pageNo){
-        return this.foodService.findFood(foodName, pageNo);
+    @GetMapping("/findFood/foodName")
+    public ArrayList<FoodDTO> getFoodInfoByFoodName(@RequestParam(name = "foodName") String foodName, @RequestParam(name = "pageNo") int pageNo){
+        return this.foodService.findFoodByFoodName(foodName, pageNo);
+    }
+
+    @GetMapping("/findFood/bsshName")
+    public ArrayList<FoodDTO> getFoodInfoByBsshName(@RequestParam(name = "bsshName") String bsshName, @RequestParam(name = "pageNo") int pageNo) {
+        return this.foodService.findFoodByBsshName(bsshName, pageNo);
     }
 
 }
