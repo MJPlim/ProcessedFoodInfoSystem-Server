@@ -1,5 +1,6 @@
 package com.plim.plimserver.global.config.security.jwt;
 
+import com.plim.plimserver.global.config.security.exception.ErrorCode;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
@@ -20,10 +21,16 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        String username = jwtTokenProvider.validateToken(request);
-        if (!username.equals("")) {
-            String token = jwtTokenProvider.createToken(username);
-            response.addHeader("Authorization", "Bearer " + token);
+
+        try {
+            String username = jwtTokenProvider.validateToken(request);
+
+            if (!username.equals("")) {
+                String token = jwtTokenProvider.createToken(username);
+                response.addHeader("Authorization", "Bearer " + token);
+            }
+        } catch (IllegalArgumentException e) {
+            request.setAttribute("exception", ErrorCode.WITHDREW);
         }
 
         chain.doFilter(request, response);

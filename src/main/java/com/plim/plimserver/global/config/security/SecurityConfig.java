@@ -1,5 +1,6 @@
 package com.plim.plimserver.global.config.security;
 
+import com.plim.plimserver.global.config.security.exception.CustomAuthenticationEntryPoint;
 import com.plim.plimserver.global.config.security.jwt.JwtAuthenticationFilter;
 import com.plim.plimserver.global.config.security.jwt.JwtAuthorizationFilter;
 import com.plim.plimserver.global.config.security.jwt.JwtTokenProvider;
@@ -36,7 +37,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic().disable()
                 .addFilterBefore(corsFilter, SecurityContextPersistenceFilter.class)
                 .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtTokenProvider))
-                .addFilter(new JwtAuthorizationFilter(authenticationManager(), jwtTokenProvider));
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(), jwtTokenProvider))
+                .exceptionHandling()
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint());
 
         http.sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
