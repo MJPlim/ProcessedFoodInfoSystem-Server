@@ -1,4 +1,4 @@
-package com.plim.plimserver.config;
+package com.plim.plimserver.global.config;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;

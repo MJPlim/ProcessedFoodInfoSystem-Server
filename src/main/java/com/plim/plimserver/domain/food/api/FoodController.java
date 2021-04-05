@@ -1,7 +1,7 @@
-package com.plim.plimserver.food.controller;
+package com.plim.plimserver.domain.food.api;
 
-import com.plim.plimserver.food.dto.FoodDTO;
-import com.plim.plimserver.food.service.FoodService;
+import com.plim.plimserver.domain.food.dto.FoodDTO;
+import com.plim.plimserver.domain.food.service.FoodService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

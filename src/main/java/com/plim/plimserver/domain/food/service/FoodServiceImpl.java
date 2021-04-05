@@ -1,11 +1,11 @@
-package com.plim.plimserver.food.service;
+package com.plim.plimserver.domain.food.service;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.plim.plimserver.api.domain.ApiKey;
-import com.plim.plimserver.api.repository.ApiKeyRepository;
-import com.plim.plimserver.food.dto.FoodDTO;
+import com.plim.plimserver.domain.api.domain.ApiKey;
+import com.plim.plimserver.domain.api.repository.ApiKeyRepository;
+import com.plim.plimserver.domain.food.dto.FoodDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;

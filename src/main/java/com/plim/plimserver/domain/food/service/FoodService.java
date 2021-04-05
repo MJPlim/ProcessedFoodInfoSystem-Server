@@ -1,6 +1,6 @@
-package com.plim.plimserver.food.service;
+package com.plim.plimserver.domain.food.service;
 
-import com.plim.plimserver.food.dto.FoodDTO;
+import com.plim.plimserver.domain.food.dto.FoodDTO;
 
 import java.util.ArrayList;
 

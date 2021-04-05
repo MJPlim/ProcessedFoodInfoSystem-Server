@@ -1,4 +1,4 @@
-package com.plim.plimserver.config;
+package com.plim.plimserver.global.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;

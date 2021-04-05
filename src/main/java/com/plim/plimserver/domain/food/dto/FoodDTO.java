@@ -1,4 +1,4 @@
-package com.plim.plimserver.food.dto;
+package com.plim.plimserver.domain.food.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

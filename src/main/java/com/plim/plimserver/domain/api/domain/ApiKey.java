@@ -1,4 +1,4 @@
-package com.plim.plimserver.api.domain;
+package com.plim.plimserver.domain.api.domain;
 
 import lombok.AccessLevel;
 import lombok.Getter;
