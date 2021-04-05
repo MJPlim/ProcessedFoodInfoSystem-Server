@@ -29,8 +29,6 @@ public class SignUpUserRequest {
 
     private String address;
 
-    private String profileImageAddress;
-
     public User toEntity(PasswordEncoder passwordEncoder) {
         return User.builder()
                 .email(this.email)
@@ -38,7 +36,6 @@ public class SignUpUserRequest {
                 .name(this.name)
                 .birth(this.birth)
                 .address(this.address)
-                .profileImageAddress(this.profileImageAddress)
                 .role(RoleType.ROLE_USER)
                 .state(StateType.NORMAL)
                 .build();
