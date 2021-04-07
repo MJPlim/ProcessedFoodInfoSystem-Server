@@ -28,26 +28,49 @@ public class FoodServiceImpl implements FoodService{
         this.restTemplate = restTemplate;
     }
 
-
-    public ArrayList<FoodDTO> findFood(String foodName, int pageNo){
-        ArrayList<FoodDTO> foodList = new ArrayList<>(); // 결과를 담을 List
+    @Override
+    public ArrayList<FoodDTO> findFoodByFoodName (String foodName, int pageNo){
         int page = 1 + 5*(pageNo-1); // 결과를 5개씩 받기 위한 리스트번호
-
-        Random r = new Random();
-        int id = r.nextInt(3)+1;
-        Optional<ApiKey> optionRawKey = this.apiKeyRepository.findById(id); // API Key를 랜덤하게 하여 key를 돌려써서 가져옴
-        String rawMaterialKey = optionRawKey.orElseThrow(NoSuchElementException::new).getKeyValue();
+        String apiKey = getApiKey();
 
         // RestTemplate 클래스를 이용하여 url, 받아올 정보의 타입을 인자로 넘겨서 반환된 json값을 지정한 타입으로 가져옴.
-        String str = restTemplate.getForObject(rawMaterialURL + rawMaterialKey + "/" + this.apiCode
+        String jsonString = restTemplate.getForObject(rawMaterialURL + apiKey + "/" + this.apiCode
                 + "/json/" + page + "/" + (page+4) + "/PRDLST_NM=" + foodName, String.class);
+        JsonArray arr = parseRawMaterialApiArray(jsonString);
 
+        return makeFoodDTOList(arr);
+    }
+
+    @Override
+    public ArrayList<FoodDTO> findFoodByBsshName(String bsshName, int pageNo) {
+        int page = 1 + 5*(pageNo-1); // 결과를 5개씩 받기 위한 리스트번호
+        String apiKey = getApiKey();
+
+        // RestTemplate 클래스를 이용하여 url, 받아올 정보의 타입을 인자로 넘겨서 반환된 json값을 지정한 타입으로 가져옴.
+        String jsonString = restTemplate.getForObject(rawMaterialURL + apiKey + "/" + this.apiCode
+                + "/json/" + page + "/" + (page+4) + "/BSSH_NM=" + bsshName, String.class);
+        JsonArray arr = parseRawMaterialApiArray(jsonString);
+
+        return makeFoodDTOList(arr);
+    }
+
+    private String getApiKey() {
+        Random r = new Random();
+        int id = r.nextInt(3)+1;
+        Optional<ApiKey> optionApiKey = this.apiKeyRepository.findById(id); // API Key를 랜덤하게 하여 key를 돌려써서 가져옴
+        return optionApiKey.orElseThrow(NoSuchElementException::new).getKeyValue();
+    }
+
+    private JsonArray parseRawMaterialApiArray(String resultJson) {
         //JsonParser를 이용하여 json의 구조 분리
         JsonParser jsonParser = new JsonParser();
-        JsonObject obj = (JsonObject)((JsonObject) jsonParser.parse(str)).get(this.apiCode);// "C002" key의 value 가져오기
+        JsonObject obj = (JsonObject)((JsonObject) jsonParser.parse(resultJson)).get(this.apiCode);// "C002" key의 value 가져오기
         Optional<JsonArray> optionalRow = Optional.ofNullable((JsonArray) obj.get("row"));// "row" key의 array 가져오기
-        JsonArray arr = optionalRow.orElseThrow(NullPointerException::new);
+        return optionalRow.orElseThrow(NullPointerException::new);
+    }
 
+    private ArrayList<FoodDTO> makeFoodDTOList(JsonArray arr) {
+        ArrayList<FoodDTO> foodList = new ArrayList<>(); // 결과를 담을 List
         for (int j = 0; j < arr.size(); j++) {
             JsonObject o = (JsonObject) arr.get(j);
             FoodDTO food = FoodDTO.builder()
@@ -60,7 +83,7 @@ public class FoodServiceImpl implements FoodService{
                     .rawMaterialName(o.get("RAWMTRL_NM").toString().replace("\"", ""))
                     .build();
             foodList.add(food);
-            }
+        }
         return foodList;
     }
 }
