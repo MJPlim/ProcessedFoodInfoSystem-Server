@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/food")
+@RequestMapping("api/v1/food")
 public class FoodController {
     private final FoodService foodService;
 
