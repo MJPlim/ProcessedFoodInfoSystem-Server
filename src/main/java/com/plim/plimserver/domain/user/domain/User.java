@@ -42,7 +42,7 @@ public class User {
 
     @CreationTimestamp
     @Column(name = "user_register_date")
-    private Timestamp createDate;
+    private Timestamp createdDate;
 
     @UpdateTimestamp
     @Column(name = "user_modified_date")
