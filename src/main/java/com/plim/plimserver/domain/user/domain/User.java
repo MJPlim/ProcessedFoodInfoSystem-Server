@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -41,7 +42,11 @@ public class User {
 
     @CreationTimestamp
     @Column(name = "user_register_date")
-    private Timestamp createDate;
+    private Timestamp createdDate;
+
+    @UpdateTimestamp
+    @Column(name = "user_modified_date")
+    private Timestamp updatedDate;
 
     @Column(name = "user_image_address")
     private String profileImageAddress;
