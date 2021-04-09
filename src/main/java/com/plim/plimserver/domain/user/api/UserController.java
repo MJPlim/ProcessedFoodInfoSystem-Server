@@ -31,7 +31,7 @@ public class UserController {
         User saved = userService.saveUser(user);
         return ResponseEntity.ok(SignUpUserResponse.builder()
                 .email(saved.getEmail())
-                .createDate(saved.getCreateDate())
+                .createDate(saved.getCreatedDate())
                 .build());
     }
 
