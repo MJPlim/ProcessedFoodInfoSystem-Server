@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class FoodServiceImpl implements FoodService{
@@ -31,7 +28,7 @@ public class FoodServiceImpl implements FoodService{
     @Override
     public ArrayList<FoodResponse> findFoodByFoodName (String foodName, int pageNo){
         int page = 1 + 5*(pageNo-1); // 결과를 5개씩 받기 위한 리스트번호
-        String apiKey = getApiKey();
+        String apiKey = getFoodSafetyKoreaApiKey();
 
         // RestTemplate 클래스를 이용하여 url, 받아올 정보의 타입을 인자로 넘겨서 반환된 json값을 지정한 타입으로 가져옴.
         String jsonString = restTemplate.getForObject(rawMaterialURL + apiKey + "/" + this.apiCode
@@ -44,7 +41,7 @@ public class FoodServiceImpl implements FoodService{
     @Override
     public ArrayList<FoodResponse> findFoodByBsshName(String bsshName, int pageNo) {
         int page = 1 + 5*(pageNo-1); // 결과를 5개씩 받기 위한 리스트번호
-        String apiKey = getApiKey();
+        String apiKey = getFoodSafetyKoreaApiKey();
 
         // RestTemplate 클래스를 이용하여 url, 받아올 정보의 타입을 인자로 넘겨서 반환된 json값을 지정한 타입으로 가져옴.
         String jsonString = restTemplate.getForObject(rawMaterialURL + apiKey + "/" + this.apiCode
@@ -54,11 +51,12 @@ public class FoodServiceImpl implements FoodService{
         return makeFoodDTOList(arr);
     }
 
-    private String getApiKey() {
+    private String getFoodSafetyKoreaApiKey() {
         Random r = new Random();
         int id = r.nextInt(3)+1;
-        Optional<ApiKey> optionApiKey = this.apiKeyRepository.findById(id); // API Key를 랜덤하게 하여 key를 돌려써서 가져옴
-        return optionApiKey.orElseThrow(NoSuchElementException::new).getKeyValue();
+        List<ApiKey> apiKeys = this.apiKeyRepository.findAllByKeyName("foodsafetykorea");
+        Optional<ApiKey> optionalApiKey = apiKeys.stream().filter(k -> k.getId() == id).findAny();// API Key를 랜덤하게 하여 key를 돌려써서 가져옴
+        return optionalApiKey.orElseThrow(NoSuchElementException::new).getKeyValue();
     }
 
     private JsonArray parseRawMaterialApiArray(String resultJson) {
