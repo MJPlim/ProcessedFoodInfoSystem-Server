@@ -35,22 +35,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .formLogin().disable()
                 .httpBasic().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
                 .addFilterBefore(corsFilter, SecurityContextPersistenceFilter.class)
                 .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtTokenProvider))
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(), jwtTokenProvider))
                 .exceptionHandling()
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint());
 
-        http.sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+        http
                 .authorizeRequests()
-                .antMatchers("/api/v1/**")
-                    .hasAnyRole("USER", "ADMIN")
-                .antMatchers("/api/v1/admin/**")
-                    .hasRole("ADMIN")
-                .anyRequest()
-                    .permitAll();
+                    .antMatchers("/api/v1/user/**")
+                        .hasAnyRole("USER", "ADMIN")
+                    .antMatchers("/api/v1/admin/**")
+                        .hasRole("ADMIN")
+                    .anyRequest()
+                        .permitAll();
     }
 
 }

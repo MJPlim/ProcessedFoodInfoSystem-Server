@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class RoleTestController {
 
     @ApiOperation(value = "유저 권한 테스트", notes = "유저의 권한을 테스트한다")
-    @GetMapping("api/v1/user")
+    @GetMapping("/api/v1/user")
     public String user() {
         return "user";
     }
 
     @ApiOperation(value = "관리자 권한 테스트", notes = "관리자의 권한을 테스트한다")
-    @GetMapping("api/v1/admin")
+    @GetMapping("/api/v1/admin")
     public String admin() {
         return "admin";
     }
