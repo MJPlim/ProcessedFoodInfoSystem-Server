@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.plim.plimserver.domain.api.domain.ApiKey;
 import com.plim.plimserver.domain.api.repository.ApiKeyRepository;
-import com.plim.plimserver.domain.food.dto.FoodDTO;
+import com.plim.plimserver.domain.food.dto.FoodResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -29,7 +29,7 @@ public class FoodServiceImpl implements FoodService{
     }
 
     @Override
-    public ArrayList<FoodDTO> findFoodByFoodName (String foodName, int pageNo){
+    public ArrayList<FoodResponse> findFoodByFoodName (String foodName, int pageNo){
         int page = 1 + 5*(pageNo-1); // 결과를 5개씩 받기 위한 리스트번호
         String apiKey = getApiKey();
 
@@ -42,7 +42,7 @@ public class FoodServiceImpl implements FoodService{
     }
 
     @Override
-    public ArrayList<FoodDTO> findFoodByBsshName(String bsshName, int pageNo) {
+    public ArrayList<FoodResponse> findFoodByBsshName(String bsshName, int pageNo) {
         int page = 1 + 5*(pageNo-1); // 결과를 5개씩 받기 위한 리스트번호
         String apiKey = getApiKey();
 
@@ -69,19 +69,19 @@ public class FoodServiceImpl implements FoodService{
         return optionalRow.orElseThrow(NullPointerException::new);
     }
 
-    private ArrayList<FoodDTO> makeFoodDTOList(JsonArray arr) {
-        ArrayList<FoodDTO> foodList = new ArrayList<>(); // 결과를 담을 List
+    private ArrayList<FoodResponse> makeFoodDTOList(JsonArray arr) {
+        ArrayList<FoodResponse> foodList = new ArrayList<>(); // 결과를 담을 List
         for (int j = 0; j < arr.size(); j++) {
             JsonObject o = (JsonObject) arr.get(j);
-            FoodDTO food = FoodDTO.builder()
-                    .lcnsNo(Long.parseLong(o.get("LCNS_NO").toString().replace("\"", "")))
-                    .bsshName(o.get("BSSH_NM").toString().replace("\"", ""))
-                    .prdlstReportNo(Long.parseLong(o.get("PRDLST_REPORT_NO").toString().replace("\"", "")))
-                    .prmsDate(Long.parseLong(o.get("PRMS_DT").toString().replace("\"", "")))
-                    .prdlstName(o.get("PRDLST_NM").toString().replace("\"", ""))
-                    .prdlstDCName(o.get("PRDLST_DCNM").toString().replace("\"", ""))
-                    .rawMaterialName(o.get("RAWMTRL_NM").toString().replace("\"", ""))
-                    .build();
+            FoodResponse food = FoodResponse.builder()
+                                            .lcnsNo(Long.parseLong(o.get("LCNS_NO").toString().replace("\"", "")))
+                                            .bsshName(o.get("BSSH_NM").toString().replace("\"", ""))
+                                            .prdlstReportNo(Long.parseLong(o.get("PRDLST_REPORT_NO").toString().replace("\"", "")))
+                                            .prmsDate(Long.parseLong(o.get("PRMS_DT").toString().replace("\"", "")))
+                                            .prdlstName(o.get("PRDLST_NM").toString().replace("\"", ""))
+                                            .prdlstDCName(o.get("PRDLST_DCNM").toString().replace("\"", ""))
+                                            .rawMaterialName(o.get("RAWMTRL_NM").toString().replace("\"", ""))
+                                            .build();
             foodList.add(food);
         }
         return foodList;
