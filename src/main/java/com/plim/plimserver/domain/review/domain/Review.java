@@ -9,15 +9,20 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
+import com.plim.plimserver.domain.food.domain.Food;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -37,8 +42,9 @@ public class Review {
 	@Column(name = "user_id")				//매핑 아직 안함
 	private Long userId;
 	
-	@Column(name = "food_id")				//이것두
-	private Long foodId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "food_id")				//이것두
+	private Food food;
 	
 	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ReviewLike> reviewLikeList = new ArrayList<>();
@@ -60,14 +66,24 @@ public class Review {
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "review_state", nullable = false)
-	private ReviewStateType reviewStateType;
+	private ReviewStateType state;
 	
 	@Builder
-	public Review(Long userId, Long foodId, float reviewRating, String reviewDescription, ReviewStateType reviewStateType) {
+	public Review(Long userId, Food food, float reviewRating, String reviewDescription, ReviewStateType state) {
 		this.userId = userId;
-		this.foodId = foodId;
+		this.food = food;
 		this.reviewRating = reviewRating;
 		this.reviewDescription = reviewDescription;
-		this.reviewStateType = reviewStateType;
+		this.state = state;
+		this.food.getReviewList().add(this);
+	}
+	
+	public void reviewUpdate(float reviewRating, String reviewDescription) {
+		this.reviewRating = reviewRating;
+		this.reviewDescription = reviewDescription;
+	}
+	
+	public void reviewStateUpdate(ReviewStateType state) {
+		this.state = state;
 	}
 }

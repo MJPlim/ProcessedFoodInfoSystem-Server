@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,6 +32,7 @@ public class ReviewLike {
 	@Column(name = "user_id")
 	private Long userId;
 
+	@Builder
 	public ReviewLike(Review review, Long userId) {
 		this.review = review;
 		this.userId = userId;
