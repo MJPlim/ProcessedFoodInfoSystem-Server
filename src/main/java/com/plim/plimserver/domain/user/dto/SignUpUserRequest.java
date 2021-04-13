@@ -25,7 +25,7 @@ public class SignUpUserRequest {
     private String password;
 
     @NotBlank(message = "이름을 입력해주세요.")
-    @Size(min = 2, max = 7, message = "이름은 최소 2글자 이상 7글자 이하여야 합니다.")
+    @Size(min = 2, max = 10, message = "이름은 최소 2글자 이상 7글자 이하여야 합니다.")
     private String name;
 
     private LocalDate birth;
