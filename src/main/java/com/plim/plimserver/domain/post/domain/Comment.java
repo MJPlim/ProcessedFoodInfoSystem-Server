@@ -72,6 +72,9 @@ public class Comment {
 		this.postC.getCommentList().add(this);
 	}
 	
+	public void commentStateUpdate(PostStateType state) {
+		this.state = state;
+	}
 	
 	
 }

@@ -6,13 +6,13 @@ import com.plim.plimserver.domain.user.exception.EmailDuplicateException;
 import com.plim.plimserver.domain.user.exception.PasswordMismatchException;
 import com.plim.plimserver.domain.user.repository.UserRepository;
 import com.plim.plimserver.global.config.security.auth.PrincipalDetails;
+import com.plim.plimserver.global.domain.mail.domain.EmailAuthCode;
+import com.plim.plimserver.global.domain.mail.repository.EmailAuthCodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -20,10 +20,18 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final EmailAuthCodeRepository emailAuthCodeRepository;
+
 
     public User saveUser(SignUpUserRequest dto) {
         if (userRepository.existsByEmail(dto.getEmail()))
             throw new EmailDuplicateException(dto.getEmail());
+
+        EmailAuthCode emailAuthCode = emailAuthCodeRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("이메일 인증 요청을 해주세요."));
+
+        emailAuthCode.validateCode(dto.getAuthCode());
+        emailAuthCodeRepository.delete(emailAuthCode);
 
         return userRepository.save(dto.toEntity(passwordEncoder));
     }

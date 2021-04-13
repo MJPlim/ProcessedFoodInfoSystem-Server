@@ -97,4 +97,8 @@ public class Post {
 		this.category = category;
 	}
 	
+	public void postStateUpdate(PostStateType state) {
+		this.state = state;
+	}
+	
 }

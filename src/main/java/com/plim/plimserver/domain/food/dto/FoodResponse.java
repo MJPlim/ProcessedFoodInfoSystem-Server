@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class FoodDTO {
+public class FoodResponse {
     private final Long lcnsNo; // 인허가번호
     private final String bsshName; // 업소명
     private final Long prdlstReportNo; // 품목제조번호

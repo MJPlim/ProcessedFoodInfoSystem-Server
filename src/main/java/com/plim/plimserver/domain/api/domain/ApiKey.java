@@ -18,4 +18,5 @@ public class ApiKey {
     @Column(name = "id")
     private int id;
     private String keyValue;
+    private String keyName;
 }
