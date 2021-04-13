@@ -14,6 +14,6 @@ import java.sql.Timestamp;
 public class SignUpUserResponse {
 
     private String email;
-    private Timestamp createDate;
+    private Timestamp createdDate;
 
 }

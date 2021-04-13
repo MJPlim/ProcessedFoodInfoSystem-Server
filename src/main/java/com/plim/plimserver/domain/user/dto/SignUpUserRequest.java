@@ -9,7 +9,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
@@ -25,12 +24,15 @@ public class SignUpUserRequest {
     private String password;
 
     @NotBlank(message = "이름을 입력해주세요.")
-    @Size(min = 2, max = 10, message = "이름은 최소 2글자 이상 7글자 이하여야 합니다.")
+    @Size(min = 2, max = 10, message = "이름은 최소 2글자 이상 10글자 이하여야 합니다.")
     private String name;
 
     private LocalDate birth;
 
     private String address;
+
+    @NotBlank
+    private String authCode;
 
     public User toEntity(PasswordEncoder passwordEncoder) {
         return User.builder()
