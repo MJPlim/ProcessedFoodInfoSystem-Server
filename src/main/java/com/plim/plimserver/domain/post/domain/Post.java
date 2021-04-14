@@ -56,9 +56,9 @@ public class Post {
 	@Column(name = "post_description", nullable = false)
 	private String postDescription;
 
-	@Column(name = "views")
+	@Column(name = "view_count")
 	@ColumnDefault("0")
-	private Long view;
+	private Long viewCount;
 
 	@CreationTimestamp
 	@Column(name = "created_date")
@@ -77,18 +77,17 @@ public class Post {
 	private PostStateType state;
 
 	@Builder
-	public Post(Long userId, String postTitle, String postDescription, PostCategoryType category, Long view, PostStateType state) {
+	public Post(Long userId, String postTitle, String postDescription, PostCategoryType category, PostStateType state) {
 		this.userId = userId;
 		this.postTitle = postTitle;
 		this.postDescription = postDescription;
-		this.view = view;
 		this.category = category;
 		this.state = state;
 	}
 	
 	@PrePersist						//default값 설정을 위함
-	public void prePersistView() {
-		this.view = this.view == null ? 0: this.view;
+	public void prePersistPostView() {
+		this.viewCount = this.viewCount == null ? 0: this.viewCount;
 	}
 	
 	public void postUpdate(String postTitle, String postDescription, PostCategoryType category) {
@@ -100,5 +99,10 @@ public class Post {
 	public void postStateUpdate(PostStateType state) {
 		this.state = state;
 	}
+	
+	public void plusViewCount() {					//변경가능성 높음 viewcount올라가는지 확인용
+		this.viewCount++;
+	}
+	
 	
 }

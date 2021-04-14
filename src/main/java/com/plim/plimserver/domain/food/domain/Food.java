@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.ColumnDefault;
@@ -52,58 +53,25 @@ public class Food {
 	@Column(name = "manufacturer_name")
 	private String manufacturerName;
 
-
-
 	@Embedded
 	private FoodDetail foodDetail; // 너무많아서 세부사항은 임베디드타입으로 설정
 
 	@Embedded
 	private FoodImage foodImage;
 
-//	@Column(name = "expiration_date")
-//	private String expriationDate;
-//
-//	@Lob
-//	@Column(name = "materials")
-//	private String materials;
-//
-//	@Lob
-//	@Column(name = "nutrient")
-//	private String nutrient;
-//
-//	@Column(name = "capacity")
-//	private String capacity;
-//
 	@Column(name = "allergy_materials")
 	private String allergyMaterials;
-
-//	@Column(name = "food_image_address")
-//	private String foodImageAddress;
-//
-//	@Column(name = "food_mete_image_address")
-//	private String foodMeteImageAddress;
 
 	@Column(name = "barcode_no")
 	private String barcodeNumber;
 
 	@Column(name = "view_count")
 	@ColumnDefault("0")
-	private Long view;
-
-	// 이 아래부터는 확정된 데이터가 아니라 지워질 수 있다.
-	@Column(name = "release_date")
-	private String releaseDate;
-
-	@Column(name = "price")
-	private Integer price;
-
-	@Column(name = "license_no")
-	private String licenseNumber;
+	private Long viewCount;
 
 	@Builder
 	public Food(String foodName, String reportNumber, String category, String manufacturerName,
-			String allergyMaterials, FoodDetail foodDetail, FoodImage foodImage, String barcodeNumber, String releaseDate, Integer price,
-			String licenseNumber) {
+			String allergyMaterials, FoodDetail foodDetail, FoodImage foodImage, String barcodeNumber) {
 		this.foodName = foodName;
 		this.reportNumber = reportNumber;
 		this.category = category;
@@ -112,9 +80,11 @@ public class Food {
 		this.allergyMaterials = allergyMaterials;
 		this.foodImage = foodImage;
 		this.barcodeNumber = barcodeNumber;
-		this.releaseDate = releaseDate;
-		this.price = price;
-		this.licenseNumber = licenseNumber;
 	}
 
+	@PrePersist						//default값 설정을 위함
+	public void prePersistFoodView() {
+		this.viewCount = this.viewCount == null ? 0: this.viewCount;
+	}
+	
 }
