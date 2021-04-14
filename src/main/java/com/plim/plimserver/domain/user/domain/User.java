@@ -45,7 +45,7 @@ public class User {
     private Timestamp createdDate;
 
     @UpdateTimestamp
-    @Column(name = "user_modified_date")
+    @Column(name = "user_created_date")
     private Timestamp updatedDate;
 
     @Column(name = "user_image_address")
