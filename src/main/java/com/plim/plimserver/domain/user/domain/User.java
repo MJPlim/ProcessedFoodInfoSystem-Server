@@ -41,7 +41,7 @@ public class User {
     private String address;
 
     @CreationTimestamp
-    @Column(name = "user_register_date")
+    @Column(name = "user_created_date")
     private Timestamp createdDate;
 
     @UpdateTimestamp
