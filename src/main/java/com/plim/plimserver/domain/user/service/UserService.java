@@ -39,12 +39,8 @@ public class UserService {
                 .authCode(authCode)
                 .build());
 
-        StringBuilder message = new StringBuilder();
-        message.append("<a href='http://localhost:8080/api/v1/email-auth?");
-        message.append("email=" + dto.getEmail());
-        message.append("&authCode=" + authCode);
-        message.append("'>이메일 인증</a>");
-        emailUtil.sendEmail(dto.getEmail(), EmailSubject.EMAIL_AUTH_REQUEST, message.toString());
+        String message = emailUtil.getEmailAuthMessage(dto.getEmail(), authCode);
+        emailUtil.sendEmail(dto.getEmail(), EmailSubject.EMAIL_AUTH_REQUEST, message);
 
         return userRepository.save(dto.toEntity(passwordEncoder));
     }
