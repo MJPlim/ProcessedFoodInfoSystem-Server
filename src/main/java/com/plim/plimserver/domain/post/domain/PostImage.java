@@ -33,8 +33,7 @@ public class PostImage {
 	private String postImageAddress;
 
 	@Builder
-	public PostImage(Long id, Post postI, String postImageAddress) {
-		this.id = id;
+	public PostImage(Post postI, String postImageAddress) {
 		this.postI = postI;
 		this.postImageAddress = postImageAddress;
 		this.postI.getPostImageList().add(this);

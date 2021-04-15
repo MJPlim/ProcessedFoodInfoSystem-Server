@@ -59,7 +59,7 @@ public class Comment {
 	private Timestamp modifiedDate;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name = "comment_state")
+	@Column(name = "comment_state", nullable = false)
 	private PostStateType state;
 
 	@Builder
@@ -70,6 +70,10 @@ public class Comment {
 		this.commentDescription = commentDescription;
 		this.state = state;
 		this.postC.getCommentList().add(this);
+	}
+	
+	public void commentUpdate(String commentDescription) {
+		this.commentDescription = commentDescription;
 	}
 	
 	public void commentStateUpdate(PostStateType state) {
