@@ -31,7 +31,7 @@ public class UserController {
         User saved = userService.saveUser(user);
         return ResponseEntity.ok(SignUpUserResponse.builder()
                 .email(saved.getEmail())
-                .createdDate(saved.getCreatedDate())
+                .message("해당 메일 주소로 이메일 인증 메일을 발송했습니다. 메일 인증을 하시면 회원가입이 완료됩니다.")
                 .build());
     }
 

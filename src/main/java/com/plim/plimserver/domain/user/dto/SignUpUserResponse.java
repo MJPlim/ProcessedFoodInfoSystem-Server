@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
-
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,6 +12,6 @@ import java.sql.Timestamp;
 public class SignUpUserResponse {
 
     private String email;
-    private Timestamp createdDate;
+    private String message;
 
 }

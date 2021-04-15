@@ -32,7 +32,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role")
-    private RoleType role;
+    private UserRoleType role;
 
     @Column(name = "user_birth")
     private LocalDate birth;
@@ -53,11 +53,11 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_state", nullable = false)
-    private StateType state;
+    private UserStateType state;
 
     @Builder
-    public User(String email, String password, String name, RoleType role,
-                LocalDate birth, String address, String profileImageAddress, StateType state) {
+    public User(String email, String password, String name, UserRoleType role,
+                LocalDate birth, String address, String profileImageAddress, UserStateType state) {
         this.email = email;
         this.password = password;
         this.name = name;
@@ -69,7 +69,10 @@ public class User {
     }
 
     public void withdraw() {
-        this.state = StateType.DELETED;
+        this.state = UserStateType.DELETED;
     }
 
+    public void emailVerificationCompleted() {
+        this.state = UserStateType.NORMAL;
+    }
 }

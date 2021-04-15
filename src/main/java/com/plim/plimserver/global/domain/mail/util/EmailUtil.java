@@ -22,11 +22,10 @@ public class EmailUtil {
         try {
             helper.setTo(toAddress);
             helper.setSubject(subject.getSubject());
-            helper.setText(body);
+            helper.setText(body, true);
         } catch (MessagingException e) {
             e.printStackTrace();
         }
-
         javaMailSender.send(message);
     }
 

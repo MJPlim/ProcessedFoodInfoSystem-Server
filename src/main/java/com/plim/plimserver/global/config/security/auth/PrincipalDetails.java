@@ -1,6 +1,6 @@
 package com.plim.plimserver.global.config.security.auth;
 
-import com.plim.plimserver.domain.user.domain.StateType;
+import com.plim.plimserver.domain.user.domain.UserStateType;
 import com.plim.plimserver.domain.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -50,7 +50,7 @@ public class PrincipalDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return !user.getState().equals(StateType.DELETED);
+        return user.getState().equals(UserStateType.NORMAL);
     }
 
 }

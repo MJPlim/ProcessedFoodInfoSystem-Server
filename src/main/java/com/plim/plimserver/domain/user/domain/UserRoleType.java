@@ -1,5 +1,5 @@
 package com.plim.plimserver.domain.user.domain;
 
-public enum RoleType {
+public enum UserRoleType {
     ROLE_USER, ROLE_ADMIN
 }
