@@ -1,7 +1,7 @@
 package com.plim.plimserver.domain.user.dto;
 
-import com.plim.plimserver.domain.user.domain.RoleType;
-import com.plim.plimserver.domain.user.domain.StateType;
+import com.plim.plimserver.domain.user.domain.UserRoleType;
+import com.plim.plimserver.domain.user.domain.UserStateType;
 import com.plim.plimserver.domain.user.domain.User;
 import lombok.Getter;
 import lombok.ToString;
@@ -31,9 +31,6 @@ public class SignUpUserRequest {
 
     private String address;
 
-    @NotBlank
-    private String authCode;
-
     public User toEntity(PasswordEncoder passwordEncoder) {
         return User.builder()
                 .email(this.email)
@@ -41,8 +38,8 @@ public class SignUpUserRequest {
                 .name(this.name)
                 .birth(this.birth)
                 .address(this.address)
-                .role(RoleType.ROLE_USER)
-                .state(StateType.NORMAL)
+                .role(UserRoleType.ROLE_USER)
+                .state(UserStateType.WAIT)
                 .build();
     }
 

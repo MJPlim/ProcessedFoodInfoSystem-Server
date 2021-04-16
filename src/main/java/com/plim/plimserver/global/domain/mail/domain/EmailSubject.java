@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum EmailSubject {
 
-    EMAIL_AUTH_CODE_REQUEST("[KATI] 회원가입 인증 메일");
+    EMAIL_AUTH_REQUEST("[KATI] 회원가입 인증 메일");
 
     @Getter
     private final String subject;

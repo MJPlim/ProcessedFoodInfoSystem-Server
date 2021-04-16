@@ -9,4 +9,6 @@ public interface EmailAuthCodeRepository extends JpaRepository<EmailAuthCode, Lo
 
     Optional<EmailAuthCode> findByEmail(String email);
 
+    boolean existsByEmail(String email);
+
 }

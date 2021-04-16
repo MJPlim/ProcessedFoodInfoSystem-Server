@@ -7,7 +7,10 @@ import com.plim.plimserver.domain.user.exception.PasswordMismatchException;
 import com.plim.plimserver.domain.user.repository.UserRepository;
 import com.plim.plimserver.global.config.security.auth.PrincipalDetails;
 import com.plim.plimserver.global.domain.mail.domain.EmailAuthCode;
+import com.plim.plimserver.global.domain.mail.domain.EmailSubject;
 import com.plim.plimserver.global.domain.mail.repository.EmailAuthCodeRepository;
+import com.plim.plimserver.global.domain.mail.util.EmailAuthCodeGenerator;
+import com.plim.plimserver.global.domain.mail.util.EmailUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,17 +24,23 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final EmailAuthCodeRepository emailAuthCodeRepository;
-
+    private final EmailUtil emailUtil;
 
     public User saveUser(SignUpUserRequest dto) {
+        if (emailAuthCodeRepository.existsByEmail(dto.getEmail()))
+            throw new IllegalArgumentException("메일에서 이메일 인증을 진행해주세요.");
         if (userRepository.existsByEmail(dto.getEmail()))
             throw new EmailDuplicateException(dto.getEmail());
 
-        EmailAuthCode emailAuthCode = emailAuthCodeRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("이메일 인증 요청을 해주세요."));
+        EmailAuthCodeGenerator authCodeGenerator = new EmailAuthCodeGenerator();
+        String authCode = authCodeGenerator.generateAuthCode();
+        emailAuthCodeRepository.save(EmailAuthCode.builder()
+                .email(dto.getEmail())
+                .authCode(authCode)
+                .build());
 
-        emailAuthCode.validateCode(dto.getAuthCode());
-        emailAuthCodeRepository.delete(emailAuthCode);
+        String message = emailUtil.getEmailAuthMessage(dto.getEmail(), authCode);
+        emailUtil.sendEmail(dto.getEmail(), EmailSubject.EMAIL_AUTH_REQUEST, message);
 
         return userRepository.save(dto.toEntity(passwordEncoder));
     }
