@@ -25,26 +25,7 @@ public class EmailAuthService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void sendAuthCode(String email) {
-        userRepository.findByEmail(email).ifPresent(user -> {
-            throw new EmailDuplicateException(user.getEmail());
-        });
-        EmailAuthCodeGenerator generator = new EmailAuthCodeGenerator();
-        String authCode = generator.generateAuthCode();
-        emailAuthCodeRepository.findByEmail(email).ifPresent(EmailAuthCode::checkAuthCodeRequestTime);
-        EmailAuthCode emailAuthCode = emailAuthCodeRepository.findByEmail(email)
-                .orElseGet(() -> {
-                    return emailAuthCodeRepository.save(EmailAuthCode.builder()
-                            .email(email)
-                            .build());
-                });
-        emailAuthCode.setAuthCode(authCode);
-        String message = "<a href='https://naver.com'>확인</a>";
-        emailUtil.sendEmail(email, EmailSubject.EMAIL_AUTH_REQUEST, message);
-    }
-
-    @Transactional
-    public void validate(HttpServletResponse response, String email, String authCode) throws IOException {
+    public void emailValidate(HttpServletResponse response, String email, String authCode) throws IOException {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("회원가입 되지 않은 이메일 주소입니다."));
         if (user.getState().equals(UserStateType.NORMAL)) response.sendRedirect("https://www.google.com");

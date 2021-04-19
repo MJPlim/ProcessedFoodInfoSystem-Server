@@ -91,4 +91,65 @@ public class EmailUtil {
                 "    </table>";
     }
 
+    public String getFindPasswordMessage(String email, String authCode) {
+        return "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n" +
+            "        <tbody>\n" +
+            "            <tr>\n" +
+            "                <td align=\"center\">\n" +
+            "                    <div style=\"max-width:520px;margin:0 auto\">\n" +
+            "                        <div\n" +
+            "                            style=\"vertical-align:top;text-align:left;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;font-size:14px;font-weight:400;color:#091e42;line-height:20px\">\n" +
+            "                            <div style=\"padding-top:0px;padding-bottom:0px;vertical-align:top;text-align:center\"><a\n" +
+            "                                    href=\"https://www.google.com\" target=\"_blank\"\n" +
+            "                                    data-saferedirecturl=\"https://www.google.com/\"><img\n" +
+            "                                        src=\"https://lh3.googleusercontent.com/LhR_DYXXUQcmwCHb2vweW50R1u2jyGy1qqxAsQaca2eeSqQ2f2jcbl7tfExbxPnJwJgzbiYiy0EiSJGNlIPRNkQHH-KaDYVJj5pdmjJws0TqHVsiyseXKuvR4rfMPScIz1W71DSZ8gmU8BrVBm4Fy31K5dJ48xzKXJlpzLAcpgycPPy8ZV6k_EUWFlFe1NtPLsxTFOW94tqRqtyu9NU80XgVligcy1EvQaBCKgTyXog5auK4HMCIS7rxKr-tuetwcCtWp-0S7kFIJHsgxHtIzCTph6fmS3fUGY9h_gcva9rAUCTeDrLt5BhVElPIRqwKY9WOJzFMuou6fWafDfcRzp60GijjYo-FBhuWk5yfyMSSILlf-BdXmrWIiwV6IPLp3xJZ2DpIOvvPAoJWMMEQ8rxjC02gtWG75QydsfU-0U1ct0O36cSxV4knzKwRQk-CtW-08Dl_C2SIDdjdf3Q3GTVwuJgavCX9Qwwe72QCrMgqLZN96RZxX6KHongv4PfLy_V4ezcbYCUR6s3T6gFMKvbakv5Y7BORcSsCNJcXRjQ9LT_KZR-4m-oJhmydkAkhjYbxvFIPNICb_uk_f5uwCV18IbQCnIy2M5wPEI9AYMOBhn4cIDZN9ArpKpK8NAeHz85fvQyiQ0GoHS0Gy4F0AcwSMkO649fIjPaLFPCzI42oeC_3iNoLFXBt0LGsorfaXEpX94KMPO-R8pZKMEB0yfM=w1280-h720-no?authuser=4\"\n" +
+            "                                        height=\"150\" alt=\"KATI logo\" style=\"border:0\" class=\"CToWUd\"></a></div>\n" +
+            "                            <hr style=\"margin-top:0px;margin-bottom:24px;border:0;border-bottom:1px solid #c1c7d0\">\n" +
+            "                            <h2\n" +
+            "                                style=\"margin-bottom:0;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;font-size:20px;font-weight:500;color:#172b4d;line-height:24px;margin-top:28px\">\n" +
+            "                                <span>KATI</span> 임시 비밀번호 안내 메일</h2>\n" +
+            "                            <p\n" +
+            "                                style=\"font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;font-size:14px;font-weight:400;color:#091e42;line-height:20px;margin-top:12px\">\n" +
+            "                                안녕하세요.</p>\n" +
+            "                            <p\n" +
+            "                                style=\"font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;font-size:14px;font-weight:400;color:#091e42;line-height:20px;margin-top:12px\">\n" +
+            "                                임시 비밀번호 안내 드립니다. 아래의 <b>임시 비밀번호</b>를 통해 로그인해주세요.</p>\n" +
+            "                            <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n" +
+            "                                <tbody>\n" +
+            "                                    <tr>\n" +
+            "                                        <td align=\"center\">\n" +
+            "                                            <span style=font-size: 20px; color: #011627>" + authCode + "</span>\n" +
+            "                                        </td>\n" +
+            "                                    </tr>\n" +
+            "                                </tbody>\n" +
+            "                            </table>\n" +
+            "                            <hr style=\"margin-top:24px;margin-bottom:24px;border:0;border-bottom:1px solid #c1c7d0\">\n" +
+            "                            <div style=\"color:#707070;font-size:13px;line-height:19px;text-align:center;margin-top:10px\">\n" +
+            "                                <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" bgcolor=\"#ffffff\"\n" +
+            "                                    align=\"center\">\n" +
+            "                                    <tbody>\n" +
+            "                                        <tr>\n" +
+            "                                            <td valign=\"top\" align=\"center\"\n" +
+            "                                                style=\"padding-top:10px;line-height:18px;text-align:center;font-weight:none;font-size:12px;color:#505f79\">\n" +
+            "                                                <span>이 메시지는 KATI에서 전송되었습니다.</span><br></td>\n" +
+            "                                        </tr>\n" +
+            "                                        <tr valign=\"top\">\n" +
+            "                                            <td align=\"center\" style=\"padding-top:15px;padding-bottom:30px\"><a\n" +
+            "                                                    href=\"https://www.kati.com\" target=\"_blank\"\n" +
+            "                                                    data-saferedirecturl=\"https://www.google.com\"><img\n" +
+            "                                                        src=\"https://lh3.googleusercontent.com/pw/ACtC-3e3OsSdKKOWeKcrnQOrArwgoAGuAVg5ZUukTz-h7wXQTucQZDxKJPOuRRxPGZeV7XeQsljC9nJ7I9SlKaSmpKM5jmG1f-WKBEmbPbhauwheNbKVUaEPcRnLu0MWY--WgMZZbxjz2m3wO9WMO28UfT4=s1182-no?authuser=0\"\n" +
+            "                                                        width=\"40\" border=\"0\" alt=\"Atlassian\"\n" +
+            "                                                        style=\"display:block;color:#4c9ac9\" class=\"CToWUd\"></a></td>\n" +
+            "                                        </tr>\n" +
+            "                                    </tbody>\n" +
+            "                                </table>\n" +
+            "                            </div>\n" +
+            "                        </div>\n" +
+            "                    </div>\n" +
+            "                </td>\n" +
+            "            </tr>\n" +
+            "        </tbody>\n" +
+            "    </table>";
+    }
+
 }

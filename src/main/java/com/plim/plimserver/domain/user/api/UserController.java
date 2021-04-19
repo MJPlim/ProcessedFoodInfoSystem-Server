@@ -1,6 +1,8 @@
 package com.plim.plimserver.domain.user.api;
 
 import com.plim.plimserver.domain.user.domain.User;
+import com.plim.plimserver.domain.user.dto.FindPasswordRequest;
+import com.plim.plimserver.domain.user.dto.FindPasswordResponse;
 import com.plim.plimserver.domain.user.dto.SignUpUserRequest;
 import com.plim.plimserver.domain.user.dto.SignUpUserResponse;
 import com.plim.plimserver.domain.user.dto.WithdrawUserRequest;
@@ -27,8 +29,8 @@ public class UserController {
 
     @ApiOperation(value = "회원가입", notes = "사용자가 회원가입을 한다")
     @PostMapping("signup")
-    public ResponseEntity<SignUpUserResponse> signup(@Valid @RequestBody SignUpUserRequest user) {
-        User saved = userService.saveUser(user);
+    public ResponseEntity<SignUpUserResponse> signup(@Valid @RequestBody SignUpUserRequest dto) {
+        User saved = userService.saveUser(dto);
         return ResponseEntity.ok(SignUpUserResponse.builder()
                 .email(saved.getEmail())
                 .message("해당 메일 주소로 이메일 인증 메일을 발송했습니다. 메일 인증을 하시면 회원가입이 완료됩니다.")
@@ -43,6 +45,15 @@ public class UserController {
                 .email(withdrew.getEmail())
                 .state(withdrew.getState())
                 .build());
+    }
+
+    @ApiOperation(value = "패스워드 찾기", notes = "해당 메일 주소로 임시 패스워드를 전송한다.")
+    @PostMapping("find-password")
+    public ResponseEntity<FindPasswordResponse> findPassword(@Valid @RequestBody FindPasswordRequest dto) {
+        User user = userService.findPassword(dto);
+        return ResponseEntity.ok(FindPasswordResponse.builder()
+            .email(user.getEmail())
+            .build());
     }
 
 }

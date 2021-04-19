@@ -1,6 +1,7 @@
 package com.plim.plimserver.domain.user.service;
 
 import com.plim.plimserver.domain.user.domain.User;
+import com.plim.plimserver.domain.user.dto.FindPasswordRequest;
 import com.plim.plimserver.domain.user.dto.SignUpUserRequest;
 import com.plim.plimserver.domain.user.exception.EmailDuplicateException;
 import com.plim.plimserver.domain.user.exception.PasswordMismatchException;
@@ -54,6 +55,21 @@ public class UserService {
             throw new PasswordMismatchException("패스워드가 일치하지 않습니다.");
 
         user.withdraw();
+        return user;
+    }
+
+    @Transactional
+    public User findPassword(FindPasswordRequest dto) {
+        User user = userRepository.findByEmail(dto.getEmail())
+            .orElseThrow(() -> new UsernameNotFoundException("해당 유저가 존재하지 않습니다"));
+
+        EmailAuthCodeGenerator authCodeGenerator = new EmailAuthCodeGenerator();
+        String authCode = authCodeGenerator.generateAuthCode();
+        user.updatePassword(passwordEncoder.encode(authCode));
+
+        String message = emailUtil.getFindPasswordMessage(dto.getEmail(), authCode);
+        emailUtil.sendEmail(dto.getEmail(), EmailSubject.FIND_PASSWORD_REQUEST, message);
+
         return user;
     }
 }
