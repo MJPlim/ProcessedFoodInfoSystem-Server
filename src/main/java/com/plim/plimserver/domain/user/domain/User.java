@@ -72,7 +72,12 @@ public class User {
         this.state = UserStateType.DELETED;
     }
 
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
     public void emailVerificationCompleted() {
         this.state = UserStateType.NORMAL;
     }
+
 }
