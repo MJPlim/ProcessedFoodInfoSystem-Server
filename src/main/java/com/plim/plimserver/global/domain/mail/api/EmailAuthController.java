@@ -16,7 +16,7 @@ public class EmailAuthController {
 
     @GetMapping("email-auth")
     public void emailAuth(HttpServletResponse response, String email, String authCode) throws IOException {
-        emailAuthService.emailValidate(response, email, authCode);
+        emailAuthService.emailValidate(email, authCode);
         response.sendRedirect("https://www.google.com");
     }
 

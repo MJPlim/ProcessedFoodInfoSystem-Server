@@ -1,6 +1,7 @@
 package com.plim.plimserver.global.domain.mail.domain;
 
 import com.plim.plimserver.global.domain.mail.exception.AuthCodeMismatchException;
+import com.plim.plimserver.global.domain.mail.exception.EmailExceptionMessage;
 import com.plim.plimserver.global.domain.mail.exception.RequestBeforeCoolTimeException;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,13 +49,7 @@ public class EmailAuthCode {
 
     public void validateCode(String authCode) {
         if (!this.authCode.equals(authCode))
-            throw new AuthCodeMismatchException("인증코드가 일치하지 않습니다.");
-    }
-
-    public void checkAuthCodeRequestTime() {
-        Timestamp coolTime = Timestamp.valueOf(this.updatedDate.toLocalDateTime().plusMinutes(3));
-        if (coolTime.after(Timestamp.valueOf(LocalDateTime.now())))
-            throw new RequestBeforeCoolTimeException("3분 후 다시 시도해주세요.");
+            throw new AuthCodeMismatchException(EmailExceptionMessage.AUTH_CODE_MISMATCH_EXCEPTION);
     }
 
 }

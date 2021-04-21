@@ -4,7 +4,9 @@ import com.plim.plimserver.domain.user.domain.User;
 import com.plim.plimserver.domain.user.dto.FindPasswordRequest;
 import com.plim.plimserver.domain.user.dto.SignUpUserRequest;
 import com.plim.plimserver.domain.user.exception.EmailDuplicateException;
+import com.plim.plimserver.domain.user.exception.EmailNotVerifedException;
 import com.plim.plimserver.domain.user.exception.PasswordMismatchException;
+import com.plim.plimserver.domain.user.exception.UserExceptionMessage;
 import com.plim.plimserver.domain.user.repository.UserRepository;
 import com.plim.plimserver.global.config.security.auth.PrincipalDetails;
 import com.plim.plimserver.global.domain.mail.domain.EmailAuthCode;
@@ -29,9 +31,9 @@ public class UserService {
 
     public User saveUser(SignUpUserRequest dto) {
         if (emailAuthCodeRepository.existsByEmail(dto.getEmail()))
-            throw new IllegalArgumentException("메일에서 이메일 인증을 진행해주세요.");
+            throw new EmailNotVerifedException(UserExceptionMessage.EMAIL_NOT_VERIFIED_EXCEPTION_MESSAGE);
         if (userRepository.existsByEmail(dto.getEmail()))
-            throw new EmailDuplicateException(dto.getEmail());
+            throw new EmailDuplicateException(UserExceptionMessage.EMAIL_DUPLICATE_EXCEPTION_MESSAGE);
 
         EmailAuthCodeGenerator authCodeGenerator = new EmailAuthCodeGenerator();
         String authCode = authCodeGenerator.generateAuthCode();
@@ -49,10 +51,10 @@ public class UserService {
     @Transactional
     public User withdraw(PrincipalDetails principal, String password) {
         User user = userRepository.findByEmail(principal.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("해당 유저가 존재하지 않습니다"));
+                .orElseThrow(() -> new UsernameNotFoundException(UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
         boolean matches = passwordEncoder.matches(password, user.getPassword());
         if (!matches)
-            throw new PasswordMismatchException("패스워드가 일치하지 않습니다.");
+            throw new PasswordMismatchException(UserExceptionMessage.PASSWORD_MISMATCH_EXCEPTION_MESSAGE);
 
         user.withdraw();
         return user;
@@ -61,7 +63,7 @@ public class UserService {
     @Transactional
     public User findPassword(FindPasswordRequest dto) {
         User user = userRepository.findByEmail(dto.getEmail())
-            .orElseThrow(() -> new UsernameNotFoundException("해당 유저가 존재하지 않습니다"));
+                .orElseThrow(() -> new UsernameNotFoundException(UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
 
         EmailAuthCodeGenerator authCodeGenerator = new EmailAuthCodeGenerator();
         String authCode = authCodeGenerator.generateAuthCode();
