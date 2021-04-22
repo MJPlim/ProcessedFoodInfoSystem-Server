@@ -154,10 +154,10 @@ public class FoodTest {
 		em.flush();
 		em.clear();
 
-		Optional<Food> findFood = foodRepository.findById(8L);
+		Optional<Food> findFood = foodRepository.findById(7L);
 		foodRepository.delete(findFood.get());
 
-		Optional<Food> deletedFood = foodRepository.findById(8L);
+		Optional<Food> deletedFood = foodRepository.findById(7L);
 
 		assertFalse(deletedFood.isPresent());
 	}

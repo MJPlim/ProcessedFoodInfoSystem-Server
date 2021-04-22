@@ -5,7 +5,10 @@ import com.plim.plimserver.domain.food.service.FoodService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 
@@ -18,7 +21,7 @@ public class FoodController {
 
     @ApiOperation(value = "제품이름 조회", notes = "제품이름과 일치하는 것을 조회한다")
     @GetMapping("/findFood/foodName")
-    public ArrayList<FoodResponse> getFoodInfoByFoodName(@RequestParam(name = "foodName") String foodName, @RequestParam(name = "pageNo") int pageNo){
+    public ArrayList<FoodResponse> getFoodInfoByFoodName(@RequestParam(name = "foodName") String foodName, @RequestParam(name = "pageNo") int pageNo) {
         return this.foodService.findFoodByFoodName(foodName, pageNo);
     }
 
@@ -28,4 +31,8 @@ public class FoodController {
         return this.foodService.findFoodByBsshName(bsshName, pageNo);
     }
 
+    @GetMapping("/makeFoodDB")
+    public int makeFoodDB() {
+        return this.foodService.makeFoodDatabaseWithoutBarCode();
+    }
 }
