@@ -36,29 +36,35 @@ public class FoodServiceImpl implements FoodService{
     }
 
     @Override
-    public ArrayList<FoodResponse> findFoodByFoodName (String foodName, int pageNo){
-        int page = 1 + 5*(pageNo-1); // 결과를 5개씩 받기 위한 리스트번호
-        String apiKey = getFoodSafetyKoreaApiKey();
-
-        // RestTemplate 클래스를 이용하여 url, 받아올 정보의 타입을 인자로 넘겨서 반환된 json값을 지정한 타입으로 가져옴.
-        String jsonString = restTemplate.getForObject(rawMaterialURL + apiKey + "/" + this.apiCode
-                + "/json/" + page + "/" + (page+4) + "/PRDLST_NM=" + foodName, String.class);
-        JsonArray arr = parseRawMaterialApiArray(jsonString);
-
-        return makeFoodDTOList(arr);
+    public ArrayList<FoodResponse> findFoodByFoodName (String foodName){
+        ArrayList<FoodResponse> foodList = new ArrayList<>();
+        List<Food> foods = this.foodRepository.findAllByFoodNameContaining(foodName);
+        for (Food food : foods) {
+            foodList.add(FoodResponse.builder()
+                                     .foodName(food.getFoodName())
+                                     .category(food.getCategory())
+                                     .manufacturerName(food.getManufacturerName())
+                                     .foodImageAddress(food.getFoodImage().getFoodImageAddress())
+                                     .foodMeteImageAddress(food.getFoodImage().getFoodMeteImageAddress())
+                                     .build());
+        }
+        return foodList;
     }
 
     @Override
-    public ArrayList<FoodResponse> findFoodByBsshName(String bsshName, int pageNo) {
-        int page = 1 + 5*(pageNo-1); // 결과를 5개씩 받기 위한 리스트번호
-        String apiKey = getFoodSafetyKoreaApiKey();
-
-        // RestTemplate 클래스를 이용하여 url, 받아올 정보의 타입을 인자로 넘겨서 반환된 json값을 지정한 타입으로 가져옴.
-        String jsonString = restTemplate.getForObject(rawMaterialURL + apiKey + "/" + this.apiCode
-                + "/json/" + page + "/" + (page+4) + "/BSSH_NM=" + bsshName, String.class);
-        JsonArray arr = parseRawMaterialApiArray(jsonString);
-
-        return makeFoodDTOList(arr);
+    public ArrayList<FoodResponse> findFoodByManufacturerName(String manufacturerName) {
+        ArrayList<FoodResponse> foodList  = new ArrayList<>();
+        List<Food> foods = this.foodRepository.findAllByManufacturerNameContaining(manufacturerName);
+        for (Food food : foods) {
+            foodList.add(FoodResponse.builder()
+                                     .foodName(food.getFoodName())
+                                     .category(food.getCategory())
+                                     .manufacturerName(food.getManufacturerName())
+                                     .foodImageAddress(food.getFoodImage().getFoodImageAddress())
+                                     .foodMeteImageAddress(food.getFoodImage().getFoodMeteImageAddress())
+                                     .build());
+        }
+        return foodList;
     }
 
     private String getFoodSafetyKoreaApiKey() {
@@ -75,24 +81,6 @@ public class FoodServiceImpl implements FoodService{
         JsonObject obj = (JsonObject)((JsonObject) jsonParser.parse(resultJson)).get(this.apiCode);// "C002" key의 value 가져오기
         Optional<JsonArray> optionalRow = Optional.ofNullable((JsonArray) obj.get("row"));// "row" key의 array 가져오기
         return optionalRow.orElseThrow(NullPointerException::new);
-    }
-
-    private ArrayList<FoodResponse> makeFoodDTOList(JsonArray arr) {
-        ArrayList<FoodResponse> foodList = new ArrayList<>(); // 결과를 담을 List
-        for (int j = 0; j < arr.size(); j++) {
-            JsonObject o = (JsonObject) arr.get(j);
-            FoodResponse food = FoodResponse.builder()
-                                            .lcnsNo(Long.parseLong(o.get("LCNS_NO").toString().replace("\"", "")))
-                                            .bsshName(o.get("BSSH_NM").toString().replace("\"", ""))
-                                            .prdlstReportNo(Long.parseLong(o.get("PRDLST_REPORT_NO").toString().replace("\"", "")))
-                                            .prmsDate(Long.parseLong(o.get("PRMS_DT").toString().replace("\"", "")))
-                                            .prdlstName(o.get("PRDLST_NM").toString().replace("\"", ""))
-                                            .prdlstDCName(o.get("PRDLST_DCNM").toString().replace("\"", ""))
-                                            .rawMaterialName(o.get("RAWMTRL_NM").toString().replace("\"", ""))
-                                            .build();
-            foodList.add(food);
-        }
-        return foodList;
     }
 
     @SneakyThrows
