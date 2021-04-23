@@ -9,6 +9,7 @@ import com.plim.plimserver.domain.api.repository.ApiKeyRepository;
 import com.plim.plimserver.domain.food.domain.Food;
 import com.plim.plimserver.domain.food.domain.FoodDetail;
 import com.plim.plimserver.domain.food.domain.FoodImage;
+import com.plim.plimserver.domain.food.dto.FoodDetailResponse;
 import com.plim.plimserver.domain.food.dto.FoodResponse;
 import com.plim.plimserver.domain.food.repository.FoodRepository;
 import lombok.SneakyThrows;
@@ -41,6 +42,7 @@ public class FoodServiceImpl implements FoodService{
         List<Food> foods = this.foodRepository.findAllByFoodNameContaining(foodName);
         for (Food food : foods) {
             foodList.add(FoodResponse.builder()
+                                     .foodId(food.getId())
                                      .foodName(food.getFoodName())
                                      .category(food.getCategory())
                                      .manufacturerName(food.getManufacturerName())
@@ -57,6 +59,7 @@ public class FoodServiceImpl implements FoodService{
         List<Food> foods = this.foodRepository.findAllByManufacturerNameContaining(manufacturerName);
         for (Food food : foods) {
             foodList.add(FoodResponse.builder()
+                                     .foodId(food.getId())
                                      .foodName(food.getFoodName())
                                      .category(food.getCategory())
                                      .manufacturerName(food.getManufacturerName())
@@ -81,6 +84,26 @@ public class FoodServiceImpl implements FoodService{
         JsonObject obj = (JsonObject)((JsonObject) jsonParser.parse(resultJson)).get(this.apiCode);// "C002" key의 value 가져오기
         Optional<JsonArray> optionalRow = Optional.ofNullable((JsonArray) obj.get("row"));// "row" key의 array 가져오기
         return optionalRow.orElseThrow(NullPointerException::new);
+    }
+
+    @Override
+    public FoodDetailResponse getFoodDetail(Long foodId) {
+        Optional<Food> optionalFood = this.foodRepository.findById(foodId);
+        Food food = optionalFood.orElseThrow(NoSuchElementException::new);
+        return FoodDetailResponse.builder()
+                                 .foodId(food.getId())
+                                 .foodName(food.getFoodName())
+                                 .category(food.getCategory())
+                                 .manufacturerName(food.getManufacturerName())
+                                 .foodImageAddress(food.getFoodImage().getFoodImageAddress())
+                                 .foodMeteImageAddress(food.getFoodImage().getFoodMeteImageAddress())
+                                 .materials(food.getFoodDetail().getMaterials())
+                                 .nutrient(food.getFoodDetail().getNutrient())
+                                 .allergyMaterials(food.getAllergyMaterials())
+                                 .viewCount(food.getViewCount())
+                                 .reviewList(food.getReviewList())
+                                 .favoriteList(food.getFavoriteList())
+                                 .build();
     }
 
     @SneakyThrows
