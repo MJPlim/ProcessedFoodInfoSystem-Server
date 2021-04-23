@@ -1,15 +1,22 @@
 package com.plim.plimserver.domain.food.service;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.plim.plimserver.domain.api.domain.ApiKey;
 import com.plim.plimserver.domain.api.repository.ApiKeyRepository;
+import com.plim.plimserver.domain.food.domain.Food;
+import com.plim.plimserver.domain.food.domain.FoodDetail;
+import com.plim.plimserver.domain.food.domain.FoodImage;
 import com.plim.plimserver.domain.food.dto.FoodResponse;
+import com.plim.plimserver.domain.food.repository.FoodRepository;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
 import java.util.*;
 
 @Service
@@ -17,38 +24,47 @@ public class FoodServiceImpl implements FoodService{
     private final ApiKeyRepository apiKeyRepository;
     private final RestTemplate restTemplate;
     private String rawMaterialURL = "http://openapi.foodsafetykorea.go.kr/api/";
+    private String haccpdataURL = "http://apis.data.go.kr/B553748/CertImgListService/getCertImgListService?ServiceKey=fTEm%2FiVcJFgwgjEeDhMET1kFQZduiSF09BedQaKgQRGH7fWSoKITTfTFZH2EzYono62%2BwMlAxdy2Jj64qzpgqQ%3D%3D&returnType=json&numOfRows=100";
     private String apiCode = "C002";
+    private final FoodRepository foodRepository;
 
     @Autowired
-    public FoodServiceImpl(ApiKeyRepository apiKeyRepository, RestTemplate restTemplate) {
+    public FoodServiceImpl(ApiKeyRepository apiKeyRepository, RestTemplate restTemplate, FoodRepository foodRepository) {
         this.apiKeyRepository = apiKeyRepository;
         this.restTemplate = restTemplate;
+        this.foodRepository = foodRepository;
     }
 
     @Override
-    public ArrayList<FoodResponse> findFoodByFoodName (String foodName, int pageNo){
-        int page = 1 + 5*(pageNo-1); // 결과를 5개씩 받기 위한 리스트번호
-        String apiKey = getFoodSafetyKoreaApiKey();
-
-        // RestTemplate 클래스를 이용하여 url, 받아올 정보의 타입을 인자로 넘겨서 반환된 json값을 지정한 타입으로 가져옴.
-        String jsonString = restTemplate.getForObject(rawMaterialURL + apiKey + "/" + this.apiCode
-                + "/json/" + page + "/" + (page+4) + "/PRDLST_NM=" + foodName, String.class);
-        JsonArray arr = parseRawMaterialApiArray(jsonString);
-
-        return makeFoodDTOList(arr);
+    public ArrayList<FoodResponse> findFoodByFoodName (String foodName){
+        ArrayList<FoodResponse> foodList = new ArrayList<>();
+        List<Food> foods = this.foodRepository.findAllByFoodNameContaining(foodName);
+        for (Food food : foods) {
+            foodList.add(FoodResponse.builder()
+                                     .foodName(food.getFoodName())
+                                     .category(food.getCategory())
+                                     .manufacturerName(food.getManufacturerName())
+                                     .foodImageAddress(food.getFoodImage().getFoodImageAddress())
+                                     .foodMeteImageAddress(food.getFoodImage().getFoodMeteImageAddress())
+                                     .build());
+        }
+        return foodList;
     }
 
     @Override
-    public ArrayList<FoodResponse> findFoodByBsshName(String bsshName, int pageNo) {
-        int page = 1 + 5*(pageNo-1); // 결과를 5개씩 받기 위한 리스트번호
-        String apiKey = getFoodSafetyKoreaApiKey();
-
-        // RestTemplate 클래스를 이용하여 url, 받아올 정보의 타입을 인자로 넘겨서 반환된 json값을 지정한 타입으로 가져옴.
-        String jsonString = restTemplate.getForObject(rawMaterialURL + apiKey + "/" + this.apiCode
-                + "/json/" + page + "/" + (page+4) + "/BSSH_NM=" + bsshName, String.class);
-        JsonArray arr = parseRawMaterialApiArray(jsonString);
-
-        return makeFoodDTOList(arr);
+    public ArrayList<FoodResponse> findFoodByManufacturerName(String manufacturerName) {
+        ArrayList<FoodResponse> foodList  = new ArrayList<>();
+        List<Food> foods = this.foodRepository.findAllByManufacturerNameContaining(manufacturerName);
+        for (Food food : foods) {
+            foodList.add(FoodResponse.builder()
+                                     .foodName(food.getFoodName())
+                                     .category(food.getCategory())
+                                     .manufacturerName(food.getManufacturerName())
+                                     .foodImageAddress(food.getFoodImage().getFoodImageAddress())
+                                     .foodMeteImageAddress(food.getFoodImage().getFoodMeteImageAddress())
+                                     .build());
+        }
+        return foodList;
     }
 
     private String getFoodSafetyKoreaApiKey() {
@@ -67,21 +83,47 @@ public class FoodServiceImpl implements FoodService{
         return optionalRow.orElseThrow(NullPointerException::new);
     }
 
-    private ArrayList<FoodResponse> makeFoodDTOList(JsonArray arr) {
-        ArrayList<FoodResponse> foodList = new ArrayList<>(); // 결과를 담을 List
-        for (int j = 0; j < arr.size(); j++) {
-            JsonObject o = (JsonObject) arr.get(j);
-            FoodResponse food = FoodResponse.builder()
-                                            .lcnsNo(Long.parseLong(o.get("LCNS_NO").toString().replace("\"", "")))
-                                            .bsshName(o.get("BSSH_NM").toString().replace("\"", ""))
-                                            .prdlstReportNo(Long.parseLong(o.get("PRDLST_REPORT_NO").toString().replace("\"", "")))
-                                            .prmsDate(Long.parseLong(o.get("PRMS_DT").toString().replace("\"", "")))
-                                            .prdlstName(o.get("PRDLST_NM").toString().replace("\"", ""))
-                                            .prdlstDCName(o.get("PRDLST_DCNM").toString().replace("\"", ""))
-                                            .rawMaterialName(o.get("RAWMTRL_NM").toString().replace("\"", ""))
-                                            .build();
-            foodList.add(food);
+    @SneakyThrows
+    @Override
+    public int makeFoodDatabaseWithoutBarCode() {
+        for (int t = 0; t < 154; t++) {
+            String url = haccpdataURL + "&pageNo=" + (t+1);
+            URI uri = new URI(url); // service key % -> 25 encoding 방지
+            String jsonString = restTemplate.getForObject(uri, String.class);
+
+            JsonParser parser = new JsonParser();
+            JsonObject object = parser.parse(jsonString).getAsJsonObject();
+            JsonArray array = object.get("list").getAsJsonArray();
+
+            for (int i = 0; i < array.size(); i++) {
+                JsonObject o = array.get(i).getAsJsonObject();
+                this.foodRepository.save(Food.builder()
+                                             .foodName(getJsonData(o, "prdlstNm"))
+                                             .reportNumber(getJsonData(o, "prdlstReportNo"))
+                                             .category(getJsonData(o, "prdkind"))
+                                             .manufacturerName(getJsonData(o, "manufacture"))
+                                             .foodDetail(FoodDetail.builder()
+                                                                   .materials(getJsonData(o, "rawmtrl"))
+                                                                   .nutrient(getJsonData(o, "nutrient"))
+                                                                   .capacity(getJsonData(o, "capacity"))
+                                                                   .build())
+                                             .foodImage(FoodImage.builder().foodImageAddress(getJsonData(o, "imgurl1"))
+                                                                 .foodMeteImageAddress(getJsonData(o, "imgurl2")).build())
+                                             .allergyMaterials(getJsonData(o, "allergy"))
+                                             .barcodeNumber(getJsonData(o, "barcode"))
+                                             .build());
+            }
         }
-        return foodList;
+        return 1;
     }
+
+    private String getJsonData(JsonObject o,String key) {
+        JsonElement reportNoObject = o.get(key);
+        String result = "No data";
+        if(reportNoObject != null){
+            result = reportNoObject.getAsString();
+        }
+        return result;
+    }
+
 }
