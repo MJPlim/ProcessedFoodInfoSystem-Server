@@ -9,7 +9,7 @@ public interface FoodService {
     ArrayList<FoodResponse> findFoodByFoodName(String foodName);
     ArrayList<FoodResponse> findFoodByManufacturerName(String manufacturerName);
 
-    int makeFoodDatabaseWithoutBarCode();
+    int makeFoodDatabaseWithoutBarCodeAPI();
 
     FoodDetailResponse getFoodDetail(Long foodId);
 }
