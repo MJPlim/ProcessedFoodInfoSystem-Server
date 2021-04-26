@@ -11,6 +11,8 @@ import com.plim.plimserver.domain.food.domain.FoodDetail;
 import com.plim.plimserver.domain.food.domain.FoodImage;
 import com.plim.plimserver.domain.food.dto.FoodDetailResponse;
 import com.plim.plimserver.domain.food.dto.FoodResponse;
+import com.plim.plimserver.domain.food.exception.FoodExceptionMessage;
+import com.plim.plimserver.domain.food.exception.NoFoodDetailException;
 import com.plim.plimserver.domain.food.repository.FoodRepository;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,7 +91,7 @@ public class FoodServiceImpl implements FoodService{
     @Override
     public FoodDetailResponse getFoodDetail(Long foodId) {
         Optional<Food> optionalFood = this.foodRepository.findById(foodId);
-        Food food = optionalFood.orElseThrow(NoSuchElementException::new);
+        Food food = optionalFood.orElseThrow(() -> new NoFoodDetailException(FoodExceptionMessage.NO_FOOD_DETAIL_EXCEPTION_MESSAGE));
         return FoodDetailResponse.builder()
                                  .foodId(food.getId())
                                  .foodName(food.getFoodName())
@@ -108,7 +110,7 @@ public class FoodServiceImpl implements FoodService{
 
     @SneakyThrows
     @Override
-    public int makeFoodDatabaseWithoutBarCode() {
+    public int makeFoodDatabaseWithoutBarCodeAPI() {
         for (int t = 0; t < 154; t++) {
             String url = haccpdataURL + "&pageNo=" + (t+1);
             URI uri = new URI(url); // service key % -> 25 encoding 방지
