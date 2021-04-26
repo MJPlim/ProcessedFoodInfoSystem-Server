@@ -4,7 +4,7 @@ import com.plim.plimserver.domain.user.domain.User;
 import com.plim.plimserver.domain.user.dto.FindPasswordRequest;
 import com.plim.plimserver.domain.user.dto.SignUpUserRequest;
 import com.plim.plimserver.domain.user.exception.EmailDuplicateException;
-import com.plim.plimserver.domain.user.exception.EmailNotVerifedException;
+import com.plim.plimserver.domain.user.exception.EmailNotVerifiedException;
 import com.plim.plimserver.domain.user.exception.PasswordMismatchException;
 import com.plim.plimserver.domain.user.exception.UserExceptionMessage;
 import com.plim.plimserver.domain.user.repository.UserRepository;
@@ -31,7 +31,7 @@ public class UserService {
 
     public User saveUser(SignUpUserRequest dto) {
         if (emailAuthCodeRepository.existsByEmail(dto.getEmail()))
-            throw new EmailNotVerifedException(UserExceptionMessage.EMAIL_NOT_VERIFIED_EXCEPTION_MESSAGE);
+            throw new EmailNotVerifiedException(UserExceptionMessage.EMAIL_NOT_VERIFIED_EXCEPTION_MESSAGE);
         if (userRepository.existsByEmail(dto.getEmail()))
             throw new EmailDuplicateException(UserExceptionMessage.EMAIL_DUPLICATE_EXCEPTION_MESSAGE);
 
