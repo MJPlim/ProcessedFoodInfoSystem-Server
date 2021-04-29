@@ -21,10 +21,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-
         try {
             String username = jwtTokenProvider.validateToken(request);
-
             if (!username.equals("")) {
                 String token = jwtTokenProvider.createToken(username);
                 response.addHeader("Authorization", "Bearer " + token);

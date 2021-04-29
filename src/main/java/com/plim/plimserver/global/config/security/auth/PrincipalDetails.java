@@ -1,20 +1,32 @@
 package com.plim.plimserver.global.config.security.auth;
 
-import com.plim.plimserver.domain.user.domain.UserStateType;
 import com.plim.plimserver.domain.user.domain.User;
+import com.plim.plimserver.domain.user.domain.UserStateType;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 @NoArgsConstructor
-@AllArgsConstructor
-public class PrincipalDetails implements UserDetails {
+public class PrincipalDetails implements UserDetails, OAuth2User {
 
     private User user;
+    private Map<String, Object> attributes;
+
+    public PrincipalDetails(User user) {
+        this.user = user;
+    }
+
+    public PrincipalDetails(User user, Map<String, Object> attributes) {
+        this.user = user;
+        this.attributes = attributes;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -51,6 +63,16 @@ public class PrincipalDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return user.getState().equals(UserStateType.NORMAL);
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return this.attributes;
+    }
+
+    @Override
+    public String getName() {
+        return null;
     }
 
 }

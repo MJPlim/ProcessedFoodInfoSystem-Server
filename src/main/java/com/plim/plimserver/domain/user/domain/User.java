@@ -55,9 +55,13 @@ public class User {
     @Column(name = "user_state", nullable = false)
     private UserStateType state;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_provider", nullable = false)
+    private UserProvider provider;
+
     @Builder
-    public User(String email, String password, String name, UserRoleType role,
-                LocalDate birth, String address, String profileImageAddress, UserStateType state) {
+    public User(String email, String password, String name, UserRoleType role, LocalDate birth,
+                String address, String profileImageAddress, UserStateType state, UserProvider provider) {
         this.email = email;
         this.password = password;
         this.name = name;
@@ -66,6 +70,7 @@ public class User {
         this.address = address;
         this.profileImageAddress = profileImageAddress;
         this.state = state;
+        this.provider = provider;
     }
 
     public void withdraw() {
