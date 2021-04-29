@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 public class AllergyCategory {
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "allergy_category_id")
-	private Long id;
+	private Integer id;
 	
 	@Column(name = "allergy_name", unique=true)
 	private String allergyName;

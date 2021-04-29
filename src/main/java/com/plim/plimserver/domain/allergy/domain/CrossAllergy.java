@@ -25,7 +25,7 @@ public class CrossAllergy {
 	
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "cross_allergy_id")
-	private Long id;
+	private Integer id;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "food_allergy_id1")

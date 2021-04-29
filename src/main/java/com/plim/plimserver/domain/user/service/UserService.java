@@ -1,10 +1,18 @@
 package com.plim.plimserver.domain.user.service;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.plim.plimserver.domain.user.domain.User;
+import com.plim.plimserver.domain.user.dto.EnterMyTabRequest;
 import com.plim.plimserver.domain.user.dto.FindPasswordRequest;
+import com.plim.plimserver.domain.user.dto.ModifyPasswordRequest;
 import com.plim.plimserver.domain.user.dto.SignUpUserRequest;
 import com.plim.plimserver.domain.user.exception.EmailDuplicateException;
 import com.plim.plimserver.domain.user.exception.EmailNotVerifiedException;
+import com.plim.plimserver.domain.user.exception.PasswordDuplicatedException;
 import com.plim.plimserver.domain.user.exception.PasswordMismatchException;
 import com.plim.plimserver.domain.user.exception.UserExceptionMessage;
 import com.plim.plimserver.domain.user.repository.UserRepository;
@@ -14,11 +22,8 @@ import com.plim.plimserver.global.domain.mail.domain.EmailSubject;
 import com.plim.plimserver.global.domain.mail.repository.EmailAuthCodeRepository;
 import com.plim.plimserver.global.domain.mail.util.EmailAuthCodeGenerator;
 import com.plim.plimserver.global.domain.mail.util.EmailUtil;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -74,4 +79,36 @@ public class UserService {
 
         return user;
     }
+    
+    @Transactional
+	public User modifyPassword(PrincipalDetails principal, ModifyPasswordRequest dto) {
+    	User user = userRepository.findByEmail(principal.getUsername())
+    			.orElseThrow(() -> new UsernameNotFoundException(UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
+    	
+    	//입력한 비밀번호가 기존 비밀번호와 다를때
+    	boolean matches1 = passwordEncoder.matches(dto.getBeforePassword(), user.getPassword());
+    	if (!matches1)
+            throw new PasswordMismatchException(UserExceptionMessage.PASSWORD_MISMATCH_EXCEPTION_MESSAGE);
+    	
+    	//변경할 비밀번호가 기존 비밀번호와 같을때
+    	boolean matches2 = passwordEncoder.matches(dto.getAfterPassword(), user.getPassword());
+    	if (matches2)
+            throw new PasswordDuplicatedException(UserExceptionMessage.PASSWORD_DUPLICATED_EXCEPTION_MESSAGE);
+    	
+    	user.updatePassword(passwordEncoder.encode(dto.getAfterPassword()));
+    	
+    	return user;
+	}
+
+    @Transactional
+	public User enterMyTab(PrincipalDetails principal, EnterMyTabRequest dto) {
+	   	User user = userRepository.findByEmail(principal.getUsername())
+    			.orElseThrow(() -> new UsernameNotFoundException(UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
+	   	
+	   	boolean matches = passwordEncoder.matches(dto.getPassword(), user.getPassword());
+    	if (!matches)
+            throw new PasswordMismatchException(UserExceptionMessage.PASSWORD_MISMATCH_EXCEPTION_MESSAGE);
+    	
+		return user;
+	}
 }

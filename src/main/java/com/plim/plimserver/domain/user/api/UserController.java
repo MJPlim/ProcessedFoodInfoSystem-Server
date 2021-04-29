@@ -1,8 +1,12 @@
 package com.plim.plimserver.domain.user.api;
 
 import com.plim.plimserver.domain.user.domain.User;
+import com.plim.plimserver.domain.user.dto.EnterMyTabRequest;
+import com.plim.plimserver.domain.user.dto.EnterMyTabResponse;
 import com.plim.plimserver.domain.user.dto.FindPasswordRequest;
 import com.plim.plimserver.domain.user.dto.FindPasswordResponse;
+import com.plim.plimserver.domain.user.dto.ModifyPasswordRequest;
+import com.plim.plimserver.domain.user.dto.ModifyPasswordResponse;
 import com.plim.plimserver.domain.user.dto.SignUpUserRequest;
 import com.plim.plimserver.domain.user.dto.SignUpUserResponse;
 import com.plim.plimserver.domain.user.dto.WithdrawUserRequest;
@@ -12,6 +16,8 @@ import com.plim.plimserver.global.config.security.auth.PrincipalDetails;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,5 +61,28 @@ public class UserController {
             .email(user.getEmail())
             .build());
     }
+    
+    @ApiOperation(value = "패스워드 변경", notes = "패스워드 변경을 요청한다.")
+    @PostMapping("modify-password")					//이전 비밀번호와 새로운 비밀번호를 받는다. 
+    public ResponseEntity<ModifyPasswordResponse> modifyPassword(@AuthenticationPrincipal PrincipalDetails principal,
+    		@Valid @RequestBody ModifyPasswordRequest dto) {
+        User user = userService.modifyPassword(principal, dto);
+        return ResponseEntity.ok(ModifyPasswordResponse.builder()
+        		.message("패스워드 변경 완료")
+        		.build());
+    }
 
+//    @PostMapping("enter-MyTab")					//유저의 패스워드를 입력받아 검증한다.  
+//    public ResponseEntity<EnterMyTabResponse> enterMyTab(@AuthenticationPrincipal PrincipalDetails principal,
+//    		@Valid @RequestBody EnterMyTabRequest dto) {
+//        User user = userService.enterMyTab(principal, dto);
+//        return ResponseEntity.ok(EnterMyTabResponse.builder()
+//        		.enterCode(1)
+//        		.userName(user.getName())
+//        		.message("들어가십쇼")
+//        		.build());
+//    }
+    
+    
+    
 }
