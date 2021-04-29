@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 public class FindPasswordRequest {
 
-    @Email
+    @Email(message = "이메일 형식에 맞춰 입력해주세요.")
     private String email;
 
 }

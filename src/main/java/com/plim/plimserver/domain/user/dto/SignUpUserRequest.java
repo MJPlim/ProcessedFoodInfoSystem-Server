@@ -1,5 +1,6 @@
 package com.plim.plimserver.domain.user.dto;
 
+import com.plim.plimserver.domain.user.domain.UserProvider;
 import com.plim.plimserver.domain.user.domain.UserRoleType;
 import com.plim.plimserver.domain.user.domain.UserStateType;
 import com.plim.plimserver.domain.user.domain.User;
@@ -40,6 +41,7 @@ public class SignUpUserRequest {
                 .address(this.address)
                 .role(UserRoleType.ROLE_USER)
                 .state(UserStateType.WAIT)
+                .provider(UserProvider.KATI)
                 .build();
     }
 

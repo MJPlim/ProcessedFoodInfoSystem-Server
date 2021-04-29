@@ -2,13 +2,15 @@ package com.plim.plimserver.global.config.security.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.plim.plimserver.domain.user.exception.EmailNotFoundException;
+import com.plim.plimserver.domain.user.exception.UserExceptionMessage;
+import com.plim.plimserver.domain.user.exception.WithdrawalAccountException;
 import com.plim.plimserver.domain.user.repository.UserRepository;
 import com.plim.plimserver.global.config.security.auth.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -38,9 +40,9 @@ public class JwtTokenProvider {
         String username = getUsername(authorization);
         if (username != null) {
             PrincipalDetails principalDetails = new PrincipalDetails(userRepository.findByEmail(username)
-                    .orElseThrow(() -> new UsernameNotFoundException("아이디 또는 패스워드를 확인해주세요.")));
+                    .orElseThrow(() -> new EmailNotFoundException(UserExceptionMessage.EMAIL_NOT_FOUND_EXCEPTION_MESSAGE)));
             if (!principalDetails.isEnabled())
-                throw new IllegalArgumentException("해당 계정은 탈퇴된 계정입니다.");
+                throw new WithdrawalAccountException(UserExceptionMessage.WITHDRAWAL_ACCOUNT_EXCEPTION);
 
             Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
