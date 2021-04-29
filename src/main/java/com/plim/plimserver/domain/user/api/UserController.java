@@ -1,12 +1,7 @@
 package com.plim.plimserver.domain.user.api;
 
 import com.plim.plimserver.domain.user.domain.User;
-import com.plim.plimserver.domain.user.dto.FindPasswordRequest;
-import com.plim.plimserver.domain.user.dto.FindPasswordResponse;
-import com.plim.plimserver.domain.user.dto.SignUpUserRequest;
-import com.plim.plimserver.domain.user.dto.SignUpUserResponse;
-import com.plim.plimserver.domain.user.dto.WithdrawUserRequest;
-import com.plim.plimserver.domain.user.dto.WithdrawUserResponse;
+import com.plim.plimserver.domain.user.dto.*;
 import com.plim.plimserver.domain.user.service.UserService;
 import com.plim.plimserver.global.config.security.auth.PrincipalDetails;
 import io.swagger.annotations.Api;
@@ -14,10 +9,12 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @Api(tags = {"User"})
@@ -52,8 +49,18 @@ public class UserController {
     public ResponseEntity<FindPasswordResponse> findPassword(@Valid @RequestBody FindPasswordRequest dto) {
         User user = userService.findPassword(dto);
         return ResponseEntity.ok(FindPasswordResponse.builder()
-            .email(user.getEmail())
-            .build());
+                .email(user.getEmail())
+                .build());
+    }
+
+    @GetMapping("oauth-success")
+    public ResponseEntity<String> user(HttpServletResponse response, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        if (principalDetails == null) {
+            throw new IllegalArgumentException("로그인을 해주세요.");
+        } else if (!principalDetails.isEnabled()) {
+            throw new IllegalArgumentException("회원탈퇴된 계정입니다.");
+        }
+        return ResponseEntity.ok("로그인 성공");
     }
 
 }
