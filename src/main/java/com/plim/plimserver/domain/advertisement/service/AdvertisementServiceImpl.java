@@ -35,7 +35,6 @@ public class AdvertisementServiceImpl implements AdvertisementService{
             int id = r.nextInt(onAds.size());
             numSet.add(id);
         }
-
         for (int i : numSet) {
             AdvertisementFood advertisementFood = onAds.get(i);
             AdvertisementResponse response = AdvertisementResponse.builder()

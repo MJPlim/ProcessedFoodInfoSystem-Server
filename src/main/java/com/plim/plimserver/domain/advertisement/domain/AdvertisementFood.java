@@ -16,7 +16,7 @@ public class AdvertisementFood {
     @Column(name = "ad_id")
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne()
     @JoinColumn(name = "food_id")
     private Food food;
 
