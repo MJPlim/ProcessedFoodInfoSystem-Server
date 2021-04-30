@@ -1,15 +1,13 @@
 package com.plim.plimserver.domain.advertisement.domain;
 
 import com.plim.plimserver.domain.food.domain.Food;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Table(name = "ad_food")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class AdvertisementFood {
