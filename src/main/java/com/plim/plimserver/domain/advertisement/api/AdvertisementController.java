@@ -21,7 +21,7 @@ public class AdvertisementController {
         return this.advertisementService.getAdvertisementFoodList();
     }
 
-    @PostMapping("/choosing")
+    @PostMapping("/onItem")
     public boolean chooseAdvertisement(@RequestParam(name = "firstID") Long id1
             , @RequestParam(name = "secondID") Long id2, @RequestParam(name = "thirdID") Long id3) {
         try {

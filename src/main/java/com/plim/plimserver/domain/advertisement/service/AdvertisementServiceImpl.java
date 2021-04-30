@@ -7,6 +7,7 @@ import com.plim.plimserver.domain.food.domain.Food;
 import com.plim.plimserver.domain.food.repository.FoodRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -22,6 +23,7 @@ public class AdvertisementServiceImpl implements AdvertisementService{
     }
 
     @Override
+    @Transactional
     public ArrayList<AdvertisementResponse> getAdvertisementFoodList() {
         ArrayList<AdvertisementResponse> ads = new ArrayList<>();
         List<AdvertisementFood> onAds = this.advertisementRepository.findAllByAdState("on");
@@ -42,6 +44,7 @@ public class AdvertisementServiceImpl implements AdvertisementService{
                                                                   .food(advertisementFood.getFood())
                                                                   .build();
             ads.add(response);
+            advertisementFood.setImpressionCount(advertisementFood.getImpressionCount()+1);
         }
         return ads;
     }
@@ -57,6 +60,9 @@ public class AdvertisementServiceImpl implements AdvertisementService{
     private void setAdvertisementFood(Long id) throws NoSuchElementException {
         Optional<Food> optFood = this.foodRepository.findById(id);
         Food food = optFood.orElseThrow(NoSuchElementException::new);
-        this.advertisementRepository.save(AdvertisementFood.builder().food(food).adState("on").build());
+        Optional<AdvertisementFood> optionalFindFood = this.advertisementRepository.findByFood(food);
+        if (!optionalFindFood.isPresent()) {
+            this.advertisementRepository.save(AdvertisementFood.builder().food(food).adState("on").build());
+        }
     }
 }
