@@ -3,6 +3,7 @@ package com.plim.plimserver.domain.advertisement.api;
 import com.plim.plimserver.domain.advertisement.dto.AdvertisementResponse;
 import com.plim.plimserver.domain.advertisement.service.AdvertisementService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,11 +17,13 @@ import java.util.NoSuchElementException;
 public class AdvertisementController {
     private final AdvertisementService advertisementService;
 
+    @ApiOperation(value = "광고제품 목록 랜덤 반환", notes = "광고상태가 on인 제품 중 3개를 랜덤하게 반환한다")
     @GetMapping("/ads")
     public ArrayList<AdvertisementResponse> getAdvertisementFoodList() {
         return this.advertisementService.getAdvertisementFoodList();
     }
 
+    @ApiOperation(value = "광고제품을 db에 생성", notes = "ad_food 테이블에 광고할 제품을 넣는다")
     @PostMapping("/onItem")
     public boolean chooseAdvertisement(@RequestParam(name = "firstID") Long id1
             , @RequestParam(name = "secondID") Long id2, @RequestParam(name = "thirdID") Long id3) {
