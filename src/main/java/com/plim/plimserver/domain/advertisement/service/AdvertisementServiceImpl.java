@@ -52,8 +52,13 @@ public class AdvertisementServiceImpl implements AdvertisementService{
     @Override
     public boolean selectAdvertisement(Long id1, Long id2, Long id3) throws NoSuchElementException{
         this.setAdvertisementFood(id1);
-        this.setAdvertisementFood(id2);
-        this.setAdvertisementFood(id3);
+        if (id2 != null) {
+            this.setAdvertisementFood(id2);
+        }
+        if (id3 != null) {
+            this.setAdvertisementFood(id3);
+        }
+
         return true;
     }
 

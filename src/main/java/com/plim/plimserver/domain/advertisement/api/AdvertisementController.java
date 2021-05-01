@@ -26,7 +26,7 @@ public class AdvertisementController {
     @ApiOperation(value = "광고제품을 db에 생성", notes = "ad_food 테이블에 광고할 제품을 넣는다")
     @PostMapping("/onItem")
     public boolean chooseAdvertisement(@RequestParam(name = "firstID") Long id1
-            , @RequestParam(name = "secondID") Long id2, @RequestParam(name = "thirdID") Long id3) {
+            , @RequestParam(name = "secondID", required = false) Long id2, @RequestParam(name = "thirdID", required = false) Long id3) {
         try {
             return this.advertisementService.selectAdvertisement(id1, id2, id3);
         } catch (NoSuchElementException e) {
