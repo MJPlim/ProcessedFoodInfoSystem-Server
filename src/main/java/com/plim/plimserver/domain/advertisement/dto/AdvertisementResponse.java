@@ -9,6 +9,6 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 public class AdvertisementResponse {
-    private Long id;
-    private Food food;
+    private final Long id;
+    private final Food food;
 }
