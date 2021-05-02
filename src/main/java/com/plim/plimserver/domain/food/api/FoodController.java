@@ -33,7 +33,7 @@ public class FoodController {
     }
     
     @ApiOperation(value = "특정 제품의 상세정보 조회", notes = "선택한 제품을 조회하여 상세정보를 반환한다")
-    @GetMapping("findFood/foodDetail")
+    @GetMapping("/findFood/foodDetail")
     public FoodDetailResponse getFoodDetail(@RequestParam(name = "foodId") Long foodId) {
         return this.foodService.getFoodDetail(foodId);
     }

@@ -17,6 +17,7 @@ import com.plim.plimserver.domain.food.repository.FoodRepository;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
@@ -88,10 +89,12 @@ public class FoodServiceImpl implements FoodService{
         return optionalRow.orElseThrow(NullPointerException::new);
     }
 
+    @Transactional
     @Override
     public FoodDetailResponse getFoodDetail(Long foodId) {
         Optional<Food> optionalFood = this.foodRepository.findById(foodId);
         Food food = optionalFood.orElseThrow(() -> new NoFoodDetailException(FoodExceptionMessage.NO_FOOD_DETAIL_EXCEPTION_MESSAGE));
+        food.setViewCount(food.getViewCount()+1);
         return FoodDetailResponse.builder()
                                  .foodId(food.getId())
                                  .foodName(food.getFoodName())

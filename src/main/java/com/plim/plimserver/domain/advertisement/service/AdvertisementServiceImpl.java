@@ -2,8 +2,11 @@ package com.plim.plimserver.domain.advertisement.service;
 
 import com.plim.plimserver.domain.advertisement.domain.AdvertisementFood;
 import com.plim.plimserver.domain.advertisement.dto.AdvertisementResponse;
+import com.plim.plimserver.domain.advertisement.exception.AdvertisementExceptionMessage;
+import com.plim.plimserver.domain.advertisement.exception.NoAdvertisementFoodDetailException;
 import com.plim.plimserver.domain.advertisement.repository.AdvertisementRepository;
 import com.plim.plimserver.domain.food.domain.Food;
+import com.plim.plimserver.domain.food.dto.FoodDetailResponse;
 import com.plim.plimserver.domain.food.repository.FoodRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,6 +50,30 @@ public class AdvertisementServiceImpl implements AdvertisementService{
             advertisementFood.setImpressionCount(advertisementFood.getImpressionCount()+1);
         }
         return ads;
+    }
+
+    @Transactional
+    @Override
+    public FoodDetailResponse getFoodDetailForAdvertisement(Long adId) {
+        Optional<AdvertisementFood> optionalAdvertisement = this.advertisementRepository.findById(adId);
+        AdvertisementFood advertisementFood = optionalAdvertisement.orElseThrow(
+                () -> new NoAdvertisementFoodDetailException(AdvertisementExceptionMessage.NO_ADVERTISEMENT_FOOD_DETAIL_EXCEPTION_MESSAGE));
+        advertisementFood.setViewCount(advertisementFood.getViewCount()+1);
+        advertisementFood.getFood().setViewCount(advertisementFood.getFood().getViewCount()+1);
+        return FoodDetailResponse.builder()
+                                 .foodId(advertisementFood.getFood().getId())
+                                 .foodName(advertisementFood.getFood().getFoodName())
+                                 .category(advertisementFood.getFood().getCategory())
+                                 .manufacturerName(advertisementFood.getFood().getManufacturerName())
+                                 .foodImageAddress(advertisementFood.getFood().getFoodImage().getFoodImageAddress())
+                                 .foodMeteImageAddress(advertisementFood.getFood().getFoodImage().getFoodMeteImageAddress())
+                                 .materials(advertisementFood.getFood().getFoodDetail().getMaterials())
+                                 .nutrient(advertisementFood.getFood().getFoodDetail().getNutrient())
+                                 .allergyMaterials(advertisementFood.getFood().getAllergyMaterials())
+                                 .viewCount(advertisementFood.getFood().getViewCount())
+                                 .reviewList(advertisementFood.getFood().getReviewList())
+                                 .favoriteList(advertisementFood.getFood().getFavoriteList())
+                                 .build();
     }
 
     @Override
