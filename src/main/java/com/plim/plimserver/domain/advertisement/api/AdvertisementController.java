@@ -2,6 +2,7 @@ package com.plim.plimserver.domain.advertisement.api;
 
 import com.plim.plimserver.domain.advertisement.dto.AdvertisementResponse;
 import com.plim.plimserver.domain.advertisement.service.AdvertisementService;
+import com.plim.plimserver.domain.food.dto.FoodDetailResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,12 @@ public class AdvertisementController {
     @GetMapping("/ads")
     public ArrayList<AdvertisementResponse> getAdvertisementFoodList() {
         return this.advertisementService.getAdvertisementFoodList();
+    }
+
+    @ApiOperation(value = "광고용 특정 제품의 상세정보 조회", notes = "선택한 광고 제품을 조회하여 상세정보를 반환한다")
+    @GetMapping("/foodDetail")
+    public FoodDetailResponse getFoodDetailForAdvertisement(@RequestParam(name = "adId") Long adId) {
+        return this.advertisementService.getFoodDetailForAdvertisement(adId);
     }
 
     @ApiOperation(value = "광고제품을 db에 생성", notes = "ad_food 테이블에 광고할 제품을 넣는다")

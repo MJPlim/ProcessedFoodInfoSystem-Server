@@ -2,10 +2,7 @@ package com.plim.plimserver.domain.food.domain;
 
 import com.plim.plimserver.domain.favorite.domain.Favorite;
 import com.plim.plimserver.domain.review.domain.Review;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
@@ -14,6 +11,7 @@ import java.util.List;
 
 @Table(name = "food")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Food {
