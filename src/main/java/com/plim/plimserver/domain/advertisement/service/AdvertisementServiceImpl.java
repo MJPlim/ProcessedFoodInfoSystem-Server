@@ -7,6 +7,7 @@ import com.plim.plimserver.domain.advertisement.exception.NoAdvertisementFoodDet
 import com.plim.plimserver.domain.advertisement.repository.AdvertisementRepository;
 import com.plim.plimserver.domain.food.domain.Food;
 import com.plim.plimserver.domain.food.dto.FoodDetailResponse;
+import com.plim.plimserver.domain.food.dto.FoodResponse;
 import com.plim.plimserver.domain.food.repository.FoodRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,14 @@ public class AdvertisementServiceImpl implements AdvertisementService{
             AdvertisementFood advertisementFood = onAds.get(i);
             AdvertisementResponse response = AdvertisementResponse.builder()
                                                                   .id(advertisementFood.getId())
-                                                                  .food(advertisementFood.getFood())
+                                                                  .food(FoodResponse.builder()
+                                                                                    .foodId(advertisementFood.getFood().getId())
+                                                                                    .foodName(advertisementFood.getFood().getFoodName())
+                                                                                    .category(advertisementFood.getFood().getCategory())
+                                                                                    .manufacturerName(advertisementFood.getFood().getManufacturerName())
+                                                                                    .foodImageAddress(advertisementFood.getFood().getFoodImage().getFoodImageAddress())
+                                                                                    .foodMeteImageAddress(advertisementFood.getFood().getFoodImage().getFoodMeteImageAddress())
+                                                                                    .build())
                                                                   .build();
             ads.add(response);
             advertisementFood.setImpressionCount(advertisementFood.getImpressionCount()+1);
