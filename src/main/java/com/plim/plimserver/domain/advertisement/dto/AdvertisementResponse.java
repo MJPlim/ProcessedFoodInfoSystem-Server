@@ -1,6 +1,6 @@
 package com.plim.plimserver.domain.advertisement.dto;
 
-import com.plim.plimserver.domain.food.domain.Food;
+import com.plim.plimserver.domain.food.dto.FoodResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,5 +10,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class AdvertisementResponse {
     private final Long id;
-    private final Food food;
+    private final FoodResponse food;
 }
