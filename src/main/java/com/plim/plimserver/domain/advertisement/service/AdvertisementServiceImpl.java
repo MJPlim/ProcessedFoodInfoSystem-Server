@@ -32,11 +32,7 @@ public class AdvertisementServiceImpl implements AdvertisementService{
         List<AdvertisementFood> onAds = this.advertisementRepository.findAllByAdState("on");
         Random r = new Random();
         Set<Integer> numSet = new HashSet<>();
-        boolean hasThree = false;
-        while (!hasThree) {
-            if (numSet.size() == 3) {
-                hasThree = true;
-            }
+        while (numSet.size() != 3) {
             int id = r.nextInt(onAds.size());
             numSet.add(id);
         }
