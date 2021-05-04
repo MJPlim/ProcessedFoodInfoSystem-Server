@@ -67,9 +67,9 @@ public class FoodTest {
 				.barcodeNumber("바코드 번호0ㅑ09ㅑ090").build();
 		foodRepository.save(food);
 		
-		User user = userRepository.findById(120L).orElseThrow();
+		Optional<User> user = userRepository.findById(120L);
 
-		Review review = Review.builder().user(user).food(food).reviewRating(4).reviewDescription("리뷰테스트")
+		Review review = Review.builder().user(user.get()).food(food).reviewRating(4).reviewDescription("리뷰테스트")
 				.state(ReviewStateType.NORMAL).build();
 		reviewRepository.save(review);
 
