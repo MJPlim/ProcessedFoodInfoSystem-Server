@@ -2,6 +2,8 @@ package com.plim.plimserver.domain.food.domain;
 
 import com.plim.plimserver.domain.favorite.domain.Favorite;
 import com.plim.plimserver.domain.review.domain.Review;
+import com.plim.plimserver.domain.review.domain.ReviewSummary;
+
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -53,6 +55,9 @@ public class Food {
 	@Column(name = "view_count")
 	@ColumnDefault("0")
 	private Long viewCount;
+	
+	@OneToOne(fetch = FetchType.LAZY, mappedBy = "food")
+	private ReviewSummary reviewsummary;
 
 	@Builder
 	public Food(String foodName, String reportNumber, String category, String manufacturerName,
@@ -65,6 +70,7 @@ public class Food {
 		this.allergyMaterials = allergyMaterials;
 		this.foodImage = foodImage;
 		this.barcodeNumber = barcodeNumber;
+		this.reviewsummary.insertFood(this);
 	}
 
 	@PrePersist						//default값 설정을 위함

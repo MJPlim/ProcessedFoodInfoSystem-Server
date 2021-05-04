@@ -23,6 +23,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.plim.plimserver.domain.food.domain.Food;
+import com.plim.plimserver.domain.user.domain.User;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -39,18 +40,19 @@ public class Review {
 	@Column(name = "review_id")
 	private Long id;
 	
-	@Column(name = "user_id")				//매핑 아직 안함
-	private Long userId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")				
+	private User user;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "food_id")				//이것두
+	@JoinColumn(name = "food_id")				
 	private Food food;
 	
 	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ReviewLike> reviewLikeList = new ArrayList<>();
 	
 	@Column(name = "review_rating", nullable = false)
-	private float reviewRating;
+	private int reviewRating;
 	
 	@Lob
 	@Column(name = "review_description")
@@ -69,8 +71,8 @@ public class Review {
 	private ReviewStateType state;
 	
 	@Builder
-	public Review(Long userId, Food food, float reviewRating, String reviewDescription, ReviewStateType state) {
-		this.userId = userId;
+	public Review(User user, Food food, int reviewRating, String reviewDescription, ReviewStateType state) {
+		this.user = user;
 		this.food = food;
 		this.reviewRating = reviewRating;
 		this.reviewDescription = reviewDescription;
@@ -78,7 +80,7 @@ public class Review {
 		this.food.getReviewList().add(this);
 	}
 	
-	public void reviewUpdate(float reviewRating, String reviewDescription) {
+	public void reviewUpdate(int reviewRating, String reviewDescription) {
 		this.reviewRating = reviewRating;
 		this.reviewDescription = reviewDescription;
 	}
