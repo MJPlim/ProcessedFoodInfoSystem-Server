@@ -84,4 +84,13 @@ public class FavoriteServiceImpl implements FavoriteService{
         this.favoriteRepository.deleteByUserAndFood(user, food);
     }
 
+    @Override
+    public boolean getFavoriteStateForSpecificFood(PrincipalDetails principalDetails, Long foodId) {
+        Food food = this.foodRepository.findById(foodId).orElseThrow(() -> new NoFoodException(FoodExceptionMessage.NO_FOOD_EXCEPTION_MESSAGE));
+        User user = this.userRepository.findByEmail(principalDetails.getUsername())
+                                       .orElseThrow(() -> new UsernameNotFoundException(UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
+
+        return this.favoriteRepository.existsByUserAndFood(user, food);
+    }
+
 }

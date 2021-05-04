@@ -11,4 +11,6 @@ public interface FavoriteService {
     List<FavoriteResponse> getFavoriteFoodList(PrincipalDetails principalDetails);
     boolean addFavoriteFood(PrincipalDetails principalDetails, Long foodId) throws NoSuchElementException;
     void deleteFavoriteFood(PrincipalDetails principalDetails, Long foodId);
+    boolean getFavoriteStateForSpecificFood(PrincipalDetails principalDetails, Long foodId);
+
 }

@@ -36,4 +36,9 @@ public class FavoriteController {
         this.favoriteService.deleteFavoriteFood(principalDetails, foodId);
     }
 
+    @GetMapping("/checkFavorite")
+    public boolean getFavoriteStateForSpecificFood(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestParam(name = "foodId") Long foodId) {
+        return this.favoriteService.getFavoriteStateForSpecificFood(principalDetails, foodId);
+    }
+
 }
