@@ -1,15 +1,14 @@
 package com.plim.plimserver.domain.food.api;
 
+import com.plim.plimserver.domain.food.dto.FindFoodByBarcodeRequest;
 import com.plim.plimserver.domain.food.dto.FoodDetailResponse;
 import com.plim.plimserver.domain.food.dto.FoodResponse;
 import com.plim.plimserver.domain.food.service.FoodService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 
@@ -31,7 +30,7 @@ public class FoodController {
     public ArrayList<FoodResponse> getFoodInfoByManufacturerName(@RequestParam(name = "manufacturerName") String manufacturerName) {
         return this.foodService.findFoodByManufacturerName(manufacturerName);
     }
-    
+
     @ApiOperation(value = "특정 제품의 상세정보 조회", notes = "선택한 제품을 조회하여 상세정보를 반환한다")
     @GetMapping("/findFood/foodDetail")
     public FoodDetailResponse getFoodDetail(@RequestParam(name = "foodId") Long foodId) {
@@ -43,4 +42,10 @@ public class FoodController {
     public int makeFoodDB() {
         return this.foodService.makeFoodDatabaseWithoutBarCodeAPI();
     }
+
+    @PostMapping("/findFood/barcode")
+    public ResponseEntity<?> findFoodByBarcode(@RequestBody FindFoodByBarcodeRequest request) {
+        return ResponseEntity.ok(this.foodService.findFoodByBarcode(request.getBarcode()));
+    }
+
 }

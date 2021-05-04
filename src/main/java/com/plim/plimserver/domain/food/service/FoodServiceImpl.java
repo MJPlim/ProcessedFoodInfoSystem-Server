@@ -24,7 +24,7 @@ import java.net.URI;
 import java.util.*;
 
 @Service
-public class FoodServiceImpl implements FoodService{
+public class FoodServiceImpl implements FoodService {
     private final ApiKeyRepository apiKeyRepository;
     private final RestTemplate restTemplate;
     private String rawMaterialURL = "http://openapi.foodsafetykorea.go.kr/api/";
@@ -40,42 +40,42 @@ public class FoodServiceImpl implements FoodService{
     }
 
     @Override
-    public ArrayList<FoodResponse> findFoodByFoodName (String foodName){
+    public ArrayList<FoodResponse> findFoodByFoodName(String foodName) {
         ArrayList<FoodResponse> foodList = new ArrayList<>();
         List<Food> foods = this.foodRepository.findAllByFoodNameContaining(foodName);
         for (Food food : foods) {
             foodList.add(FoodResponse.builder()
-                                     .foodId(food.getId())
-                                     .foodName(food.getFoodName())
-                                     .category(food.getCategory())
-                                     .manufacturerName(food.getManufacturerName())
-                                     .foodImageAddress(food.getFoodImage().getFoodImageAddress())
-                                     .foodMeteImageAddress(food.getFoodImage().getFoodMeteImageAddress())
-                                     .build());
+                    .foodId(food.getId())
+                    .foodName(food.getFoodName())
+                    .category(food.getCategory())
+                    .manufacturerName(food.getManufacturerName())
+                    .foodImageAddress(food.getFoodImage().getFoodImageAddress())
+                    .foodMeteImageAddress(food.getFoodImage().getFoodMeteImageAddress())
+                    .build());
         }
         return foodList;
     }
 
     @Override
     public ArrayList<FoodResponse> findFoodByManufacturerName(String manufacturerName) {
-        ArrayList<FoodResponse> foodList  = new ArrayList<>();
+        ArrayList<FoodResponse> foodList = new ArrayList<>();
         List<Food> foods = this.foodRepository.findAllByManufacturerNameContaining(manufacturerName);
         for (Food food : foods) {
             foodList.add(FoodResponse.builder()
-                                     .foodId(food.getId())
-                                     .foodName(food.getFoodName())
-                                     .category(food.getCategory())
-                                     .manufacturerName(food.getManufacturerName())
-                                     .foodImageAddress(food.getFoodImage().getFoodImageAddress())
-                                     .foodMeteImageAddress(food.getFoodImage().getFoodMeteImageAddress())
-                                     .build());
+                    .foodId(food.getId())
+                    .foodName(food.getFoodName())
+                    .category(food.getCategory())
+                    .manufacturerName(food.getManufacturerName())
+                    .foodImageAddress(food.getFoodImage().getFoodImageAddress())
+                    .foodMeteImageAddress(food.getFoodImage().getFoodMeteImageAddress())
+                    .build());
         }
         return foodList;
     }
 
     private String getFoodSafetyKoreaApiKey() {
         Random r = new Random();
-        int id = r.nextInt(3)+1;
+        int id = r.nextInt(3) + 1;
         List<ApiKey> apiKeys = this.apiKeyRepository.findAllByKeyName("foodsafetykorea");
         Optional<ApiKey> optionalApiKey = apiKeys.stream().filter(k -> k.getId() == id).findAny();// API Key를 랜덤하게 하여 key를 돌려써서 가져옴
         return optionalApiKey.orElseThrow(NoSuchElementException::new).getKeyValue();
@@ -84,7 +84,7 @@ public class FoodServiceImpl implements FoodService{
     private JsonArray parseRawMaterialApiArray(String resultJson) {
         //JsonParser를 이용하여 json의 구조 분리
         JsonParser jsonParser = new JsonParser();
-        JsonObject obj = (JsonObject)((JsonObject) jsonParser.parse(resultJson)).get(this.apiCode);// "C002" key의 value 가져오기
+        JsonObject obj = (JsonObject) ((JsonObject) jsonParser.parse(resultJson)).get(this.apiCode);// "C002" key의 value 가져오기
         Optional<JsonArray> optionalRow = Optional.ofNullable((JsonArray) obj.get("row"));// "row" key의 array 가져오기
         return optionalRow.orElseThrow(NullPointerException::new);
     }
@@ -94,28 +94,28 @@ public class FoodServiceImpl implements FoodService{
     public FoodDetailResponse getFoodDetail(Long foodId) {
         Optional<Food> optionalFood = this.foodRepository.findById(foodId);
         Food food = optionalFood.orElseThrow(() -> new NoFoodDetailException(FoodExceptionMessage.NO_FOOD_DETAIL_EXCEPTION_MESSAGE));
-        food.setViewCount(food.getViewCount()+1);
+        food.setViewCount(food.getViewCount() + 1);
         return FoodDetailResponse.builder()
-                                 .foodId(food.getId())
-                                 .foodName(food.getFoodName())
-                                 .category(food.getCategory())
-                                 .manufacturerName(food.getManufacturerName())
-                                 .foodImageAddress(food.getFoodImage().getFoodImageAddress())
-                                 .foodMeteImageAddress(food.getFoodImage().getFoodMeteImageAddress())
-                                 .materials(food.getFoodDetail().getMaterials())
-                                 .nutrient(food.getFoodDetail().getNutrient())
-                                 .allergyMaterials(food.getAllergyMaterials())
-                                 .viewCount(food.getViewCount())
-                                 .reviewList(food.getReviewList())
-                                 .favoriteList(food.getFavoriteList())
-                                 .build();
+                .foodId(food.getId())
+                .foodName(food.getFoodName())
+                .category(food.getCategory())
+                .manufacturerName(food.getManufacturerName())
+                .foodImageAddress(food.getFoodImage().getFoodImageAddress())
+                .foodMeteImageAddress(food.getFoodImage().getFoodMeteImageAddress())
+                .materials(food.getFoodDetail().getMaterials())
+                .nutrient(food.getFoodDetail().getNutrient())
+                .allergyMaterials(food.getAllergyMaterials())
+                .viewCount(food.getViewCount())
+                .reviewList(food.getReviewList())
+                .favoriteList(food.getFavoriteList())
+                .build();
     }
 
     @SneakyThrows
     @Override
     public int makeFoodDatabaseWithoutBarCodeAPI() {
         for (int t = 0; t < 154; t++) {
-            String url = haccpdataURL + "&pageNo=" + (t+1);
+            String url = haccpdataURL + "&pageNo=" + (t + 1);
             URI uri = new URI(url); // service key % -> 25 encoding 방지
             String jsonString = restTemplate.getForObject(uri, String.class);
 
@@ -126,32 +126,38 @@ public class FoodServiceImpl implements FoodService{
             for (int i = 0; i < array.size(); i++) {
                 JsonObject o = array.get(i).getAsJsonObject();
                 this.foodRepository.save(Food.builder()
-                                             .foodName(getJsonData(o, "prdlstNm"))
-                                             .reportNumber(getJsonData(o, "prdlstReportNo"))
-                                             .category(getJsonData(o, "prdkind"))
-                                             .manufacturerName(getJsonData(o, "manufacture"))
-                                             .foodDetail(FoodDetail.builder()
-                                                                   .materials(getJsonData(o, "rawmtrl"))
-                                                                   .nutrient(getJsonData(o, "nutrient"))
-                                                                   .capacity(getJsonData(o, "capacity"))
-                                                                   .build())
-                                             .foodImage(FoodImage.builder().foodImageAddress(getJsonData(o, "imgurl1"))
-                                                                 .foodMeteImageAddress(getJsonData(o, "imgurl2")).build())
-                                             .allergyMaterials(getJsonData(o, "allergy"))
-                                             .barcodeNumber(getJsonData(o, "barcode"))
-                                             .build());
+                        .foodName(getJsonData(o, "prdlstNm"))
+                        .reportNumber(getJsonData(o, "prdlstReportNo"))
+                        .category(getJsonData(o, "prdkind"))
+                        .manufacturerName(getJsonData(o, "manufacture"))
+                        .foodDetail(FoodDetail.builder()
+                                .materials(getJsonData(o, "rawmtrl"))
+                                .nutrient(getJsonData(o, "nutrient"))
+                                .capacity(getJsonData(o, "capacity"))
+                                .build())
+                        .foodImage(FoodImage.builder().foodImageAddress(getJsonData(o, "imgurl1"))
+                                .foodMeteImageAddress(getJsonData(o, "imgurl2")).build())
+                        .allergyMaterials(getJsonData(o, "allergy"))
+                        .barcodeNumber(getJsonData(o, "barcode"))
+                        .build());
             }
         }
         return 1;
     }
 
-    private String getJsonData(JsonObject o,String key) {
+    private String getJsonData(JsonObject o, String key) {
         JsonElement reportNoObject = o.get(key);
         String result = "No data";
-        if(reportNoObject != null){
+        if (reportNoObject != null) {
             result = reportNoObject.getAsString();
         }
         return result;
+    }
+
+    @Override
+    public FoodResponse findFoodByBarcode(String barcode) {
+        return FoodResponse.of(this.foodRepository.findByBarcodeNumber(barcode)
+                .orElseThrow(() -> new IllegalArgumentException("해당 제품이 존재하지 않습니다.")));
     }
 
 }
