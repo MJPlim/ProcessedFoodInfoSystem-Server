@@ -13,7 +13,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.annotation.Rollback;
+
 
 import com.plim.plimserver.domain.favorite.domain.Favorite;
 import com.plim.plimserver.domain.favorite.repository.FavoriteRepository;
@@ -26,6 +28,9 @@ import com.plim.plimserver.domain.review.domain.ReviewLike;
 import com.plim.plimserver.domain.review.domain.ReviewStateType;
 import com.plim.plimserver.domain.review.repository.ReviewLikeRepository;
 import com.plim.plimserver.domain.review.repository.ReviewRepository;
+import com.plim.plimserver.domain.user.domain.User;
+import com.plim.plimserver.domain.user.exception.UserExceptionMessage;
+import com.plim.plimserver.domain.user.repository.UserRepository;
 import com.plim.plimserver.global.config.DatabaseConfig;
 
 @DataJpaTest
@@ -48,6 +53,8 @@ public class FoodTest {
 	@Autowired
 	private ReviewLikeRepository reviewLikeRepository;
 
+	@Autowired
+	private UserRepository userRepository;
 
 	@Test
 	@Rollback(false)
@@ -59,9 +66,10 @@ public class FoodTest {
 				.manufacturerName("테스트제조사").foodDetail(foodDetail).foodImage(foodImage).allergyMaterials("알러지 재료테스트")
 				.barcodeNumber("바코드 번호0ㅑ09ㅑ090").build();
 		foodRepository.save(food);
+		
+		User user = userRepository.findById(120L).orElseThrow();
 
-
-		Review review = Review.builder().userId(120L).food(food).reviewRating(4.5f).reviewDescription("리뷰테스트")
+		Review review = Review.builder().user(user).food(food).reviewRating(4).reviewDescription("리뷰테스트")
 				.state(ReviewStateType.NORMAL).build();
 		reviewRepository.save(review);
 
@@ -144,7 +152,7 @@ public class FoodTest {
 		em.clear();
 		
 		Optional<Review> findReview = reviewRepository.findById(6L);
-		findReview.get().reviewUpdate(3.5f, "맛이 바뀌었네요ㅎㅎ");
+		findReview.get().reviewUpdate(3, "맛이 바뀌었네요ㅎㅎ");
 		findReview.get().reviewStateUpdate(ReviewStateType.DELETED);
 	}
 	

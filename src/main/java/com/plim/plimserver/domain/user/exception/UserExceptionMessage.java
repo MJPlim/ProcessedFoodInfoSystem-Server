@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum UserExceptionMessage {
 
+	NOT_LOGIN_EXCEPTION_MESSAGE("로그인 하지 않았습니다. 로그인 후 진행해주시기 바랍니다."),
     PASSWORD_MISMATCH_EXCEPTION_MESSAGE("패스워드가 일치하지 않습니다."),
     PASSWORD_DUPLICATED_EXCEPTION_MESSAGE("기존 패스워드와 동일합니다."),
     USERNAME_NOT_FOUND_EXCEPTION_MESSAGE("해당 유저가 존재하지 않습니다."),
