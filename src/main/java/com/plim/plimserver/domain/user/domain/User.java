@@ -1,5 +1,6 @@
 package com.plim.plimserver.domain.user.domain;
 
+
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,6 +16,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+
+import com.plim.plimserver.domain.user.dto.UserInfoModifyRequest;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -103,4 +110,9 @@ public class User {
         this.state = UserStateType.NORMAL;
     }
 
+    public void modifyUserInfo(UserInfoModifyRequest request) {
+        this.name = request.getName();
+        this.birth = request.getBirth();
+        this.address = request.getAddress();
+    }
 }

@@ -12,4 +12,6 @@ public interface FoodService {
     int makeFoodDatabaseWithoutBarCodeAPI();
 
     FoodDetailResponse getFoodDetail(Long foodId);
+
+    FoodResponse findFoodByBarcode(String barcode);
 }

@@ -3,6 +3,9 @@ package com.plim.plimserver.domain.user.api;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.plim.plimserver.domain.user.dto.*;
+import com.plim.plimserver.domain.user.exception.NoLoginException;
+import com.plim.plimserver.domain.user.exception.UserExceptionMessage;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,14 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.plim.plimserver.domain.user.domain.User;
-import com.plim.plimserver.domain.user.dto.FindPasswordRequest;
-import com.plim.plimserver.domain.user.dto.FindPasswordResponse;
-import com.plim.plimserver.domain.user.dto.ModifyPasswordRequest;
-import com.plim.plimserver.domain.user.dto.ModifyPasswordResponse;
-import com.plim.plimserver.domain.user.dto.SignUpUserRequest;
-import com.plim.plimserver.domain.user.dto.SignUpUserResponse;
-import com.plim.plimserver.domain.user.dto.WithdrawUserRequest;
-import com.plim.plimserver.domain.user.dto.WithdrawUserResponse;
 import com.plim.plimserver.domain.user.service.UserService;
 import com.plim.plimserver.global.config.security.auth.PrincipalDetails;
 
@@ -46,6 +41,7 @@ public class UserController {
     @ApiOperation(value = "회원탈퇴", notes = "회원을 탈퇴시킨다")
     @PostMapping("withdraw")
     public ResponseEntity<WithdrawUserResponse> withdraw(@AuthenticationPrincipal PrincipalDetails principal, @RequestBody WithdrawUserRequest dto) {
+        if (principal == null) throw new NoLoginException(UserExceptionMessage.NO_LOGIN_EXCEPTION_MESSAGE);
         User withdrew = userService.withdraw(principal, dto.getPassword());
         return ResponseEntity.ok(WithdrawUserResponse.builder()
                 .email(withdrew.getEmail())
@@ -71,28 +67,39 @@ public class UserController {
         }
         return ResponseEntity.ok("로그인 성공");
     }
-    
+
     @ApiOperation(value = "패스워드 변경", notes = "패스워드 변경을 요청한다.")
-    @PostMapping("modify-password")					//이전 비밀번호와 새로운 비밀번호를 받는다. 
+    @PostMapping("modify-password")
     public ResponseEntity<ModifyPasswordResponse> modifyPassword(@AuthenticationPrincipal PrincipalDetails principal,
-    		@Valid @RequestBody ModifyPasswordRequest dto) {
+                                                                 @Valid @RequestBody ModifyPasswordRequest dto) {
+        if (principal == null) throw new NoLoginException(UserExceptionMessage.NO_LOGIN_EXCEPTION_MESSAGE);
         User user = userService.modifyPassword(principal, dto);
         return ResponseEntity.ok(ModifyPasswordResponse.builder()
-        		.message("패스워드 변경 완료")
-        		.build());
+                .message("패스워드 변경 완료")
+                .build());
     }
 
-//    @PostMapping("enter-MyTab")					//유저의 패스워드를 입력받아 검증한다.  
-//    public ResponseEntity<EnterMyTabResponse> enterMyTab(@AuthenticationPrincipal PrincipalDetails principal,
-//    		@Valid @RequestBody EnterMyTabRequest dto) {
-//        User user = userService.enterMyTab(principal, dto);
-//        return ResponseEntity.ok(EnterMyTabResponse.builder()
-//        		.enterCode(1)
-//        		.userName(user.getName())
-//        		.message("들어가십쇼")
-//        		.build());
-//    }
-    
-    
-    
+    @GetMapping("user-info")
+    public ResponseEntity<UserInfoResponse> getUserInfo(@AuthenticationPrincipal PrincipalDetails principal) {
+        if (principal == null) throw new NoLoginException(UserExceptionMessage.NO_LOGIN_EXCEPTION_MESSAGE);
+        User user = userService.getUserInfo(principal);
+        return ResponseEntity.ok(UserInfoResponse.builder()
+                .name(user.getName())
+                .birth(user.getBirth())
+                .address(user.getAddress())
+                .build());
+    }
+
+    @PostMapping("modify-user-info")
+    public ResponseEntity<UserInfoResponse> modifyUserInfo(@AuthenticationPrincipal PrincipalDetails principal,
+                                                           @Valid @RequestBody UserInfoModifyRequest request) {
+        if (principal == null) throw new NoLoginException(UserExceptionMessage.NO_LOGIN_EXCEPTION_MESSAGE);
+        User user = userService.modifyUserInfo(principal, request);
+        return ResponseEntity.ok(UserInfoResponse.builder()
+                .name(user.getName())
+                .birth(user.getBirth())
+                .address(user.getAddress())
+                .build());
+    }
+
 }
