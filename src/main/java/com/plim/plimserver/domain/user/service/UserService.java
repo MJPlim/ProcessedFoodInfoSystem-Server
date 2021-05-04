@@ -1,15 +1,12 @@
 package com.plim.plimserver.domain.user.service;
 
+import com.plim.plimserver.domain.user.dto.*;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.plim.plimserver.domain.user.domain.User;
-import com.plim.plimserver.domain.user.dto.EnterMyTabRequest;
-import com.plim.plimserver.domain.user.dto.FindPasswordRequest;
-import com.plim.plimserver.domain.user.dto.ModifyPasswordRequest;
-import com.plim.plimserver.domain.user.dto.SignUpUserRequest;
 import com.plim.plimserver.domain.user.exception.EmailDuplicateException;
 import com.plim.plimserver.domain.user.exception.EmailNotVerifiedException;
 import com.plim.plimserver.domain.user.exception.PasswordDuplicatedException;
@@ -115,5 +112,13 @@ public class UserService {
     public User getUserInfo(PrincipalDetails principal) {
         return userRepository.findByEmail(principal.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException(UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
+    }
+
+    @Transactional
+    public User modifyUserInfo(PrincipalDetails principal, UserInfoModifyRequest request) {
+        User user = userRepository.findByEmail(principal.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException(UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
+        user.modifyUserInfo(request);
+        return user;
     }
 }

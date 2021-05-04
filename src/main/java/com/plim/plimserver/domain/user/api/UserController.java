@@ -41,6 +41,7 @@ public class UserController {
     @ApiOperation(value = "회원탈퇴", notes = "회원을 탈퇴시킨다")
     @PostMapping("withdraw")
     public ResponseEntity<WithdrawUserResponse> withdraw(@AuthenticationPrincipal PrincipalDetails principal, @RequestBody WithdrawUserRequest dto) {
+        if (principal == null) throw new NoLoginException(UserExceptionMessage.NO_LOGIN_EXCEPTION_MESSAGE);
         User withdrew = userService.withdraw(principal, dto.getPassword());
         return ResponseEntity.ok(WithdrawUserResponse.builder()
                 .email(withdrew.getEmail())
@@ -68,7 +69,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "패스워드 변경", notes = "패스워드 변경을 요청한다.")
-    @PostMapping("modify-password")                    //이전 비밀번호와 새로운 비밀번호를 받는다.
+    @PostMapping("modify-password")
     public ResponseEntity<ModifyPasswordResponse> modifyPassword(@AuthenticationPrincipal PrincipalDetails principal,
                                                                  @Valid @RequestBody ModifyPasswordRequest dto) {
         if (principal == null) throw new NoLoginException(UserExceptionMessage.NO_LOGIN_EXCEPTION_MESSAGE);
@@ -79,7 +80,7 @@ public class UserController {
     }
 
     @GetMapping("user-info")
-    public ResponseEntity<?> getUserInfo(@AuthenticationPrincipal PrincipalDetails principal) {
+    public ResponseEntity<UserInfoResponse> getUserInfo(@AuthenticationPrincipal PrincipalDetails principal) {
         if (principal == null) throw new NoLoginException(UserExceptionMessage.NO_LOGIN_EXCEPTION_MESSAGE);
         User user = userService.getUserInfo(principal);
         return ResponseEntity.ok(UserInfoResponse.builder()
@@ -89,15 +90,16 @@ public class UserController {
                 .build());
     }
 
-//    @PostMapping("enter-MyTab")					//유저의 패스워드를 입력받아 검증한다.  
-//    public ResponseEntity<EnterMyTabResponse> enterMyTab(@AuthenticationPrincipal PrincipalDetails principal,
-//    		@Valid @RequestBody EnterMyTabRequest dto) {
-//        User user = userService.enterMyTab(principal, dto);
-//        return ResponseEntity.ok(EnterMyTabResponse.builder()
-//        		.enterCode(1)
-//        		.userName(user.getName())
-//        		.message("들어가십쇼")
-//        		.build());
-//    }
+    @PostMapping("modify-user-info")
+    public ResponseEntity<UserInfoResponse> modifyUserInfo(@AuthenticationPrincipal PrincipalDetails principal,
+                                                           @Valid @RequestBody UserInfoModifyRequest request) {
+        if (principal == null) throw new NoLoginException(UserExceptionMessage.NO_LOGIN_EXCEPTION_MESSAGE);
+        User user = userService.modifyUserInfo(principal, request);
+        return ResponseEntity.ok(UserInfoResponse.builder()
+                .name(user.getName())
+                .birth(user.getBirth())
+                .address(user.getAddress())
+                .build());
+    }
 
 }
