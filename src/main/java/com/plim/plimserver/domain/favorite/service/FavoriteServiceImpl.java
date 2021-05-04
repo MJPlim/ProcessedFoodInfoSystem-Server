@@ -5,6 +5,8 @@ import com.plim.plimserver.domain.favorite.dto.FavoriteResponse;
 import com.plim.plimserver.domain.favorite.repository.FavoriteRepository;
 import com.plim.plimserver.domain.food.domain.Food;
 import com.plim.plimserver.domain.food.dto.FoodResponse;
+import com.plim.plimserver.domain.food.exception.FoodExceptionMessage;
+import com.plim.plimserver.domain.food.exception.NoFoodException;
 import com.plim.plimserver.domain.food.repository.FoodRepository;
 import com.plim.plimserver.domain.user.domain.User;
 import com.plim.plimserver.domain.user.exception.UserExceptionMessage;
@@ -13,6 +15,7 @@ import com.plim.plimserver.global.config.security.auth.PrincipalDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,20 +32,6 @@ public class FavoriteServiceImpl implements FavoriteService{
         this.userRepository = userRepository;
         this.favoriteRepository = favoriteRepository;
         this.foodRepository = foodRepository;
-    }
-
-    @Override
-    public boolean addFavoriteFood(PrincipalDetails principalDetails, Long foodId) throws NoSuchElementException{
-        Food food = this.foodRepository.findById(foodId).orElseThrow(NoSuchElementException::new);
-        User user = this.userRepository.findByEmail(principalDetails.getUsername())
-                                       .orElseThrow(NoSuchElementException::new);
-
-        this.favoriteRepository.save(Favorite.builder()
-                                             .user(user)
-                                             .food(food)
-                                             .build());
-
-        return true;
     }
 
     @Override
@@ -69,4 +58,30 @@ public class FavoriteServiceImpl implements FavoriteService{
         }
         return responses;
     }
+
+    @Transactional
+    @Override
+    public boolean addFavoriteFood(PrincipalDetails principalDetails, Long foodId) throws NoSuchElementException{
+        Food food = this.foodRepository.findById(foodId).orElseThrow(NoSuchElementException::new);
+        User user = this.userRepository.findByEmail(principalDetails.getUsername())
+                                       .orElseThrow(NoSuchElementException::new);
+
+        this.favoriteRepository.save(Favorite.builder()
+                                             .user(user)
+                                             .food(food)
+                                             .build());
+
+        return true;
+    }
+
+    @Transactional
+    @Override
+    public void deleteFavoriteFood(PrincipalDetails principalDetails, Long foodId){
+        Food food = this.foodRepository.findById(foodId).orElseThrow(() -> new NoFoodException(FoodExceptionMessage.NO_FOOD_EXCEPTION_MESSAGE));
+        User user = this.userRepository.findByEmail(principalDetails.getUsername())
+                                       .orElseThrow(() -> new UsernameNotFoundException(UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
+
+        this.favoriteRepository.deleteByUserAndFood(user, food);
+    }
+
 }

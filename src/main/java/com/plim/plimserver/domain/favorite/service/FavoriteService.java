@@ -8,6 +8,7 @@ import java.util.NoSuchElementException;
 
 public interface FavoriteService {
 
-    boolean addFavoriteFood(PrincipalDetails principalDetails, Long foodId) throws NoSuchElementException;
     List<FavoriteResponse> getFavoriteFoodList(PrincipalDetails principalDetails);
+    boolean addFavoriteFood(PrincipalDetails principalDetails, Long foodId) throws NoSuchElementException;
+    void deleteFavoriteFood(PrincipalDetails principalDetails, Long foodId);
 }

@@ -16,8 +16,13 @@ import java.util.NoSuchElementException;
 public class FavoriteController {
     private final FavoriteService favoriteService;
 
+    @GetMapping("/list")
+    public List<FavoriteResponse> getFavoriteList(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+        return this.favoriteService.getFavoriteFoodList(principalDetails);
+    }
+
     @PostMapping("/addFavorite")
-    public boolean setFavoriteFood(@AuthenticationPrincipal PrincipalDetails principalDetails
+    public boolean addFavoriteFood(@AuthenticationPrincipal PrincipalDetails principalDetails
             , @RequestParam(name = "foodId") Long foodId) {
         try {
             return this.favoriteService.addFavoriteFood(principalDetails, foodId);
@@ -26,9 +31,9 @@ public class FavoriteController {
         }
     }
 
-    @GetMapping("/list")
-    public List<FavoriteResponse> getFavoriteList(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-        return this.favoriteService.getFavoriteFoodList(principalDetails);
+    @DeleteMapping("/deleteFavorite")
+    public void deleteFavoriteFood(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestParam(name = "foodId") Long foodId) {
+        this.favoriteService.deleteFavoriteFood(principalDetails, foodId);
     }
 
 }

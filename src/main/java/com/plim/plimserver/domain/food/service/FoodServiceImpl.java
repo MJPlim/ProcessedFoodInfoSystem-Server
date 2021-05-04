@@ -93,8 +93,8 @@ public class FoodServiceImpl implements FoodService {
     @Override
     public FoodDetailResponse getFoodDetail(Long foodId) {
         Optional<Food> optionalFood = this.foodRepository.findById(foodId);
-        Food food = optionalFood.orElseThrow(() -> new NoFoodDetailException(FoodExceptionMessage.NO_FOOD_DETAIL_EXCEPTION_MESSAGE));
-        food.setViewCount(food.getViewCount() + 1);
+        Food food = optionalFood.orElseThrow(() -> new NoFoodDetailException(FoodExceptionMessage.NO_FOOD_EXCEPTION_MESSAGE));
+        food.setViewCount(food.getViewCount()+1);
         return FoodDetailResponse.builder()
                 .foodId(food.getId())
                 .foodName(food.getFoodName())
