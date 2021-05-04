@@ -12,6 +12,7 @@ import javax.persistence.Table;
 
 import com.plim.plimserver.domain.food.domain.Food;
 
+import com.plim.plimserver.domain.user.domain.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,16 +28,17 @@ public class Favorite {
 	@Column(name = "favorite_id")
 	private Long id;
 	
-	@Column(name = "user_id")
-	private Long userId;			//매핑아직안함
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	private User user;			//매핑아직안함
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "food_id")
 	private Food food;			//이것두
 
 	@Builder
-	public Favorite(Long userId, Food food) {
-		this.userId = userId;
+	public Favorite(User user, Food food) {
+		this.user = user;
 		this.food = food;
 		this.food.getFavoriteList().add(this);
 	}
