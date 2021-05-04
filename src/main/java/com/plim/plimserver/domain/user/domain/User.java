@@ -1,5 +1,6 @@
 package com.plim.plimserver.domain.user.domain;
 
+import com.plim.plimserver.domain.user.dto.UserInfoModifyRequest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -85,4 +86,9 @@ public class User {
         this.state = UserStateType.NORMAL;
     }
 
+    public void modifyUserInfo(UserInfoModifyRequest request) {
+        this.name = request.getName();
+        this.birth = request.getBirth();
+        this.address = request.getAddress();
+    }
 }

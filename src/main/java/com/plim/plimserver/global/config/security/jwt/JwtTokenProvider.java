@@ -42,7 +42,7 @@ public class JwtTokenProvider {
             PrincipalDetails principalDetails = new PrincipalDetails(userRepository.findByEmail(username)
                     .orElseThrow(() -> new EmailNotFoundException(UserExceptionMessage.EMAIL_NOT_FOUND_EXCEPTION_MESSAGE)));
             if (!principalDetails.isEnabled())
-                throw new WithdrawalAccountException(UserExceptionMessage.WITHDRAWAL_ACCOUNT_EXCEPTION);
+                throw new WithdrawalAccountException(UserExceptionMessage.WITHDRAWAL_ACCOUNT_EXCEPTION_MESSAGE);
 
             Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
