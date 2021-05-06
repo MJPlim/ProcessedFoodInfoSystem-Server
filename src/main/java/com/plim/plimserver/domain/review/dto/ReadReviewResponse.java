@@ -18,5 +18,7 @@ public class ReadReviewResponse {
 	private Timestamp reviewCreatedDate;
 	private Timestamp reviewModifiedDate;
 	private ReviewStateType state;
-
+	private boolean userCheck;
+	private boolean userLikeCheck;
+	private Integer likeCount;
 }

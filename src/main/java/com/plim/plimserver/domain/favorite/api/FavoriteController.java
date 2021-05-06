@@ -15,7 +15,7 @@ import java.util.NoSuchElementException;
 @Api(tags = {"Favorite"})
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1/favorite")
+@RequestMapping("api/v1/user/favorite")
 public class FavoriteController {
     private final FavoriteService favoriteService;
 

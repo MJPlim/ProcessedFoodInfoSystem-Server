@@ -45,7 +45,7 @@ public class FoodController {
 
     @ApiOperation(value = "바코드 번호를 이용한 제품 조회", notes = "바코드 번호를 통해 제품 상세 정보를 제공한다.")
     @PostMapping("/findFood/barcode")
-    public ResponseEntity<FoodResponse> findFoodByBarcode(@RequestBody FindFoodByBarcodeRequest request) {
+    public ResponseEntity<FoodDetailResponse> findFoodByBarcode(@RequestBody FindFoodByBarcodeRequest request) {
         return ResponseEntity.ok(this.foodService.findFoodByBarcode(request.getBarcode()));
     }
 

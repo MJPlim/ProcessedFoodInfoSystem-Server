@@ -1,5 +1,8 @@
 package com.plim.plimserver.global.config.security.jwt;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.plim.plimserver.domain.user.exception.NoLoginException;
+import com.plim.plimserver.domain.user.exception.WithdrawalAccountException;
 import com.plim.plimserver.global.config.security.exception.ErrorCode;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -27,8 +30,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 String token = jwtTokenProvider.createToken(username);
                 response.addHeader("Authorization", "Bearer " + token);
             }
-        } catch (IllegalArgumentException e) {
+        } catch (WithdrawalAccountException e) {
             request.setAttribute("exception", ErrorCode.WITHDREW);
+        } catch (NoLoginException | TokenExpiredException e) {
+            request.setAttribute("exception", ErrorCode.NO_LOGIN);
         }
 
         chain.doFilter(request, response);

@@ -75,8 +75,6 @@ public class AdvertisementServiceImpl implements AdvertisementService{
                                  .nutrient(advertisementFood.getFood().getFoodDetail().getNutrient())
                                  .allergyMaterials(advertisementFood.getFood().getAllergyMaterials())
                                  .viewCount(advertisementFood.getFood().getViewCount())
-                                 .reviewList(advertisementFood.getFood().getReviewList())
-                                 .favoriteList(advertisementFood.getFood().getFavoriteList())
                                  .build();
     }
 
