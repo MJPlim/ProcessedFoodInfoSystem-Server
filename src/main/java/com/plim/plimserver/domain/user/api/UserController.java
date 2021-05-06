@@ -1,11 +1,14 @@
 package com.plim.plimserver.domain.user.api;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-
+import com.plim.plimserver.domain.user.domain.User;
 import com.plim.plimserver.domain.user.dto.*;
 import com.plim.plimserver.domain.user.exception.NoLoginException;
 import com.plim.plimserver.domain.user.exception.UserExceptionMessage;
+import com.plim.plimserver.domain.user.service.UserService;
+import com.plim.plimserver.global.config.security.auth.PrincipalDetails;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,13 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.plim.plimserver.domain.user.domain.User;
-import com.plim.plimserver.domain.user.service.UserService;
-import com.plim.plimserver.global.config.security.auth.PrincipalDetails;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import lombok.RequiredArgsConstructor;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 @Api(tags = {"User"})
 @RequiredArgsConstructor
@@ -39,9 +37,8 @@ public class UserController {
     }
 
     @ApiOperation(value = "회원탈퇴", notes = "회원을 탈퇴시킨다")
-    @PostMapping("withdraw")
+    @PostMapping("api/v1/user/withdraw")
     public ResponseEntity<WithdrawUserResponse> withdraw(@AuthenticationPrincipal PrincipalDetails principal, @RequestBody WithdrawUserRequest dto) {
-        if (principal == null) throw new NoLoginException(UserExceptionMessage.NO_LOGIN_EXCEPTION_MESSAGE);
         User withdrew = userService.withdraw(principal, dto.getPassword());
         return ResponseEntity.ok(WithdrawUserResponse.builder()
                 .email(withdrew.getEmail())
@@ -69,7 +66,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "패스워드 변경", notes = "패스워드 변경을 요청한다.")
-    @PostMapping("modify-password")
+    @PostMapping("api/v1/user/modify-password")
     public ResponseEntity<ModifyPasswordResponse> modifyPassword(@AuthenticationPrincipal PrincipalDetails principal,
                                                                  @Valid @RequestBody ModifyPasswordRequest dto) {
         if (principal == null) throw new NoLoginException(UserExceptionMessage.NO_LOGIN_EXCEPTION_MESSAGE);
@@ -79,9 +76,8 @@ public class UserController {
                 .build());
     }
 
-    @GetMapping("user-info")
+    @GetMapping("api/v1/user/user-info")
     public ResponseEntity<UserInfoResponse> getUserInfo(@AuthenticationPrincipal PrincipalDetails principal) {
-        if (principal == null) throw new NoLoginException(UserExceptionMessage.NO_LOGIN_EXCEPTION_MESSAGE);
         User user = userService.getUserInfo(principal);
         return ResponseEntity.ok(UserInfoResponse.builder()
                 .name(user.getName())
@@ -90,10 +86,9 @@ public class UserController {
                 .build());
     }
 
-    @PostMapping("modify-user-info")
+    @PostMapping("api/v1/user/modify-user-info")
     public ResponseEntity<UserInfoResponse> modifyUserInfo(@AuthenticationPrincipal PrincipalDetails principal,
                                                            @Valid @RequestBody UserInfoModifyRequest request) {
-        if (principal == null) throw new NoLoginException(UserExceptionMessage.NO_LOGIN_EXCEPTION_MESSAGE);
         User user = userService.modifyUserInfo(principal, request);
         return ResponseEntity.ok(UserInfoResponse.builder()
                 .name(user.getName())

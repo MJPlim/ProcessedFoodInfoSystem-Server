@@ -1,14 +1,16 @@
 package com.plim.plimserver.global.config.security.exception;
 
 import com.google.gson.Gson;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import com.plim.plimserver.domain.user.exception.UserExceptionMessage;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.AuthenticationEntryPoint;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
@@ -19,8 +21,13 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         Gson gson = new Gson();
         Object exception = httpServletRequest.getAttribute("exception");
         if (exception != null) {
+            httpServletResponse.setStatus(400);
             if (exception.equals(ErrorCode.WITHDREW)) {
-                error.put("error-message", "해당 계정은 탈퇴된 계정입니다.");
+                error.put("error-message", UserExceptionMessage.WITHDRAWAL_ACCOUNT_EXCEPTION_MESSAGE.getMessage());
+                String message = gson.toJson(error);
+                httpServletResponse.getWriter().println(message);
+            } else if (exception.equals(ErrorCode.NO_LOGIN)) {
+                error.put("error-message", UserExceptionMessage.NO_LOGIN_EXCEPTION_MESSAGE.getMessage());
                 String message = gson.toJson(error);
                 httpServletResponse.getWriter().println(message);
             }

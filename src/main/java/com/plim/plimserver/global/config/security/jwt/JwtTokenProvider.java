@@ -3,6 +3,7 @@ package com.plim.plimserver.global.config.security.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.plim.plimserver.domain.user.exception.EmailNotFoundException;
+import com.plim.plimserver.domain.user.exception.NoLoginException;
 import com.plim.plimserver.domain.user.exception.UserExceptionMessage;
 import com.plim.plimserver.domain.user.exception.WithdrawalAccountException;
 import com.plim.plimserver.domain.user.repository.UserRepository;
@@ -35,7 +36,7 @@ public class JwtTokenProvider {
     public String validateToken(HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");
         if (authorization == null || !authorization.startsWith(JwtProperties.TOKEN_PREFIX))
-            return "";
+            throw new NoLoginException(UserExceptionMessage.NO_LOGIN_EXCEPTION_MESSAGE);
 
         String username = getUsername(authorization);
         if (username != null) {
