@@ -1,5 +1,6 @@
 package com.plim.plimserver.domain.review.api;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,9 +17,9 @@ import com.plim.plimserver.domain.review.dto.CreateReviewRequest;
 import com.plim.plimserver.domain.review.dto.CreateReviewResponse;
 import com.plim.plimserver.domain.review.dto.DeleteReviewRequest;
 import com.plim.plimserver.domain.review.dto.DeleteReviewResponse;
-import com.plim.plimserver.domain.review.dto.ReadReviewRequest;
 import com.plim.plimserver.domain.review.dto.ReadReviewResponse;
 import com.plim.plimserver.domain.review.dto.ReviewRankingResponse;
+import com.plim.plimserver.domain.review.dto.UpdateReviewLikeRequest;
 import com.plim.plimserver.domain.review.dto.UpdateReviewRequest;
 import com.plim.plimserver.domain.review.dto.UpdateReviewResponse;
 import com.plim.plimserver.domain.review.service.ReviewService;
@@ -43,10 +44,17 @@ public class ReviewController {
 				.build());
 	}
 
-	@ApiOperation(value = "리뷰 불러오기", notes = "상품에 작성된 리뷰들을 불러온다.")
+	@ApiOperation(value = "식품 리뷰 불러오기", notes = "상품에 작성된 리뷰들을 불러온다.")
 	@GetMapping("readReview")
-	public List<ReadReviewResponse> readReview(@RequestParam Long foodId){
-		return reviewService.findReview(foodId);
+	public List<ReadReviewResponse> readReview(@RequestParam Long foodId, @RequestParam Integer pageNum){
+		return reviewService.findReview(foodId, pageNum);
+	}
+	
+	@ApiOperation(value = "식품 리뷰 불러오기", notes = "로그인한 사용자가 상품에 작성된 리뷰들을 불러온다.")
+	@GetMapping("api/v1/user/readReview")
+	public List<ReadReviewResponse> readloginedReview(@AuthenticationPrincipal PrincipalDetails principal, @RequestParam Long foodId,
+			@RequestParam Integer pageNum){
+		return reviewService.findReviewByUserIdANDFoodID(principal, foodId, pageNum);
 	}
 	
 	@ApiOperation(value = "유저 리뷰들 불러오기", notes = "로그인한 사용자가 작성한 리뷰들을 마이페이지에서 볼 수 있다.")
@@ -54,6 +62,20 @@ public class ReviewController {
 	public List<ReadReviewResponse> readReviewByUserID(@AuthenticationPrincipal PrincipalDetails principal){
 		return reviewService.findReviewByUserId(principal);
 	}
+	
+	@ApiOperation(value = "리뷰에 좋아요 누르기", notes = "로그인한 사용자가 리뷰들에 좋아요를 누를 수 있다.")
+	@PostMapping("api/v1/user/updateReviewLike")
+	public Map<String, String> updateReviewLike(@AuthenticationPrincipal PrincipalDetails principal, @RequestBody UpdateReviewLikeRequest dto){
+		reviewService.changeReviewLike(principal, dto);
+		
+		Map<String, String> returnMap = new HashMap<String, String>();
+		if(!dto.isLikeCheck())
+			returnMap.put("message", "좋아요를 눌렀습니다.");
+		else
+			returnMap.put("message", "좋아요를 취소합니다.");
+		return returnMap;
+	}
+	
 	
 	@ApiOperation(value = "리뷰 업데이트", notes = "로그인한 사용자가 작성한 리뷰를 수정한다.")
 	@PostMapping("api/v1/user/updateReview")
