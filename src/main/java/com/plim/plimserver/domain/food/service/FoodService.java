@@ -13,5 +13,5 @@ public interface FoodService {
 
     FoodDetailResponse getFoodDetail(Long foodId);
 
-    FoodResponse findFoodByBarcode(String barcode);
+    FoodDetailResponse findFoodByBarcode(String barcode);
 }
