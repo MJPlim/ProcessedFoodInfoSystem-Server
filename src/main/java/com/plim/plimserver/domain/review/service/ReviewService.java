@@ -15,7 +15,7 @@ public interface ReviewService {
 
 	public Review saveReview(PrincipalDetails principal, CreateReviewRequest dto);
 
-	public List<ReadReviewResponse> findReview(ReadReviewRequest dto);
+	public List<ReadReviewResponse> findReview(Long foodId);
 
 	public Review removeReview(PrincipalDetails principal, DeleteReviewRequest dto);
 

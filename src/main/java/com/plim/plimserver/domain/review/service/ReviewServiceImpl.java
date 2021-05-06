@@ -52,7 +52,6 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Transactional
 	public Review saveReview(PrincipalDetails principal, CreateReviewRequest dto) {
-		loginCheck(principal);
 		User findUser = userRepository.findByEmail(principal.getUsername()).orElseThrow(() -> new UsernameNotFoundException(
 				UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
 		Food findFood = foodRepository.findById(dto.getFoodId()).orElseThrow(() -> new NoFoodDetailException(
@@ -75,8 +74,8 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 	@Transactional
-	public List<ReadReviewResponse> findReview(ReadReviewRequest dto) {
-		Food food = foodRepository.findById(dto.getFoodId()).orElseThrow(() -> new NoFoodDetailException(
+	public List<ReadReviewResponse> findReview(Long foodId) {
+		Food food = foodRepository.findById(foodId).orElseThrow(() -> new NoFoodDetailException(
 				FoodExceptionMessage.NO_FOOD_DETAIL_EXCEPTION_MESSAGE));
 				
 		List<Review> reviewList = food.getReviewList();
@@ -102,7 +101,6 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Transactional
 	public List<ReadReviewResponse> findReviewByUserId(PrincipalDetails principal) {
-		loginCheck(principal);
 		User user = userRepository.findByEmail(principal.getUsername()).orElseThrow(() -> new UsernameNotFoundException(
 				UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
 		
@@ -128,14 +126,13 @@ public class ReviewServiceImpl implements ReviewService {
 	
 	@Transactional
 	public Review changeReview(PrincipalDetails principal, UpdateReviewRequest dto) {
-		loginCheck(principal);
 		Review findReview = reviewRepository.findById(dto.getReviewId()).orElseThrow(() -> new NotSuchReviewException(
 				ReviewExceptionMessage.NOT_SUCH_REVIEW_EXCEPTION_MESSAGE));
-		if(!findReview.getState().equals(ReviewStateType.DELETED)) {
-			findReview.getFood().getReviewsummary().updateReviewSummary(findReview.getReviewRating(), dto.getReviewRating());
+		if (!findReview.getState().equals(ReviewStateType.DELETED)) {
+			findReview.getFood().getReviewsummary().updateReviewSummary(findReview.getReviewRating(),
+					dto.getReviewRating());
 			findReview.reviewUpdate(dto.getReviewRating(), dto.getReviewDescription());
-		}
-		else
+		} else
 			throw new DeletedReviewException(ReviewExceptionMessage.DELETED_REVIEW_EXCEPTION_MESSAGE);
 		
 		return findReview;
@@ -143,12 +140,14 @@ public class ReviewServiceImpl implements ReviewService {
 	
 	@Transactional
 	public Review removeReview(PrincipalDetails principal, DeleteReviewRequest dto) {
-		loginCheck(principal);
 		Review findReview = reviewRepository.findById(dto.getReviewId()).orElseThrow(() -> new NotSuchReviewException(
 				ReviewExceptionMessage.NOT_SUCH_REVIEW_EXCEPTION_MESSAGE));
 		
-		findReview.getFood().getReviewsummary().deleteReviewSummary(findReview.getReviewRating());
-		findReview.reviewStateUpdate(ReviewStateType.DELETED);
+		if (!findReview.getState().equals(ReviewStateType.DELETED)) {
+			findReview.getFood().getReviewsummary().deleteReviewSummary(findReview.getReviewRating());
+			findReview.reviewStateUpdate(ReviewStateType.DELETED);
+		} else
+			throw new DeletedReviewException(ReviewExceptionMessage.DELETED_REVIEW_EXCEPTION_MESSAGE);
 		return findReview;
 	}
 	@Transactional

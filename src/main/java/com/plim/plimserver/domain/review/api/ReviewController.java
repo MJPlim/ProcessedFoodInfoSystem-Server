@@ -8,6 +8,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.plim.plimserver.domain.review.domain.Review;
@@ -34,7 +35,7 @@ public class ReviewController {
 	private final ReviewService reviewService;
 	
 	@ApiOperation(value = "리뷰 생성", notes = "로그인한 사용자가 리뷰를 작성한다.")
-	@PostMapping("createReview")
+	@PostMapping("api/v1/user/createReview")
 	public ResponseEntity<CreateReviewResponse> createReview(@AuthenticationPrincipal PrincipalDetails principal, @RequestBody CreateReviewRequest dto){
 		Review savedReview = reviewService.saveReview(principal, dto);
 		return ResponseEntity.ok(CreateReviewResponse.builder()
@@ -44,18 +45,18 @@ public class ReviewController {
 
 	@ApiOperation(value = "리뷰 불러오기", notes = "상품에 작성된 리뷰들을 불러온다.")
 	@GetMapping("readReview")
-	public List<ReadReviewResponse> readReview(@RequestBody ReadReviewRequest dto){
-		return reviewService.findReview(dto);
+	public List<ReadReviewResponse> readReview(@RequestParam Long foodId){
+		return reviewService.findReview(foodId);
 	}
 	
 	@ApiOperation(value = "유저 리뷰들 불러오기", notes = "로그인한 사용자가 작성한 리뷰들을 마이페이지에서 볼 수 있다.")
-	@GetMapping("readReviewByUserID")
+	@GetMapping("api/v1/user/readReviewByUserID")
 	public List<ReadReviewResponse> readReviewByUserID(@AuthenticationPrincipal PrincipalDetails principal){
 		return reviewService.findReviewByUserId(principal);
 	}
 	
 	@ApiOperation(value = "리뷰 업데이트", notes = "로그인한 사용자가 작성한 리뷰를 수정한다.")
-	@PostMapping("updateReview")
+	@PostMapping("api/v1/user/updateReview")
 	public ResponseEntity<UpdateReviewResponse> updateReview(@AuthenticationPrincipal PrincipalDetails principal, @RequestBody UpdateReviewRequest dto){
 		Review reivew = reviewService.changeReview(principal, dto);
 		return ResponseEntity.ok(UpdateReviewResponse.builder()
@@ -64,7 +65,7 @@ public class ReviewController {
 	}
 	
 	@ApiOperation(value = "리뷰 삭제", notes = "로그인한 사용자가 작성한 리뷰를 삭제한다.")
-	@PostMapping("deleteReview")
+	@PostMapping("api/v1/user/deleteReview")
 	public ResponseEntity<DeleteReviewResponse> deleteReview(@AuthenticationPrincipal PrincipalDetails principal, @RequestBody DeleteReviewRequest dto){
 		Review reivew = reviewService.removeReview(principal, dto);
 		return ResponseEntity.ok(DeleteReviewResponse.builder()

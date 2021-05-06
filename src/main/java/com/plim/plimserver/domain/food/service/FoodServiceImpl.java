@@ -106,8 +106,6 @@ public class FoodServiceImpl implements FoodService {
                 .nutrient(food.getFoodDetail().getNutrient())
                 .allergyMaterials(food.getAllergyMaterials())
                 .viewCount(food.getViewCount())
-                .reviewList(food.getReviewList())
-                .favoriteList(food.getFavoriteList())
                 .build();
     }
 
