@@ -20,7 +20,7 @@ public class FoodDetailResponse {
     private final String allergyMaterials;
     private final Long viewCount;
 
-    public static FoodDetailResponse of(Food food) {
+    public static FoodDetailResponse from(Food food) {
         return new FoodDetailResponse(
                 food.getId(), food.getFoodName(), food.getCategory(), food.getManufacturerName(),
                 food.getFoodImage().getFoodImageAddress(), food.getFoodImage().getFoodMeteImageAddress(),

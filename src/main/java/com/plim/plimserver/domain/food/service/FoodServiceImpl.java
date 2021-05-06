@@ -154,7 +154,7 @@ public class FoodServiceImpl implements FoodService {
 
     @Override
     public FoodDetailResponse findFoodByBarcode(String barcode) {
-        return FoodDetailResponse.of(this.foodRepository.findByBarcodeNumber(barcode)
+        return FoodDetailResponse.from(this.foodRepository.findByBarcodeNumber(barcode)
                 .orElseThrow(() -> new NoFoodDetailException(FoodExceptionMessage.NO_FOOD_DETAIL_EXCEPTION_MESSAGE)));
     }
 
