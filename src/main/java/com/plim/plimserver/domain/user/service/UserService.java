@@ -63,6 +63,16 @@ public class UserService {
     }
 
     @Transactional
+    public User setSecondEmail(PrincipalDetails principal, SetSecondEmailRequest request) {
+        User user = this.userRepository.findByEmail(principal.getUsername())
+                                       .orElseThrow(() -> new UsernameNotFoundException(UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
+
+        user.setSecondEmail(request.getEmail());
+
+        return user;
+    }
+
+    @Transactional
     public User findPassword(FindPasswordRequest dto) {
         User user = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException(UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));

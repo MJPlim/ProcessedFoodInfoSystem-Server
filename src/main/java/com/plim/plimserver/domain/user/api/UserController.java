@@ -46,6 +46,17 @@ public class UserController {
                 .build());
     }
 
+    @ApiOperation(value = "2차보안 설정하기", notes = "2차보안용 이메일을 설정한다.")
+    @PostMapping("set-secondEmail")
+    public ResponseEntity<SetSecondEmailResponse> setSecondEmail(@AuthenticationPrincipal PrincipalDetails principal
+            , @Valid @RequestBody SetSecondEmailRequest request) {
+        User user = this.userService.setSecondEmail(principal, request);
+        return ResponseEntity.ok(SetSecondEmailResponse.builder()
+                                                       .email(user.getSecondEmail())
+                                                       .build());
+    }
+
+
     @ApiOperation(value = "패스워드 찾기", notes = "해당 메일 주소로 임시 패스워드를 전송한다.")
     @PostMapping("find-password")
     public ResponseEntity<FindPasswordResponse> findPassword(@Valid @RequestBody FindPasswordRequest dto) {
