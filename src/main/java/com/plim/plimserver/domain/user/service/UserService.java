@@ -1,17 +1,13 @@
 package com.plim.plimserver.domain.user.service;
 
 import com.plim.plimserver.domain.user.dto.*;
+import com.plim.plimserver.domain.user.exception.*;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.plim.plimserver.domain.user.domain.User;
-import com.plim.plimserver.domain.user.exception.EmailDuplicateException;
-import com.plim.plimserver.domain.user.exception.EmailNotVerifiedException;
-import com.plim.plimserver.domain.user.exception.PasswordDuplicatedException;
-import com.plim.plimserver.domain.user.exception.PasswordMismatchException;
-import com.plim.plimserver.domain.user.exception.UserExceptionMessage;
 import com.plim.plimserver.domain.user.repository.UserRepository;
 import com.plim.plimserver.global.config.security.auth.PrincipalDetails;
 import com.plim.plimserver.global.domain.mail.domain.EmailAuthCode;
@@ -65,7 +61,7 @@ public class UserService {
     @Transactional
     public User setSecondEmail(PrincipalDetails principal, SetSecondEmailRequest request) {
         if (userRepository.existsBySecondEmail(request.getEmail()))
-            throw new EmailDuplicateException(UserExceptionMessage.EMAIL_DUPLICATE_EXCEPTION_MESSAGE);
+            throw new SecondEmailDuplicateException(UserExceptionMessage.SECOND_EMAIL_DUPLICATE_EXCEPTION_MESSAGE);
 
         User user = this.userRepository.findByEmail(principal.getUsername())
                                        .orElseThrow(() -> new UsernameNotFoundException(UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
