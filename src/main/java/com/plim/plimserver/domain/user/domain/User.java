@@ -1,39 +1,24 @@
 package com.plim.plimserver.domain.user.domain;
 
 
+import com.plim.plimserver.domain.review.domain.Review;
+import com.plim.plimserver.domain.user.dto.UserInfoModifyRequest;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
-
-import com.plim.plimserver.domain.user.dto.UserInfoModifyRequest;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import com.plim.plimserver.domain.review.domain.Review;
-
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 @NoArgsConstructor
 @Getter
+@Setter
 @Table(name = "user")
 @Entity
 public class User {
@@ -45,6 +30,9 @@ public class User {
 
     @Column(name = "user_email", unique = true)
     private String email;
+
+    @Column(name = "user_second_email", unique = true)
+    private String secondEmail;
 
     @Column(name = "user_password", nullable = false)
     private String password;

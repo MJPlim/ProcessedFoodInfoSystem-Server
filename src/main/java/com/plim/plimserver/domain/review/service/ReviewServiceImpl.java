@@ -2,10 +2,10 @@ package com.plim.plimserver.domain.review.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -23,13 +23,11 @@ import com.plim.plimserver.domain.review.domain.ReviewStateType;
 import com.plim.plimserver.domain.review.domain.ReviewSummary;
 import com.plim.plimserver.domain.review.dto.CreateReviewRequest;
 import com.plim.plimserver.domain.review.dto.DeleteReviewRequest;
-import com.plim.plimserver.domain.review.dto.ReadReviewRequest;
 import com.plim.plimserver.domain.review.dto.ReadReviewResponse;
 import com.plim.plimserver.domain.review.dto.ReviewRankingResponse;
 import com.plim.plimserver.domain.review.dto.UpdateReviewLikeRequest;
 import com.plim.plimserver.domain.review.dto.UpdateReviewRequest;
 import com.plim.plimserver.domain.review.etc.DateComparatorASC;
-import com.plim.plimserver.domain.review.etc.DateComparatorDESC;
 import com.plim.plimserver.domain.review.exception.DeletedReviewException;
 import com.plim.plimserver.domain.review.exception.InvalidRequestReviewLikeException;
 import com.plim.plimserver.domain.review.exception.NotFoundPageException;
@@ -55,6 +53,8 @@ public class ReviewServiceImpl implements ReviewService {
 	private final FoodRepository foodRepository;
 	private final ReviewSummaryRepository reviewSummaryRepository;
 	private final ReviewLikeRepository reviewLikeRepository;
+	
+	private static final int viewCount = 5;	//한번에 보여줄 페이지 수
 
 	@Transactional
 	public Review saveReview(PrincipalDetails principal, CreateReviewRequest dto) {
@@ -81,7 +81,6 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Transactional
 	public List<ReadReviewResponse> findReview(Long foodId, Integer pageNum) {
-		int viewCount = 5;	//한번에 보여줄 페이지 수
 		Pageable limitFive;
 		
 		if (!pageNum.equals(null)) {
@@ -111,7 +110,7 @@ public class ReviewServiceImpl implements ReviewService {
 		return showReviewList;
 	}
 
-	@Override
+	@Transactional
 	public List<ReadReviewResponse> findReviewByUserIdANDFoodID(PrincipalDetails principal, Long foodId, Integer pageNum) {
 		int viewCount = 5;	//한번에 보여줄 페이지 수
 		Pageable limitFive;
@@ -123,7 +122,7 @@ public class ReviewServiceImpl implements ReviewService {
 			limitFive = PageRequest.of(pageNum - 1, viewCount, Sort.by("reviewCreatedDate").descending());
 		} else
 			throw new NotFoundPageException(ReviewExceptionMessage.NOT_FOUND_PAGE_EXCEPTION_MESSAGE);
-		List<Review> reviewList = reviewRepository.findbyFoodIdAndUserId(foodId, findUser.getId(), limitFive);
+		List<Review> reviewList = reviewRepository.findbyFoodId(foodId, limitFive);
 		
 		List<ReadReviewResponse> showReviewList = new ArrayList<>();
 		
@@ -189,6 +188,16 @@ public class ReviewServiceImpl implements ReviewService {
 		}
 		Collections.sort(showReviewList, new DateComparatorASC());
 		return showReviewList;
+	}
+	@Transactional
+	public Map<String, Integer> findReviewTotalCount(Long foodId) {
+		int findReviewCount = reviewRepository.findReviewTotalCount(foodId);
+		int findReviewPageCount = findReviewCount / viewCount + 1;
+		
+		Map<String, Integer> returnMap = new HashMap<>(); 
+		returnMap.put("findReviewCount", findReviewCount);
+		returnMap.put("findReviewPageCount", findReviewPageCount);
+		return returnMap;
 	}
 	
 	@Transactional
@@ -267,6 +276,8 @@ public class ReviewServiceImpl implements ReviewService {
 			throw new NotLoginException(UserExceptionMessage.NOT_LOGIN_EXCEPTION_MESSAGE);
 		}
 	}
+
+	
 
 
 

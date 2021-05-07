@@ -26,4 +26,10 @@ public class ReviewTest {
 		Pageable page = PageRequest.of(2, 5, Sort.by("reviewCreatedDate").descending());
 		reviewRepository.findbyFoodIdAndUserId(12529L, 238L, page).forEach(review -> System.out.println(review.getId() + " " +review.getReviewDescription()));
 	}
+	
+	@Test
+	public void countTest() {
+		int count = reviewRepository.findReviewTotalCount(12529L);
+		System.out.println(count);
+	}
 }
