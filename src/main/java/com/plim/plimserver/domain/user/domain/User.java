@@ -31,7 +31,7 @@ public class User {
     @Column(name = "user_email", unique = true)
     private String email;
 
-    @Column(name = "user_second_email")
+    @Column(name = "user_second_email", unique = true)
     private String secondEmail;
 
     @Column(name = "user_password", nullable = false)
