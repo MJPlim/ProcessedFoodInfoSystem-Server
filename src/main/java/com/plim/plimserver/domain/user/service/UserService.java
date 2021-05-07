@@ -64,10 +64,23 @@ public class UserService {
 
     @Transactional
     public User setSecondEmail(PrincipalDetails principal, SetSecondEmailRequest request) {
+        if (userRepository.existsBySecondEmail(request.getEmail()))
+            throw new EmailDuplicateException(UserExceptionMessage.EMAIL_DUPLICATE_EXCEPTION_MESSAGE);
+
         User user = this.userRepository.findByEmail(principal.getUsername())
                                        .orElseThrow(() -> new UsernameNotFoundException(UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
 
         user.setSecondEmail(request.getEmail());
+
+        return user;
+    }
+
+    public User findEmail(FindEmailRequest request) {
+        User user = this.userRepository.findBySecondEmail(request.getEmail())
+                                       .orElseThrow(() -> new UsernameNotFoundException(UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
+
+        String msg = this.emailUtil.getFindEmailMessage(user.getEmail());
+        this.emailUtil.sendEmail(request.getEmail(), EmailSubject.FIND_EMAIL_REQUEST, msg);
 
         return user;
     }

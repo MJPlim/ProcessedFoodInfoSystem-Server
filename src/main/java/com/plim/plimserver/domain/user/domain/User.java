@@ -31,6 +31,9 @@ public class User {
     @Column(name = "user_email", unique = true)
     private String email;
 
+    @Column(name = "user_second_email")
+    private String secondEmail;
+
     @Column(name = "user_password", nullable = false)
     private String password;
 
@@ -68,9 +71,6 @@ public class User {
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviewList = new ArrayList<>();
-
-    @Column(name = "second_email")
-    private String secondEmail;
 
     @Builder
     public User(String email, String password, String name, UserRoleType role, LocalDate birth,
