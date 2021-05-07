@@ -16,4 +16,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long>{
 	
 	@Query(value = "select r from Review r where r.food.id=:foodId and r.user.id=:userId and r.state = 'NORMAL'")
 	public List<Review> findbyFoodIdAndUserId(@Param("foodId") Long foodId, @Param("userId") Long userId, Pageable pagable);
+	
+	@Query(value = "select count(r) from Review r where r.food.id=:foodId and r.state = 'NORMAL'")
+	public int findReviewTotalCount(@Param("foodId") Long foodId);
 }

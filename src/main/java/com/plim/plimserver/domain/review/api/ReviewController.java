@@ -46,15 +46,27 @@ public class ReviewController {
 
 	@ApiOperation(value = "식품 리뷰 불러오기", notes = "상품에 작성된 리뷰들을 불러온다.")
 	@GetMapping("readReview")
-	public List<ReadReviewResponse> readReview(@RequestParam Long foodId, @RequestParam Integer pageNum){
-		return reviewService.findReview(foodId, pageNum);
+	public Map<String, Object> readReview(@RequestParam Long foodId, @RequestParam Integer pageNum){
+		Map<String, Integer> reviewCount = reviewService.findReviewTotalCount(foodId);
+		List<ReadReviewResponse> reviewList = reviewService.findReview(foodId, pageNum);
+		
+		Map<String, Object> returnMap = new HashMap<>();
+		returnMap.put("reviewCount", reviewCount);
+		returnMap.put("readReviewResponse", reviewList);
+		return returnMap;
 	}
 	
 	@ApiOperation(value = "식품 리뷰 불러오기", notes = "로그인한 사용자가 상품에 작성된 리뷰들을 불러온다.")
 	@GetMapping("api/v1/user/readReview")
-	public List<ReadReviewResponse> readloginedReview(@AuthenticationPrincipal PrincipalDetails principal, @RequestParam Long foodId,
-			@RequestParam Integer pageNum){
-		return reviewService.findReviewByUserIdANDFoodID(principal, foodId, pageNum);
+	public Map<String, Object> readloginedReview(@AuthenticationPrincipal PrincipalDetails principal,
+			@RequestParam Long foodId, @RequestParam Integer pageNum) {
+		Map<String, Integer> reviewCount = reviewService.findReviewTotalCount(foodId);
+		List<ReadReviewResponse> reviewList = reviewService.findReviewByUserIdANDFoodID(principal, foodId, pageNum);
+		
+		Map<String, Object> returnMap = new HashMap<>();
+		returnMap.put("reviewCount", reviewCount);
+		returnMap.put("readReviewResponse", reviewList);
+		return returnMap;
 	}
 	
 	@ApiOperation(value = "유저 리뷰들 불러오기", notes = "로그인한 사용자가 작성한 리뷰들을 마이페이지에서 볼 수 있다.")

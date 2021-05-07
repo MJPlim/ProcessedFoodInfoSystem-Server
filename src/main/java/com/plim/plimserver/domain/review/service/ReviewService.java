@@ -1,6 +1,7 @@
 package com.plim.plimserver.domain.review.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.plim.plimserver.domain.review.domain.Review;
 import com.plim.plimserver.domain.review.domain.ReviewLike;
@@ -30,6 +31,8 @@ public interface ReviewService {
 	public Review removeReview(PrincipalDetails principal, DeleteReviewRequest dto);
 	
 	public List<ReviewRankingResponse> rankedReview();
+
+	public Map<String, Integer> findReviewTotalCount(Long foodId);
 
 
 
