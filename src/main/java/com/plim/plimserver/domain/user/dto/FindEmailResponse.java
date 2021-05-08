@@ -10,5 +10,5 @@ import javax.validation.constraints.Email;
 public class FindEmailResponse {
 
     @Email(message = "이메일 형식에 맞춰 입력해주세요.")
-    private final String email;
+    private final String secondEmail;
 }

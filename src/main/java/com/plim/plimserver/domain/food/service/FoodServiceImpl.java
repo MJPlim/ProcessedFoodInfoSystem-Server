@@ -9,13 +9,20 @@ import com.plim.plimserver.domain.api.repository.ApiKeyRepository;
 import com.plim.plimserver.domain.food.domain.Food;
 import com.plim.plimserver.domain.food.domain.FoodDetail;
 import com.plim.plimserver.domain.food.domain.FoodImage;
+import com.plim.plimserver.domain.food.domain.SortElement;
+import com.plim.plimserver.domain.food.dto.FindFoodBySortingResponse;
 import com.plim.plimserver.domain.food.dto.FoodDetailResponse;
 import com.plim.plimserver.domain.food.dto.FoodResponse;
 import com.plim.plimserver.domain.food.exception.FoodExceptionMessage;
 import com.plim.plimserver.domain.food.exception.NoFoodDetailException;
+import com.plim.plimserver.domain.food.exception.NoFoodListException;
 import com.plim.plimserver.domain.food.repository.FoodRepository;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -156,6 +163,131 @@ public class FoodServiceImpl implements FoodService {
     public FoodDetailResponse findFoodByBarcode(String barcode) {
         return FoodDetailResponse.from(this.foodRepository.findByBarcodeNumber(barcode)
                 .orElseThrow(() -> new NoFoodDetailException(FoodExceptionMessage.NO_FOOD_DETAIL_EXCEPTION_MESSAGE)));
+    }
+
+    @Override
+    public FindFoodBySortingResponse findFoodByPaging(int pageNo, int size, String sortElement, String foodName, String manufacturerName) {
+        if (sortElement == null) {
+            Pageable page = PageRequest.of(pageNo - 1, size);
+            if (foodName != null) {
+                Page<Food> foodPage = this.foodRepository.findAllByFoodNameContaining(foodName, page);
+                return this.makeFoodResponseByPaging(foodPage);
+            }else if (manufacturerName != null) {
+                Page<Food> foodPage = this.foodRepository.findAllByManufacturerNameContaining(manufacturerName, page);
+                return this.makeFoodResponseByPaging(foodPage);
+            }else{
+                throw new NoFoodListException(FoodExceptionMessage.NO_FOOD_LIST_EXCEPTION_MESSAGE);
+            }
+        }else{
+            if (sortElement.equals(SortElement.RANK.getMessage())) { // 아직 안함
+                return null;
+            } else if (sortElement.equals(SortElement.MANUFACTURER.getMessage())) {
+                Pageable page = PageRequest.of(pageNo - 1, size, Sort.by("manufacturerName"));
+                if (foodName != null) {
+                    Page<Food> foodPage = this.foodRepository.findAllByFoodNameContaining(foodName, page);
+                    return this.makeFoodResponseByPaging(foodPage);
+                }else if (manufacturerName != null) {
+                    Page<Food> foodPage = this.foodRepository.findAllByManufacturerNameContaining(manufacturerName, page);
+                    return this.makeFoodResponseByPaging(foodPage);
+                }else{
+                    throw new NoFoodListException(FoodExceptionMessage.NO_FOOD_LIST_EXCEPTION_MESSAGE);
+                }
+            }else if (sortElement.equals(SortElement.REVIEW_COUNT.getMessage())) {
+                if (foodName != null) {
+                    List<Food> foodPage = this.foodRepository.findAllByFoodNameContaining(foodName);
+                    foodPage.sort((o1, o2) -> {
+                        if (o1.getReviewList().size() < o2.getReviewList().size()) {
+                            return -1;
+                        } else if (o1.getReviewList().size() > o2.getReviewList().size()) {
+                            return 1;
+                        }
+                        return 0;
+                    });
+
+                    return this.makeFoodResponse(foodPage, pageNo, size);
+                }else if (manufacturerName != null) {
+                    List<Food> foodPage = this.foodRepository.findAllByManufacturerNameContaining(manufacturerName);
+                    foodPage.sort((o1, o2) -> {
+                        if (o1.getReviewList().size() < o2.getReviewList().size()) {
+                            return -1;
+                        } else if (o1.getReviewList().size() > o2.getReviewList().size()) {
+                            return 1;
+                        }
+                        return 0;
+                    });
+                    return this.makeFoodResponse(foodPage, pageNo, size);
+                }else{
+                    throw new NoFoodListException(FoodExceptionMessage.NO_FOOD_LIST_EXCEPTION_MESSAGE);
+                }
+            }
+
+        }
+        return null;
+    }
+
+    private FindFoodBySortingResponse makeFoodResponseByPaging(Page<Food> foodList) {
+        List<FoodResponse> resultList = new ArrayList<>();
+        for (Food food : foodList.getContent()) {
+            FoodResponse response = FoodResponse.builder()
+                                                .foodId(food.getId())
+                                                .foodName(food.getFoodName())
+                                                .category(food.getCategory())
+                                                .manufacturerName(food.getManufacturerName())
+                                                .foodImageAddress(food.getFoodImage().getFoodImageAddress())
+                                                .foodMeteImageAddress(food.getFoodImage().getFoodMeteImageAddress())
+                                                .build();
+            resultList.add(response);
+        }
+        return FindFoodBySortingResponse.builder()
+                                        .pageNo(foodList.getNumber() + 1)
+                                        .pageSize(foodList.getSize())
+                                        .maxPage(foodList.getTotalPages())
+                                        .totalDataCount((int)foodList.getTotalElements())
+                                        .resultList(resultList)
+                                        .build();
+    }
+
+    private FindFoodBySortingResponse makeFoodResponse(List<Food> foodList, int pageNo, int size) {
+        List<FoodResponse> resultList = new ArrayList<>();
+        int startIndex = size * (pageNo - 1);
+        int maxPage = (foodList.size()/size + 1);
+        int rest = foodList.size() % size;
+        if (1 <= pageNo && pageNo <= maxPage) {
+            if (pageNo == maxPage) {
+                for (int i = startIndex; i < startIndex + rest; i++) {
+                    Food food = foodList.get(i);
+                    FoodResponse response = FoodResponse.builder()
+                                                        .foodId(food.getId())
+                                                        .foodName(food.getFoodName())
+                                                        .category(food.getCategory())
+                                                        .manufacturerName(food.getManufacturerName())
+                                                        .foodImageAddress(food.getFoodImage().getFoodImageAddress())
+                                                        .foodMeteImageAddress(food.getFoodImage().getFoodMeteImageAddress())
+                                                        .build();
+                    resultList.add(response);
+                }
+            } else {
+                for (int i = startIndex; i < size*pageNo; i++) {
+                    Food food = foodList.get(i);
+                    FoodResponse response = FoodResponse.builder()
+                                                        .foodId(food.getId())
+                                                        .foodName(food.getFoodName())
+                                                        .category(food.getCategory())
+                                                        .manufacturerName(food.getManufacturerName())
+                                                        .foodImageAddress(food.getFoodImage().getFoodImageAddress())
+                                                        .foodMeteImageAddress(food.getFoodImage().getFoodMeteImageAddress())
+                                                        .build();
+                    resultList.add(response);
+                }
+            }
+        }
+        return FindFoodBySortingResponse.builder()
+                                        .pageNo(pageNo)
+                                        .pageSize(size)
+                                        .maxPage(foodList.size()/size + 1)
+                                        .totalDataCount(foodList.size())
+                                        .resultList(resultList)
+                                        .build();
     }
 
 }
