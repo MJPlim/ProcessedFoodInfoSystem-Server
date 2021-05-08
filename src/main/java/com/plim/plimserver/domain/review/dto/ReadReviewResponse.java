@@ -13,7 +13,7 @@ public class ReadReviewResponse {
 	private Long reviewId;
 	private String userName;
 	private Long foodId;
-	private float reviewRating;
+	private Integer reviewRating;
 	private String reviewDescription;
 	private Timestamp reviewCreatedDate;
 	private Timestamp reviewModifiedDate;
