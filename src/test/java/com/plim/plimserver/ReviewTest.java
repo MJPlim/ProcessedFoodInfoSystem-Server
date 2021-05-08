@@ -10,6 +10,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import com.plim.plimserver.domain.review.domain.ReviewLike;
+import com.plim.plimserver.domain.review.repository.ReviewLikeRepository;
 import com.plim.plimserver.domain.review.repository.ReviewRepository;
 import com.plim.plimserver.global.config.DatabaseConfig;
 
@@ -21,6 +23,9 @@ public class ReviewTest {
 	@Autowired
 	private ReviewRepository reviewRepository;
 	
+	@Autowired
+	private ReviewLikeRepository reviewLikeRepository;
+	
 	@Test
 	public void pageTest() {
 		Pageable page = PageRequest.of(2, 5, Sort.by("reviewCreatedDate").descending());
@@ -31,5 +36,11 @@ public class ReviewTest {
 	public void countTest() {
 		int count = reviewRepository.findReviewTotalCount(12529L);
 		System.out.println(count);
+	}
+	
+	@Test
+	public void likeTest() {
+		ReviewLike reviewLike = reviewLikeRepository.findByUserId(72L, 238L);
+		System.out.println(reviewLike.getReview().getReviewDescription());
 	}
 }

@@ -192,7 +192,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Transactional
 	public Map<String, Integer> findReviewTotalCount(Long foodId) {
 		int findReviewCount = reviewRepository.findReviewTotalCount(foodId);
-		int findReviewPageCount = findReviewCount / viewCount + 1;
+		int findReviewPageCount = (findReviewCount % viewCount) == 0? (findReviewCount / viewCount): (findReviewCount / viewCount) + 1;
 		
 		Map<String, Integer> returnMap = new HashMap<>(); 
 		returnMap.put("findReviewCount", findReviewCount);
@@ -222,17 +222,17 @@ public class ReviewServiceImpl implements ReviewService {
 		Review findReview = reviewRepository.findById(dto.getReviewId()).orElseThrow(() -> new NotSuchReviewException(
 				ReviewExceptionMessage.NOT_SUCH_REVIEW_EXCEPTION_MESSAGE));
 		
-		ReviewLike findReviewLike = reviewLikeRepository.findByUserId(findUser.getId());
+		ReviewLike findReviewLike = reviewLikeRepository.findByUserId(findReview.getId(), findUser.getId());
 		
 		if (!dto.isLikeCheck()) {
 			if (findReviewLike == null) 
 				return reviewLikeRepository.save(ReviewLike.builder().userId(findUser.getId()).review(findReview).build());
-			 else 
+			else 
 				throw new InvalidRequestReviewLikeException(ReviewExceptionMessage.INVALID_REQUEST_REVIEWLIKE_EXCEPTION_MESSAGE);			
 		} else {
 			if (findReviewLike == null) 
 				throw new InvalidRequestReviewLikeException(ReviewExceptionMessage.INVALID_REQUEST_REVIEWLIKE_EXCEPTION_MESSAGE);
-			 else {
+			else {
 				reviewLikeRepository.delete(findReviewLike);
 				return findReviewLike;
 			}

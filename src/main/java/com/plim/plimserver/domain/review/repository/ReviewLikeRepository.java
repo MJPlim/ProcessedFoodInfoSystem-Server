@@ -7,7 +7,8 @@ import org.springframework.data.repository.query.Param;
 import com.plim.plimserver.domain.review.domain.ReviewLike;
 
 public interface ReviewLikeRepository extends JpaRepository<ReviewLike, Long>{
-	public ReviewLike findByUserId(Long userId);
+	@Query(value = "Select rl from ReviewLike rl where rl.review.id =:reviewId and rl.userId = :userId")
+	public ReviewLike findByUserId(@Param("reviewId")Long reviewId, @Param("userId")Long userId);
 	
 	@Query(value = "Select count(rl) from ReviewLike rl where rl.review.id =:reviewId")
 	public int findReviewLikeCountByReview(@Param("reviewId")Long reviewId);
