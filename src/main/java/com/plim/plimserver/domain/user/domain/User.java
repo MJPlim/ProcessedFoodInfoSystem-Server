@@ -1,6 +1,7 @@
 package com.plim.plimserver.domain.user.domain;
 
 
+import com.plim.plimserver.domain.allergy.domain.UserAllergy;
 import com.plim.plimserver.domain.review.domain.Review;
 import com.plim.plimserver.domain.user.dto.UserInfoModifyRequest;
 import lombok.Builder;
@@ -71,7 +72,10 @@ public class User {
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviewList = new ArrayList<>();
-
+    
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserAllergy> userAllergyList = new ArrayList<>();
+    
     @Builder
     public User(String email, String password, String name, UserRoleType role, LocalDate birth,
                 String address, String profileImageAddress, UserStateType state, UserProvider provider) {
