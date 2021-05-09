@@ -5,17 +5,17 @@ import com.plim.plimserver.domain.food.dto.FindFoodBySortingResponse;
 import com.plim.plimserver.domain.food.dto.FoodDetailResponse;
 import com.plim.plimserver.domain.food.dto.FoodResponse;
 import com.plim.plimserver.domain.food.service.FoodService;
+import com.plim.plimserver.global.dto.Pagination;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Api(tags = {"Food"})
 @RestController
@@ -57,10 +57,20 @@ public class FoodController {
     @ApiOperation(value = "검색결과 조건에 따라 정렬", notes = "검색결과를 조건에 따라 정렬하여 제공한다")
     @GetMapping("/getFoodListBySorting")
     public ResponseEntity<FindFoodBySortingResponse> getFoodListBySorting(
-            @RequestParam(name = "pageNo", defaultValue = "1") int pageNo, @RequestParam(name = "size", defaultValue = "10") int size
-            , @RequestParam(name = "sort", required = false) String sortElement, @RequestParam(name = "foodName", required = false)String foodName
-            , @RequestParam(name = "manufacturerName", required = false)String manufacturerName) {
-        return ResponseEntity.ok(this.foodService.findFoodByPaging(pageNo, size, sortElement, foodName, manufacturerName));
+            @RequestParam(name = "pageNo", defaultValue = "1") int pageNo,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "sort", required = false) String sortElement,
+            @RequestParam(name = "foodName", required = false) String foodName,
+            @RequestParam(name = "manufacturerName", required = false) String manufacturerName) {
+        return ResponseEntity.ok(this.foodService.findFoodByPaging(
+                pageNo, size, sortElement, foodName, manufacturerName));
+    }
+
+    @ApiOperation(value = "카테고리에 해당하는 제품 조회", notes = "카테고리에 해당하는 제품을 제공한다.")
+    @GetMapping("/list/category")
+    public ResponseEntity<Pagination<List<FoodDetailResponse>>> getFoodListByCategory(@PageableDefault Pageable pageable,
+                                                                                      @RequestParam String category) {
+        return ResponseEntity.ok(this.foodService.findFoodByCategory(category, pageable));
     }
 
 }

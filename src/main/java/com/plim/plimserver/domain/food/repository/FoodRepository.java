@@ -20,4 +20,8 @@ public interface FoodRepository extends JpaRepository<Food, Long>{
 
     Optional<Food> findByBarcodeNumber(String barcodeNumber);
 
+    Page<Food> findAllByAllergyMaterialsNotIn(List<String> allergy, Pageable pageable);
+
+    Page<Food> findAllByCategoryContaining(String category, Pageable pageable);
+
 }
