@@ -15,14 +15,14 @@ public interface FoodService {
 
     ArrayList<FoodResponse> findFoodByManufacturerName(String manufacturerName);
 
-    int makeFoodDatabaseWithoutBarCodeAPI();
-
     FoodDetailResponse getFoodDetail(Long foodId);
 
     FoodDetailResponse findFoodByBarcode(String barcode);
 
     FindFoodBySortingResponse findFoodByPaging(int pageNo, int size, String sortElement, String foodName, String manufacturerName);
 
-    Pagination<List<FoodDetailResponse>> findFoodByCategory(String categoryList, Pageable pageable);
+    Pagination<List<FoodResponse>> findFoodByCategory(String categoryList, Pageable pageable);
+
+    //    int makeFoodDatabaseWithoutBarCodeAPI();
 
 }

@@ -42,12 +42,6 @@ public class FoodController {
         return this.foodService.getFoodDetail(foodId);
     }
 
-    @ApiOperation(value = "HACCP API를 이용한 food 테이블 생성", notes = "HACCP API로 데이터를 제공받아 데이터베이스의 food 테이블에 데이터를 생성")
-    @GetMapping("/makeFoodDB")
-    public int makeFoodDB() {
-        return this.foodService.makeFoodDatabaseWithoutBarCodeAPI();
-    }
-
     @ApiOperation(value = "바코드 번호를 이용한 제품 조회", notes = "바코드 번호를 통해 제품 상세 정보를 제공한다.")
     @PostMapping("/findFood/barcode")
     public ResponseEntity<FoodDetailResponse> findFoodByBarcode(@RequestBody FindFoodByBarcodeRequest request) {
@@ -68,9 +62,15 @@ public class FoodController {
 
     @ApiOperation(value = "카테고리에 해당하는 제품 조회", notes = "카테고리에 해당하는 제품을 제공한다.")
     @GetMapping("/list/category")
-    public ResponseEntity<Pagination<List<FoodDetailResponse>>> getFoodListByCategory(@PageableDefault Pageable pageable,
-                                                                                      @RequestParam String category) {
+    public ResponseEntity<Pagination<List<FoodResponse>>> getFoodListByCategory(@PageableDefault Pageable pageable,
+                                                                                @RequestParam String category) {
         return ResponseEntity.ok(this.foodService.findFoodByCategory(category, pageable));
     }
+
+    //    @ApiOperation(value = "HACCP API를 이용한 food 테이블 생성", notes = "HACCP API로 데이터를 제공받아 데이터베이스의 food 테이블에 데이터를 생성")
+//    @GetMapping("/makeFoodDB")
+//    public int makeFoodDB() {
+//        return this.foodService.makeFoodDatabaseWithoutBarCodeAPI();
+//    }
 
 }

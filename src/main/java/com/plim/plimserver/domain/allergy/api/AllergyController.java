@@ -17,6 +17,7 @@ import com.plim.plimserver.domain.allergy.service.AllergyService;
 import com.plim.plimserver.global.config.security.auth.PrincipalDetails;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 
 @Api(tags = {"Allergy"})
@@ -26,6 +27,7 @@ public class AllergyController {
 	
 	private final AllergyService allergyService;
 	
+	@ApiOperation(value = "유저 알러지 정보 생성", notes = "사용자가 가지고 있는 알러지 정보를 입력한다.")
 	@PostMapping("api/v1/user/createUserAllergy")
 	public ResponseEntity<CreateUserAllergyResponse> createUserAllergy(@AuthenticationPrincipal PrincipalDetails principal,
 			@RequestBody CreateUserAllergyRequest dto){
@@ -37,6 +39,7 @@ public class AllergyController {
 				.build());
 	}
 	
+	@ApiOperation(value = "유저 알러지 정보 조회", notes = "사용자가 가지고 있는 알러지 정보를 조회한다.")
 	@GetMapping("api/v1/user/readUserAllergy")
 	public Map<String, Object> readUserAllergy(@AuthenticationPrincipal PrincipalDetails principal){
 		List<String> userAllergyList = allergyService.findUserAllergy(principal);

@@ -131,7 +131,7 @@ public class ReviewServiceImpl implements ReviewService {
 		
 		for (Review r : reviewList) {
 			int count = reviewLikeRepository.findReviewLikeCountByReview(r.getId());
-			ReviewLike findReviewLike = reviewLikeRepository.checkLikeByReview(r.getId());
+			ReviewLike findReviewLike = reviewLikeRepository.checkLikeByReview(r.getId(), findUser.getId());
 			checkedUser = findUser.getId().equals(r.getUser().getId())?true:false;
 			checkedLike = findReviewLike == null?false:true;
 			if(!r.getState().equals(ReviewStateType.DELETED)) {				
@@ -167,7 +167,7 @@ public class ReviewServiceImpl implements ReviewService {
 		
 		for(Review r : reviewList) {
 			int count = reviewLikeRepository.findReviewLikeCountByReview(r.getId());
-			ReviewLike findReviewLike = reviewLikeRepository.checkLikeByReview(r.getId());
+			ReviewLike findReviewLike = reviewLikeRepository.checkLikeByReview(r.getId(), findUser.getId());
 			checkedUser = findUser.getId().equals(r.getUser().getId())?true:false;
 			checkedLike = findReviewLike == null?false:true;
 			if(!r.getState().equals(ReviewStateType.DELETED)) {
