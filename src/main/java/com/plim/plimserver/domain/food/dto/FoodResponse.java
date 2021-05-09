@@ -15,5 +15,7 @@ public class FoodResponse {
     private final String manufacturerName;
     private final String foodImageAddress;
     private final String foodMeteImageAddress;
+    private final int reviewCount;
+    private final String reviewRate;
 
 }
