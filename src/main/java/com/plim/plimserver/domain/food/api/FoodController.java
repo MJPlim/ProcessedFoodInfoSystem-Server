@@ -62,8 +62,8 @@ public class FoodController {
 
     @ApiOperation(value = "카테고리에 해당하는 제품 조회", notes = "카테고리에 해당하는 제품을 제공한다.")
     @GetMapping("/list/category")
-    public ResponseEntity<Pagination<List<FoodDetailResponse>>> getFoodListByCategory(@PageableDefault Pageable pageable,
-                                                                                      @RequestParam String category) {
+    public ResponseEntity<Pagination<List<FoodResponse>>> getFoodListByCategory(@PageableDefault Pageable pageable,
+                                                                                @RequestParam String category) {
         return ResponseEntity.ok(this.foodService.findFoodByCategory(category, pageable));
     }
 

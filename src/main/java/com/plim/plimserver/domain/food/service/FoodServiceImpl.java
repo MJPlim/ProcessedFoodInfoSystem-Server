@@ -1,6 +1,5 @@
 package com.plim.plimserver.domain.food.service;
 
-import com.plim.plimserver.domain.api.repository.ApiKeyRepository;
 import com.plim.plimserver.domain.food.domain.Food;
 import com.plim.plimserver.domain.food.domain.SortElement;
 import com.plim.plimserver.domain.food.dto.FindFoodBySortingResponse;
@@ -21,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -233,10 +231,10 @@ public class FoodServiceImpl implements FoodService {
     }
 
     @Override
-    public Pagination<List<FoodDetailResponse>> findFoodByCategory(String category, Pageable pageable) {
+    public Pagination<List<FoodResponse>> findFoodByCategory(String category, Pageable pageable) {
         Page<Food> page = this.foodRepository.findAllByCategoryContaining(category, pageable);
-        List<FoodDetailResponse> data = page.stream()
-                .map(FoodDetailResponse::from)
+        List<FoodResponse> data = page.stream()
+                .map(FoodResponse::from)
                 .collect(Collectors.toList());
         return Pagination.of(page, data);
     }
