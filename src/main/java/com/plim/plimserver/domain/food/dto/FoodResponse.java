@@ -30,7 +30,7 @@ public class FoodResponse {
                 .foodMeteImageAddress(food.getFoodImage().getFoodMeteImageAddress())
                 .reviewRate(String.format("%.2f",
                         food.getReviewList().stream()
-                        .mapToInt(Review::getReviewRating).average().orElse(0)))
+                                .mapToInt(Review::getReviewRating).average().orElse(0)))
                 .build();
     }
 
