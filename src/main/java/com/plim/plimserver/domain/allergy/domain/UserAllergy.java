@@ -10,6 +10,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.plim.plimserver.domain.user.domain.User;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,17 +26,19 @@ public class UserAllergy {
 	@Column(name = "user_allergy_id")
 	private Long id;
 	
-	@Column(name = "user_id")
-	private Long userId;				//아직 안넣음
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	private User user;				
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "food_allergy_id")
 	private FoodAllergy foodAllergy;
 	
 	@Builder
-	public UserAllergy(Long userId, FoodAllergy foodAllergy) {
-		this.userId = userId;
+	public UserAllergy(User user, FoodAllergy foodAllergy) {
+		this.user = user;
 		this.foodAllergy = foodAllergy;
 		this.foodAllergy.getUserAllergyList().add(this);
+		this.user.getUserAllergyList().add(this);
 	}
 }

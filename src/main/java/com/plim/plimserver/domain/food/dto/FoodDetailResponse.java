@@ -1,14 +1,13 @@
 package com.plim.plimserver.domain.food.dto;
 
 import com.plim.plimserver.domain.food.domain.Food;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-@AllArgsConstructor
 public class FoodDetailResponse {
+
     private final Long foodId;
     private final String foodName;
     private final String category;
@@ -21,11 +20,18 @@ public class FoodDetailResponse {
     private final Long viewCount;
 
     public static FoodDetailResponse from(Food food) {
-        return new FoodDetailResponse(
-                food.getId(), food.getFoodName(), food.getCategory(), food.getManufacturerName(),
-                food.getFoodImage().getFoodImageAddress(), food.getFoodImage().getFoodMeteImageAddress(),
-                food.getFoodDetail().getMaterials(), food.getFoodDetail().getNutrient(), food.getAllergyMaterials(),
-                food.getViewCount());
+        return FoodDetailResponse.builder()
+                .foodId(food.getId())
+                .foodName(food.getFoodName())
+                .category(food.getCategory())
+                .manufacturerName(food.getManufacturerName())
+                .foodImageAddress(food.getFoodImage().getFoodImageAddress())
+                .foodMeteImageAddress(food.getFoodImage().getFoodMeteImageAddress())
+                .materials(food.getFoodDetail().getMaterials())
+                .nutrient(food.getFoodDetail().getNutrient())
+                .allergyMaterials(food.getAllergyMaterials())
+                .viewCount(food.getViewCount())
+                .build();
     }
 
 }
