@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -119,13 +120,11 @@ public class FoodServiceImpl implements FoodService {
             if (sortElement.equals(SortElement.RANK.getMessage())) { // 아직 안함
                 if (foodName != null && manufacturerName == null) {
                     List<Food> foodPage = this.foodRepository.findAllByFoodNameContaining(foodName);
-                    foodPage.sort(new SortByReviewRateAndDesc());
-                    foodPage.sort(new SortByReviewCountAndDesc());
+                    foodPage.sort(new SortByReviewRateAndDesc().thenComparing(new SortByReviewCountAndDesc()));
                     return this.makeFoodResponse(foodPage, pageNo, size);
                 } else if (manufacturerName != null && foodName == null) {
                     List<Food> foodPage = this.foodRepository.findAllByManufacturerNameContaining(manufacturerName);
-                    foodPage.sort(new SortByReviewRateAndDesc());
-                    foodPage.sort(new SortByReviewCountAndDesc());
+                    foodPage.sort(new SortByReviewRateAndDesc().thenComparing(new SortByReviewCountAndDesc()));
                     return this.makeFoodResponse(foodPage, pageNo, size);
                 } else {
                     throw new NoFoodListException(FoodExceptionMessage.NO_FOOD_LIST_EXCEPTION_MESSAGE);
