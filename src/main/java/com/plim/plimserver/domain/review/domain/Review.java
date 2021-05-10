@@ -1,39 +1,24 @@
 package com.plim.plimserver.domain.review.domain;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import com.plim.plimserver.domain.food.domain.Food;
+import com.plim.plimserver.domain.review.dto.CreateReviewRequest;
 import com.plim.plimserver.domain.user.domain.User;
-
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import javax.persistence.*;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Table(name = "review")
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Review {
 	
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -70,14 +55,24 @@ public class Review {
 	@Column(name = "review_state", nullable = false)
 	private ReviewStateType state;
 	
-	@Builder
-	public Review(User user, Food food, int reviewRating, String reviewDescription, ReviewStateType state) {
+	@Builder(access = AccessLevel.PRIVATE)
+	private Review(User user, Food food, int reviewRating, String reviewDescription, ReviewStateType state) {
 		this.user = user;
 		this.food = food;
 		this.reviewRating = reviewRating;
 		this.reviewDescription = reviewDescription;
 		this.state = state;
 		this.food.getReviewList().add(this);
+	}
+
+	public static Review of(User user, Food food, CreateReviewRequest dto) {
+		return Review.builder()
+				.user(user)
+				.food(food)
+				.reviewRating(dto.getReviewRating())
+				.reviewDescription(dto.getReviewDescription())
+				.state(ReviewStateType.NORMAL)
+				.build();
 	}
 	
 	public void reviewUpdate(int reviewRating, String reviewDescription) {
@@ -88,4 +83,5 @@ public class Review {
 	public void reviewStateUpdate(ReviewStateType state) {
 		this.state = state;
 	}
+
 }
