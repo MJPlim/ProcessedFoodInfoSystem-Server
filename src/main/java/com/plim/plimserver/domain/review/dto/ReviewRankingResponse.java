@@ -11,5 +11,5 @@ public class ReviewRankingResponse {
 	
 	private String foodName;
 	
-	private float avgRating;
+	private String avgRating;
 }

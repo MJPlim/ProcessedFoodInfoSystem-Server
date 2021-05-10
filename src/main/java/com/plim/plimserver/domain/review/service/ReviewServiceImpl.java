@@ -30,6 +30,7 @@ import com.plim.plimserver.domain.review.dto.UpdateReviewRequest;
 import com.plim.plimserver.domain.review.etc.DateComparatorASC;
 import com.plim.plimserver.domain.review.exception.DeletedReviewException;
 import com.plim.plimserver.domain.review.exception.InvalidRequestReviewLikeException;
+import com.plim.plimserver.domain.review.exception.NotApproachReviewException;
 import com.plim.plimserver.domain.review.exception.NotFoundPageException;
 import com.plim.plimserver.domain.review.exception.NotSuchReviewException;
 import com.plim.plimserver.domain.review.exception.ReviewExceptionMessage;
@@ -202,12 +203,18 @@ public class ReviewServiceImpl implements ReviewService {
 	
 	@Transactional
 	public Review changeReview(PrincipalDetails principal, UpdateReviewRequest dto) {
+		User findUser = userRepository.findByEmail(principal.getUsername()).orElseThrow(() -> new UsernameNotFoundException(
+				UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
+		
 		Review findReview = reviewRepository.findById(dto.getReviewId()).orElseThrow(() -> new NotSuchReviewException(
 				ReviewExceptionMessage.NOT_SUCH_REVIEW_EXCEPTION_MESSAGE));
 		if (!findReview.getState().equals(ReviewStateType.DELETED)) {
+			if(findReview.getUser().getId().equals(findUser.getId())) {
 			findReview.getFood().getReviewsummary().updateReviewSummary(findReview.getReviewRating(),
 					dto.getReviewRating());
 			findReview.reviewUpdate(dto.getReviewRating(), dto.getReviewDescription());
+			}else
+				throw new NotApproachReviewException(ReviewExceptionMessage.NOT_APPROACH_REVIEW_EXCEPTION_MESSAGE);
 		} else
 			throw new DeletedReviewException(ReviewExceptionMessage.DELETED_REVIEW_EXCEPTION_MESSAGE);
 		
@@ -264,7 +271,7 @@ public class ReviewServiceImpl implements ReviewService {
 			rankingList.add(ReviewRankingResponse.builder()
 					.foodId(r.getFood().getId())
 					.foodName(r.getFood().getFoodName())
-					.avgRating(r.getAvgRating())
+					.avgRating(String.format("%.02f", r.getAvgRating()))
 					.build());
 		}
 		return rankingList;
