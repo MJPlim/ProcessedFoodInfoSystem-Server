@@ -29,7 +29,7 @@ public class ReviewTest {
 	@Test
 	public void pageTest() {
 		Pageable page = PageRequest.of(2, 5, Sort.by("reviewCreatedDate").descending());
-		reviewRepository.findbyFoodIdAndUserId(12529L, 238L, page).forEach(review -> System.out.println(review.getId() + " " +review.getReviewDescription()));
+		reviewRepository.findByFoodIdAndUserId(12529L, 238L, page).forEach(review -> System.out.println(review.getId() + " " +review.getReviewDescription()));
 	}
 	
 	@Test
