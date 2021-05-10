@@ -1,22 +1,5 @@
 package com.plim.plimserver;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
-import java.util.Optional;
-
-import javax.persistence.EntityManager;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.test.annotation.Rollback;
-
-
 import com.plim.plimserver.domain.favorite.domain.Favorite;
 import com.plim.plimserver.domain.favorite.repository.FavoriteRepository;
 import com.plim.plimserver.domain.food.domain.Food;
@@ -26,12 +9,25 @@ import com.plim.plimserver.domain.food.repository.FoodRepository;
 import com.plim.plimserver.domain.review.domain.Review;
 import com.plim.plimserver.domain.review.domain.ReviewLike;
 import com.plim.plimserver.domain.review.domain.ReviewStateType;
+import com.plim.plimserver.domain.review.dto.CreateReviewRequest;
 import com.plim.plimserver.domain.review.repository.ReviewLikeRepository;
 import com.plim.plimserver.domain.review.repository.ReviewRepository;
 import com.plim.plimserver.domain.user.domain.User;
-import com.plim.plimserver.domain.user.exception.UserExceptionMessage;
 import com.plim.plimserver.domain.user.repository.UserRepository;
 import com.plim.plimserver.global.config.DatabaseConfig;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.Rollback;
+
+import javax.persistence.EntityManager;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @DataJpaTest
 @Import(DatabaseConfig.class)
@@ -69,8 +65,9 @@ public class FoodTest {
 		
 		Optional<User> user = userRepository.findById(120L);
 
-		Review review = Review.builder().user(user.get()).food(food).reviewRating(4).reviewDescription("리뷰테스트")
-				.state(ReviewStateType.NORMAL).build();
+//		Review review = Review.builder().user(user.get()).food(food).reviewRating(4).reviewDescription("리뷰테스트")
+//				.state(ReviewStateType.NORMAL).build();
+		Review review = Review.of(user.get(), food, new CreateReviewRequest());
 		reviewRepository.save(review);
 
 

@@ -1,14 +1,15 @@
 package com.plim.plimserver.domain.review.dto;
 
+import com.plim.plimserver.domain.review.domain.Review;
+import com.plim.plimserver.domain.review.domain.ReviewStateType;
+import lombok.*;
+
 import java.sql.Timestamp;
 
-import com.plim.plimserver.domain.review.domain.ReviewStateType;
-
-import lombok.Builder;
-import lombok.Getter;
-
 @Getter
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ReadReviewResponse {
 	private Long reviewId;
 	private String userName;
@@ -21,4 +22,20 @@ public class ReadReviewResponse {
 	private boolean userCheck;
 	private boolean userLikeCheck;
 	private Integer likeCount;
+
+	public static ReadReviewResponse of(Review review, Long foodId, boolean userCheck, boolean userLikeCheck, int likeCount) {
+		return ReadReviewResponse.builder()
+				.reviewId(review.getId())
+				.userName(review.getUser().getName())
+				.foodId(foodId)
+				.reviewRating(review.getReviewRating())
+				.reviewDescription(review.getReviewDescription())
+				.reviewCreatedDate(review.getReviewCreatedDate())
+				.reviewModifiedDate(review.getReviewModifiedDate())
+				.state(review.getState())
+				.userCheck(userCheck)
+				.userLikeCheck(userLikeCheck)
+				.likeCount(likeCount)
+				.build();
+	}
 }
