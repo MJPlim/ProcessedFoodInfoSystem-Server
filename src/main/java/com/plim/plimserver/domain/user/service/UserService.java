@@ -142,8 +142,7 @@ public class UserService {
         User user = getUser(principal);
         Long favoriteCount = this.favoriteRepository.countAllByUser(user);
         Long reviewCount = this.reviewRepository.countAllByUser(user);
-        Long commentCount = this.commentRepository.countAllByUserId(user.getId());
-        return ResponseEntity.ok(UserSummaryResponse.of(favoriteCount, reviewCount, commentCount));
+        return ResponseEntity.ok(UserSummaryResponse.of(user.getName(), favoriteCount, reviewCount));
     }
 
     private User getUser(PrincipalDetails principal) {
