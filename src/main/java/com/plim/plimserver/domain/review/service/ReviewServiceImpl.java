@@ -49,7 +49,7 @@ public class ReviewServiceImpl implements ReviewService {
         if (reviewRepository.existsByFoodAndUser(food, user))
             throw new AlreadyWrittenReivewException(ReviewExceptionMessage.ALREADY_WRITTEN_REVIEW_EXCEPTION_MESSAGE);
 
-        reviewRepository.save(Review.of(user, food, dto));
+        food.addReview(reviewRepository.save(Review.of(user, food, dto)));
 
         if (food.getReviewsummary() == null) reviewSummaryRepository.save(ReviewSummary.of(food, dto));
         else food.getReviewsummary().createReviewSummary(dto.getReviewRating());
@@ -84,7 +84,6 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Transactional
     public List<ReadReviewResponse> findReviewByUserIdANDFoodID(PrincipalDetails principal, Long foodId, Integer pageNum) {
-        int viewCount = 5;
         Pageable limitFive;
         User findUser = userRepository.findByEmail(principal.getUsername()).orElseThrow(() -> new UsernameNotFoundException(
                 UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
