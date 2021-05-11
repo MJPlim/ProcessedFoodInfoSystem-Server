@@ -123,9 +123,7 @@ public class UserService {
 
     @Transactional
     public ResponseEntity<UserInfoResponse> modifyUserInfo(PrincipalDetails principal, UserInfoModifyRequest request) {
-        User user = getUser(principal);
-        user.modifyUserInfo(request);
-        return ResponseEntity.ok(UserInfoResponse.from(user));
+        return ResponseEntity.ok(UserInfoResponse.from(getUser(principal).modifyUserInfo(request)));
     }
 
     public ResponseEntity<UserSummaryResponse> userSummary(PrincipalDetails principal) {
