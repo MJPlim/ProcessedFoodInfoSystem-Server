@@ -117,16 +117,6 @@ public class UserService {
         return user;
     }
 
-    @Transactional
-    public User enterMyTab(PrincipalDetails principal, EnterMyTabRequest dto) {
-        User user = getUser(principal);
-        boolean matches = passwordEncoder.matches(dto.getPassword(), user.getPassword());
-        if (!matches)
-            throw new PasswordMismatchException(UserExceptionMessage.PASSWORD_MISMATCH_EXCEPTION_MESSAGE);
-
-        return user;
-    }
-
     public ResponseEntity<UserInfoResponse> getUserInfo(PrincipalDetails principal) {
         return ResponseEntity.ok(UserInfoResponse.from(getUser(principal)));
     }
