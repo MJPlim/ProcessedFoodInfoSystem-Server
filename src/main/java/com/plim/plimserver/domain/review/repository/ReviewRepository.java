@@ -13,14 +13,16 @@ import java.util.List;
 public interface ReviewRepository extends JpaRepository<Review, Long>{
 
 	@Query(value = "select r from Review r where r.food.id=:foodId and r.state = 'NORMAL'")
-	public List<Review> findByFoodId(@Param("foodId") Long foodId, Pageable pagable);
+	List<Review> findByFoodId(@Param("foodId") Long foodId, Pageable pageable);
 	
 	@Query(value = "select r from Review r where r.food.id=:foodId and r.user.id=:userId and r.state = 'NORMAL'")
-	public List<Review> findByFoodIdAndUserId(@Param("foodId") Long foodId, @Param("userId") Long userId, Pageable pagable);
+	List<Review> findByFoodIdAndUserId(@Param("foodId") Long foodId, @Param("userId") Long userId, Pageable pageable);
 	
 	@Query(value = "select count(r) from Review r where r.food.id=:foodId and r.state = 'NORMAL'")
-	public int findReviewTotalCount(@Param("foodId") Long foodId);
+	int findReviewTotalCount(@Param("foodId") Long foodId);
 
 	boolean existsByFoodAndUser(Food food, User user);
+
+	Long countAllByUser(User user);
 
 }

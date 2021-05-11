@@ -52,8 +52,8 @@ public class UserController {
             , @Valid @RequestBody SetSecondEmailRequest request) {
         User user = this.userService.setSecondEmail(principal, request);
         return ResponseEntity.ok(SetSecondEmailResponse.builder()
-                                                       .secondEmail(user.getSecondEmail())
-                                                       .build());
+                .secondEmail(user.getSecondEmail())
+                .build());
     }
 
     @ApiOperation(value = "아이디 찾기", notes = "2차보안으로 설정한 이메일로 기존 이메일을 전송한다")
@@ -61,8 +61,8 @@ public class UserController {
     public ResponseEntity<FindEmailResponse> findEmail(@Valid @RequestBody FindEmailRequest request) {
         User user = this.userService.findEmail(request);
         return ResponseEntity.ok(FindEmailResponse.builder()
-                                                  .secondEmail(user.getSecondEmail())
-                                                  .build());
+                .secondEmail(user.getSecondEmail())
+                .build());
     }
 
     @ApiOperation(value = "패스워드 찾기", notes = "해당 메일 주소로 임시 패스워드를 전송한다.")
@@ -97,23 +97,18 @@ public class UserController {
 
     @GetMapping("api/v1/user/user-info")
     public ResponseEntity<UserInfoResponse> getUserInfo(@AuthenticationPrincipal PrincipalDetails principal) {
-        User user = userService.getUserInfo(principal);
-        return ResponseEntity.ok(UserInfoResponse.builder()
-                .name(user.getName())
-                .birth(user.getBirth())
-                .address(user.getAddress())
-                .build());
+        return userService.getUserInfo(principal);
     }
 
     @PostMapping("api/v1/user/modify-user-info")
     public ResponseEntity<UserInfoResponse> modifyUserInfo(@AuthenticationPrincipal PrincipalDetails principal,
                                                            @Valid @RequestBody UserInfoModifyRequest request) {
-        User user = userService.modifyUserInfo(principal, request);
-        return ResponseEntity.ok(UserInfoResponse.builder()
-                .name(user.getName())
-                .birth(user.getBirth())
-                .address(user.getAddress())
-                .build());
+        return userService.modifyUserInfo(principal, request);
+    }
+
+    @GetMapping("api/v1/user/summary")
+    public ResponseEntity<UserSummaryResponse> userSummary(@AuthenticationPrincipal PrincipalDetails principal) {
+        return userService.userSummary(principal);
     }
 
 }

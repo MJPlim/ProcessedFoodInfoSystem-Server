@@ -15,4 +15,6 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long>{
 
     boolean existsByUserAndFood(User user, Food food);
 
+    Long countAllByUser(User user);
+
 }
