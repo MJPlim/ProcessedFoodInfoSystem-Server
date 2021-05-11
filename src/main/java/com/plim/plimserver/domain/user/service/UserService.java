@@ -1,7 +1,11 @@
 package com.plim.plimserver.domain.user.service;
 
+import com.plim.plimserver.domain.favorite.repository.FavoriteRepository;
+import com.plim.plimserver.domain.post.repository.CommentRepository;
+import com.plim.plimserver.domain.review.repository.ReviewRepository;
 import com.plim.plimserver.domain.user.dto.*;
 import com.plim.plimserver.domain.user.exception.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,6 +29,9 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final EmailAuthCodeRepository emailAuthCodeRepository;
+    private final FavoriteRepository favoriteRepository;
+    private final ReviewRepository reviewRepository;
+    private final CommentRepository commentRepository;
     private final EmailUtil emailUtil;
 
     public User saveUser(SignUpUserRequest dto) {
@@ -48,12 +55,10 @@ public class UserService {
 
     @Transactional
     public User withdraw(PrincipalDetails principal, String password) {
-        User user = userRepository.findByEmail(principal.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException(UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
+        User user = getUser(principal);
         boolean matches = passwordEncoder.matches(password, user.getPassword());
         if (!matches)
             throw new PasswordMismatchException(UserExceptionMessage.PASSWORD_MISMATCH_EXCEPTION_MESSAGE);
-
         user.withdraw();
         return user;
     }
@@ -63,9 +68,7 @@ public class UserService {
         if (userRepository.existsBySecondEmail(request.getSecondEmail()))
             throw new SecondEmailDuplicateException(UserExceptionMessage.SECOND_EMAIL_DUPLICATE_EXCEPTION_MESSAGE);
 
-        User user = this.userRepository.findByEmail(principal.getUsername())
-                                       .orElseThrow(() -> new UsernameNotFoundException(UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
-
+        User user = getUser(principal);
         user.setSecondEmail(request.getSecondEmail());
 
         return user;
@@ -73,7 +76,7 @@ public class UserService {
 
     public User findEmail(FindEmailRequest request) {
         User user = this.userRepository.findBySecondEmail(request.getSecondEmail())
-                                       .orElseThrow(() -> new UsernameNotFoundException(UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
+                .orElseThrow(() -> new UsernameNotFoundException(UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
 
         String msg = this.emailUtil.getFindEmailMessage(user.getEmail());
         this.emailUtil.sendEmail(request.getSecondEmail(), EmailSubject.FIND_EMAIL_REQUEST, msg);
@@ -98,9 +101,7 @@ public class UserService {
 
     @Transactional
     public User modifyPassword(PrincipalDetails principal, ModifyPasswordRequest dto) {
-        User user = userRepository.findByEmail(principal.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException(UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
-
+        User user = getUser(principal);
         //입력한 비밀번호가 기존 비밀번호와 다를때
         boolean matches1 = passwordEncoder.matches(dto.getBeforePassword(), user.getPassword());
         if (!matches1)
@@ -118,9 +119,7 @@ public class UserService {
 
     @Transactional
     public User enterMyTab(PrincipalDetails principal, EnterMyTabRequest dto) {
-        User user = userRepository.findByEmail(principal.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException(UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
-
+        User user = getUser(principal);
         boolean matches = passwordEncoder.matches(dto.getPassword(), user.getPassword());
         if (!matches)
             throw new PasswordMismatchException(UserExceptionMessage.PASSWORD_MISMATCH_EXCEPTION_MESSAGE);
@@ -128,16 +127,27 @@ public class UserService {
         return user;
     }
 
-    public User getUserInfo(PrincipalDetails principal) {
-        return userRepository.findByEmail(principal.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException(UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
+    public ResponseEntity<UserInfoResponse> getUserInfo(PrincipalDetails principal) {
+        return ResponseEntity.ok(UserInfoResponse.from(getUser(principal)));
     }
 
     @Transactional
-    public User modifyUserInfo(PrincipalDetails principal, UserInfoModifyRequest request) {
-        User user = userRepository.findByEmail(principal.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException(UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
+    public ResponseEntity<UserInfoResponse> modifyUserInfo(PrincipalDetails principal, UserInfoModifyRequest request) {
+        User user = getUser(principal);
         user.modifyUserInfo(request);
-        return user;
+        return ResponseEntity.ok(UserInfoResponse.from(user));
+    }
+
+    public ResponseEntity<UserSummaryResponse> userSummary(PrincipalDetails principal) {
+        User user = getUser(principal);
+        Long favoriteCount = this.favoriteRepository.countAllByUser(user);
+        Long reviewCount = this.reviewRepository.countAllByUser(user);
+        Long commentCount = this.commentRepository.countAllByUserId(user.getId());
+        return ResponseEntity.ok(UserSummaryResponse.of(favoriteCount, reviewCount, commentCount));
+    }
+
+    private User getUser(PrincipalDetails principal) {
+        return userRepository.findByEmail(principal.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException(UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
     }
 }
