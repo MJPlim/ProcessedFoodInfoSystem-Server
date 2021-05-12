@@ -11,10 +11,6 @@ import java.util.List;
 
 public interface FoodService {
 
-    ArrayList<FoodResponse> findFoodByFoodName(String foodName);
-
-    ArrayList<FoodResponse> findFoodByManufacturerName(String manufacturerName);
-
     FoodDetailResponse getFoodDetail(Long foodId);
 
     FoodDetailResponse findFoodByBarcode(String barcode);

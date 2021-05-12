@@ -14,7 +14,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Api(tags = {"Food"})
@@ -23,18 +22,6 @@ import java.util.List;
 @RequestMapping("api/v1/food")
 public class FoodController {
     private final FoodService foodService;
-
-    @ApiOperation(value = "제품이름 조회", notes = "제품이름과 일치하는 것을 조회한다")
-    @GetMapping("/findFood/foodName")
-    public ArrayList<FoodResponse> getFoodInfoByFoodName(@RequestParam(name = "foodName") String foodName) {
-        return this.foodService.findFoodByFoodName(foodName);
-    }
-
-    @ApiOperation(value = "회사이름 조회", notes = "회사이름과 일치하는 것을 조회한다")
-    @GetMapping("/findFood/manufacturerName")
-    public ArrayList<FoodResponse> getFoodInfoByManufacturerName(@RequestParam(name = "manufacturerName") String manufacturerName) {
-        return this.foodService.findFoodByManufacturerName(manufacturerName);
-    }
 
     @ApiOperation(value = "특정 제품의 상세정보 조회", notes = "선택한 제품을 조회하여 상세정보를 반환한다")
     @GetMapping("/findFood/foodDetail")
