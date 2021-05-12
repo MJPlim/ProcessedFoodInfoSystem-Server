@@ -62,7 +62,6 @@ public class Review {
 		this.reviewRating = reviewRating;
 		this.reviewDescription = reviewDescription;
 		this.state = state;
-		this.food.getReviewList().add(this);
 	}
 
 	public static Review of(User user, Food food, CreateReviewRequest dto) {

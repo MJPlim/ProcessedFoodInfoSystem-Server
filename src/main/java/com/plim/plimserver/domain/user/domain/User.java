@@ -102,9 +102,10 @@ public class User {
         this.state = UserStateType.NORMAL;
     }
 
-    public void modifyUserInfo(UserInfoModifyRequest request) {
+    public User modifyUserInfo(UserInfoModifyRequest request) {
         this.name = request.getName();
         this.birth = request.getBirth();
         this.address = request.getAddress();
+        return this;
     }
 }

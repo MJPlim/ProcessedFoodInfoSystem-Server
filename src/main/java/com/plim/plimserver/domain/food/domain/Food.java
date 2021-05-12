@@ -78,4 +78,8 @@ public class Food {
         this.viewCount = this.viewCount == null ? 0 : this.viewCount;
     }
 
+    public void addReview(Review review) {
+        this.reviewList.add(review);
+    }
+
 }
