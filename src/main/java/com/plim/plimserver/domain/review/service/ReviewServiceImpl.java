@@ -108,14 +108,10 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Transactional
-    public Map<String, Integer> findReviewTotalCount(Long foodId) {
-        int findReviewCount = reviewRepository.findReviewTotalCount(foodId);
+   	public ReadSummaryResponse findReviewSummary(Long foodId) {
+    	int findReviewCount = reviewRepository.findReviewTotalCount(foodId);
         int findReviewPageCount = (findReviewCount % viewCount) == 0 ? (findReviewCount / viewCount) : (findReviewCount / viewCount) + 1;
-
-        Map<String, Integer> returnMap = new HashMap<>();
-        returnMap.put("findReviewCount", findReviewCount);
-        returnMap.put("findReviewPageCount", findReviewPageCount);
-        return returnMap;
+       	return ReadSummaryResponse.of(reviewSummaryRepository.findByFoodId(foodId), findReviewCount, findReviewPageCount);
     }
 
     @Transactional
@@ -180,5 +176,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .map(ReviewRankingResponse::from)
                 .collect(Collectors.toList());
     }
+
+   
 
 }
