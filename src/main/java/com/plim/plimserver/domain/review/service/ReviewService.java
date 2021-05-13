@@ -2,6 +2,7 @@ package com.plim.plimserver.domain.review.service;
 
 import com.plim.plimserver.domain.review.domain.Review;
 import com.plim.plimserver.domain.review.domain.ReviewLike;
+import com.plim.plimserver.domain.review.domain.ReviewSummary;
 import com.plim.plimserver.domain.review.dto.*;
 import com.plim.plimserver.global.config.security.auth.PrincipalDetails;
 
@@ -26,6 +27,6 @@ public interface ReviewService {
 	
 	public List<ReviewRankingResponse> rankedReview();
 
-	public Map<String, Integer> findReviewTotalCount(Long foodId);
+	public ReadSummaryResponse findReviewSummary(Long foodId);
 
 }

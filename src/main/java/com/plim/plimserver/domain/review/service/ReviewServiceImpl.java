@@ -49,7 +49,7 @@ public class ReviewServiceImpl implements ReviewService {
         if (reviewRepository.existsByFoodAndUser(food, user))
             throw new AlreadyWrittenReivewException(ReviewExceptionMessage.ALREADY_WRITTEN_REVIEW_EXCEPTION_MESSAGE);
 
-        reviewRepository.save(Review.of(user, food, dto));
+        food.addReview(reviewRepository.save(Review.of(user, food, dto)));
 
         if (food.getReviewsummary() == null) reviewSummaryRepository.save(ReviewSummary.of(food, dto));
         else food.getReviewsummary().createReviewSummary(dto.getReviewRating());
@@ -84,7 +84,6 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Transactional
     public List<ReadReviewResponse> findReviewByUserIdANDFoodID(PrincipalDetails principal, Long foodId, Integer pageNum) {
-        int viewCount = 5;
         Pageable limitFive;
         User findUser = userRepository.findByEmail(principal.getUsername()).orElseThrow(() -> new UsernameNotFoundException(
                 UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
@@ -108,14 +107,10 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Transactional
-    public Map<String, Integer> findReviewTotalCount(Long foodId) {
-        int findReviewCount = reviewRepository.findReviewTotalCount(foodId);
+   	public ReadSummaryResponse findReviewSummary(Long foodId) {
+    	int findReviewCount = reviewRepository.findReviewTotalCount(foodId);
         int findReviewPageCount = (findReviewCount % viewCount) == 0 ? (findReviewCount / viewCount) : (findReviewCount / viewCount) + 1;
-
-        Map<String, Integer> returnMap = new HashMap<>();
-        returnMap.put("findReviewCount", findReviewCount);
-        returnMap.put("findReviewPageCount", findReviewPageCount);
-        return returnMap;
+       	return ReadSummaryResponse.of(reviewSummaryRepository.findByFoodId(foodId), findReviewCount, findReviewPageCount);
     }
 
     @Transactional
@@ -180,5 +175,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .map(ReviewRankingResponse::from)
                 .collect(Collectors.toList());
     }
+
+   
 
 }

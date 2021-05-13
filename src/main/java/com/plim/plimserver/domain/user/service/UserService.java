@@ -117,25 +117,13 @@ public class UserService {
         return user;
     }
 
-    @Transactional
-    public User enterMyTab(PrincipalDetails principal, EnterMyTabRequest dto) {
-        User user = getUser(principal);
-        boolean matches = passwordEncoder.matches(dto.getPassword(), user.getPassword());
-        if (!matches)
-            throw new PasswordMismatchException(UserExceptionMessage.PASSWORD_MISMATCH_EXCEPTION_MESSAGE);
-
-        return user;
-    }
-
     public ResponseEntity<UserInfoResponse> getUserInfo(PrincipalDetails principal) {
         return ResponseEntity.ok(UserInfoResponse.from(getUser(principal)));
     }
 
     @Transactional
     public ResponseEntity<UserInfoResponse> modifyUserInfo(PrincipalDetails principal, UserInfoModifyRequest request) {
-        User user = getUser(principal);
-        user.modifyUserInfo(request);
-        return ResponseEntity.ok(UserInfoResponse.from(user));
+        return ResponseEntity.ok(UserInfoResponse.from(getUser(principal).modifyUserInfo(request)));
     }
 
     public ResponseEntity<UserSummaryResponse> userSummary(PrincipalDetails principal) {

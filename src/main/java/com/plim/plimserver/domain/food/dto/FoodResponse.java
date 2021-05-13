@@ -2,6 +2,7 @@ package com.plim.plimserver.domain.food.dto;
 
 import com.plim.plimserver.domain.food.domain.Food;
 import com.plim.plimserver.domain.review.domain.Review;
+import com.plim.plimserver.domain.review.domain.ReviewStateType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,8 +29,9 @@ public class FoodResponse {
                 .manufacturerName(food.getManufacturerName())
                 .foodImageAddress(food.getFoodImage().getFoodImageAddress())
                 .foodMeteImageAddress(food.getFoodImage().getFoodMeteImageAddress())
+                .reviewCount((int)food.getReviewList().stream().filter(f -> f.getState().equals(ReviewStateType.NORMAL)).count())
                 .reviewRate(String.format("%.2f",
-                        food.getReviewList().stream()
+                        food.getReviewList().stream().filter(f -> f.getState().equals(ReviewStateType.NORMAL))
                                 .mapToInt(Review::getReviewRating).average().orElse(0)))
                 .build();
     }

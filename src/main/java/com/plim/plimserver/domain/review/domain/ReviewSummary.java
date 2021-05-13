@@ -161,7 +161,10 @@ public class ReviewSummary {
         }
         this.reviewCount--;
         this.sumRating -= reviewRating;
-        this.avgRating = (float) sumRating / (float) reviewCount;
+        this.avgRating = this.reviewCount == 0? 0 : (float) sumRating / (float) reviewCount;
+    }
+    public void test() {
+    	this.reviewCount++;
     }
 
     public void insertFood(Food food) {

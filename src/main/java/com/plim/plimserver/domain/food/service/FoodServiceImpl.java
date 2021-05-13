@@ -11,7 +11,6 @@ import com.plim.plimserver.domain.food.exception.NoFoodListException;
 import com.plim.plimserver.domain.food.repository.FoodRepository;
 import com.plim.plimserver.domain.food.util.SortByReviewCountAndDesc;
 import com.plim.plimserver.domain.food.util.SortByReviewRateAndDesc;
-import com.plim.plimserver.domain.review.domain.Review;
 import com.plim.plimserver.global.dto.Pagination;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,62 +37,13 @@ public class FoodServiceImpl implements FoodService {
         this.foodRepository = foodRepository;
     }
 
-    @Override
-    public ArrayList<FoodResponse> findFoodByFoodName(String foodName) {
-        ArrayList<FoodResponse> foodList = new ArrayList<>();
-        List<Food> foods = this.foodRepository.findAllByFoodNameContaining(foodName);
-        for (Food food : foods) {
-            foodList.add(FoodResponse.builder()
-                    .foodId(food.getId())
-                    .foodName(food.getFoodName())
-                    .category(food.getCategory())
-                    .manufacturerName(food.getManufacturerName())
-                    .foodImageAddress(food.getFoodImage().getFoodImageAddress())
-                    .foodMeteImageAddress(food.getFoodImage().getFoodMeteImageAddress())
-                    .reviewCount(food.getReviewList().size())
-                    .reviewRate(String.format("%.2f", food.getReviewList().stream().mapToInt(Review::getReviewRating).sum()/(float)food.getReviewList().size()))
-                    .build());
-        }
-        return foodList;
-    }
-
-    @Override
-    public ArrayList<FoodResponse> findFoodByManufacturerName(String manufacturerName) {
-        ArrayList<FoodResponse> foodList = new ArrayList<>();
-        List<Food> foods = this.foodRepository.findAllByManufacturerNameContaining(manufacturerName);
-        for (Food food : foods) {
-            foodList.add(FoodResponse.builder()
-                    .foodId(food.getId())
-                    .foodName(food.getFoodName())
-                    .category(food.getCategory())
-                    .manufacturerName(food.getManufacturerName())
-                    .foodImageAddress(food.getFoodImage().getFoodImageAddress())
-                    .foodMeteImageAddress(food.getFoodImage().getFoodMeteImageAddress())
-                    .reviewCount(food.getReviewList().size())
-                    .reviewRate(String.format("%.2f", food.getReviewList().stream().mapToInt(Review::getReviewRating).sum()/(float)food.getReviewList().size()))
-                    .build());
-        }
-        return foodList;
-    }
-
     @Transactional
     @Override
     public FoodDetailResponse getFoodDetail(Long foodId) {
         Optional<Food> optionalFood = this.foodRepository.findById(foodId);
         Food food = optionalFood.orElseThrow(() -> new NoFoodDetailException(FoodExceptionMessage.NO_FOOD_EXCEPTION_MESSAGE));
         food.setViewCount(food.getViewCount() + 1);
-        return FoodDetailResponse.builder()
-                .foodId(food.getId())
-                .foodName(food.getFoodName())
-                .category(food.getCategory())
-                .manufacturerName(food.getManufacturerName())
-                .foodImageAddress(food.getFoodImage().getFoodImageAddress())
-                .foodMeteImageAddress(food.getFoodImage().getFoodMeteImageAddress())
-                .materials(food.getFoodDetail().getMaterials())
-                .nutrient(food.getFoodDetail().getNutrient())
-                .allergyMaterials(food.getAllergyMaterials())
-                .viewCount(food.getViewCount())
-                .build();
+        return FoodDetailResponse.from(food);
     }
 
     @Override
@@ -117,7 +66,7 @@ public class FoodServiceImpl implements FoodService {
                 throw new NoFoodListException(FoodExceptionMessage.NO_FOOD_LIST_EXCEPTION_MESSAGE);
             }
         } else {
-            if (sortElement.equals(SortElement.RANK.getMessage())) { // 아직 안함
+            if (sortElement.equals(SortElement.RANK.getMessage())) {
                 if (foodName != null && manufacturerName == null) {
                     List<Food> foodPage = this.foodRepository.findAllByFoodNameContaining(foodName);
                     foodPage.sort(new SortByReviewRateAndDesc().thenComparing(new SortByReviewCountAndDesc()));
@@ -159,20 +108,7 @@ public class FoodServiceImpl implements FoodService {
     }
 
     private FindFoodBySortingResponse makeFoodResponseByPaging(Page<Food> foodList) {
-        List<FoodResponse> resultList = new ArrayList<>();
-        for (Food food : foodList.getContent()) {
-            FoodResponse response = FoodResponse.builder()
-                    .foodId(food.getId())
-                    .foodName(food.getFoodName())
-                    .category(food.getCategory())
-                    .manufacturerName(food.getManufacturerName())
-                    .foodImageAddress(food.getFoodImage().getFoodImageAddress())
-                    .foodMeteImageAddress(food.getFoodImage().getFoodMeteImageAddress())
-                    .reviewCount(food.getReviewList().size())
-                    .reviewRate(String.format("%.2f", food.getReviewList().stream().mapToInt(Review::getReviewRating).sum()/(float)food.getReviewList().size()))
-                    .build();
-            resultList.add(response);
-        }
+        List<FoodResponse> resultList = foodList.getContent().stream().map(FoodResponse::from).collect(Collectors.toList());
         return FindFoodBySortingResponse.builder()
                 .pageNo(foodList.getNumber() + 1)
                 .pageSize(foodList.getSize())
@@ -191,31 +127,13 @@ public class FoodServiceImpl implements FoodService {
             if (pageNo == maxPage) {
                 for (int i = startIndex; i < startIndex + rest; i++) {
                     Food food = foodList.get(i);
-                    FoodResponse response = FoodResponse.builder()
-                                                        .foodId(food.getId())
-                                                        .foodName(food.getFoodName())
-                                                        .category(food.getCategory())
-                                                        .manufacturerName(food.getManufacturerName())
-                                                        .foodImageAddress(food.getFoodImage().getFoodImageAddress())
-                                                        .foodMeteImageAddress(food.getFoodImage().getFoodMeteImageAddress())
-                                                        .reviewCount(food.getReviewList().size())
-                                                        .reviewRate(String.format("%.2f", food.getReviewList().stream().mapToInt(Review::getReviewRating).sum()/(float)food.getReviewList().size()))
-                                                        .build();
+                    FoodResponse response = FoodResponse.from(food);
                     resultList.add(response);
                 }
             } else {
                 for (int i = startIndex; i < size * pageNo; i++) {
                     Food food = foodList.get(i);
-                    FoodResponse response = FoodResponse.builder()
-                                                        .foodId(food.getId())
-                                                        .foodName(food.getFoodName())
-                                                        .category(food.getCategory())
-                                                        .manufacturerName(food.getManufacturerName())
-                                                        .foodImageAddress(food.getFoodImage().getFoodImageAddress())
-                                                        .foodMeteImageAddress(food.getFoodImage().getFoodMeteImageAddress())
-                                                        .reviewCount(food.getReviewList().size())
-                                                        .reviewRate(String.format("%.2f", food.getReviewList().stream().mapToInt(Review::getReviewRating).sum()/(float)food.getReviewList().size()))
-                                                        .build();
+                    FoodResponse response = FoodResponse.from(food);
                     resultList.add(response);
                 }
             }
