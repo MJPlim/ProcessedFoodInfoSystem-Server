@@ -1,14 +1,14 @@
 package com.plim.plimserver.domain.review.repository;
 
-import com.plim.plimserver.domain.food.domain.Food;
-import com.plim.plimserver.domain.review.domain.Review;
-import com.plim.plimserver.domain.user.domain.User;
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
+import com.plim.plimserver.domain.review.domain.Review;
+import com.plim.plimserver.domain.user.domain.User;
 
 public interface ReviewRepository extends JpaRepository<Review, Long>{
 
@@ -21,8 +21,12 @@ public interface ReviewRepository extends JpaRepository<Review, Long>{
 	@Query(value = "select count(r) from Review r where r.food.id=:foodId and r.state = 'NORMAL'")
 	int findReviewTotalCount(@Param("foodId") Long foodId);
 
-	boolean existsByFoodAndUser(Food food, User user);
+//	boolean existsByFoodAndUser(Food food, User user);
+	
+	@Query(value = "select * from review where food_id=12505 and user_id=238 and review_state='NORMAL' limit 1", nativeQuery = true)
+	Review existsByFoodIdAndUserId(@Param("foodId") Long foodId, @Param("userId") Long userId);
 
-	Long countAllByUser(User user);
+	@Query(value = "select count(r) from Review r where r.user=:user and r.state = 'NORMAL'")
+	Long countAllByUser(@Param("user")User user);
 
 }
