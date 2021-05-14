@@ -110,7 +110,11 @@ public class ReviewServiceImpl implements ReviewService {
    	public ReadSummaryResponse findReviewSummary(Long foodId) {
     	int findReviewCount = reviewRepository.findReviewTotalCount(foodId);
         int findReviewPageCount = (findReviewCount % viewCount) == 0 ? (findReviewCount / viewCount) : (findReviewCount / viewCount) + 1;
-       	return ReadSummaryResponse.of(reviewSummaryRepository.findByFoodId(foodId), findReviewCount, findReviewPageCount);
+        ReviewSummary reviewSummary = reviewSummaryRepository.findByFoodId(foodId);
+        if(reviewSummary == null) 
+        	return ReadSummaryResponse.defaultSummary(foodId);
+        else
+       		return ReadSummaryResponse.of(reviewSummaryRepository.findByFoodId(foodId), findReviewCount, findReviewPageCount);
     }
 
     @Transactional

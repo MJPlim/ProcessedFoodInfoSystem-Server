@@ -55,4 +55,19 @@ public class ReadSummaryResponse {
     			.build();
     }
     
+    public static ReadSummaryResponse defaultSummary(Long foodId) {
+    	return ReadSummaryResponse.builder()
+    			.foodId(foodId)
+    			.oneCount(0)
+    			.twoCount(0)
+    			.threeCount(0)
+    			.fourCount(0)
+    			.fiveCount(0)
+    			.sumRating(0)
+    			.avgRating(0)
+    			.reviewCount(0)
+    			.reviewPageCount(0)
+    			.build();
+    }
+    
 }

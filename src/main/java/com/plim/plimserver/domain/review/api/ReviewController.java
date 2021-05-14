@@ -1,35 +1,20 @@
 package com.plim.plimserver.domain.review.api;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.validation.Valid;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.plim.plimserver.domain.review.dto.CreateReviewRequest;
-import com.plim.plimserver.domain.review.dto.CreateReviewResponse;
-import com.plim.plimserver.domain.review.dto.DeleteReviewRequest;
-import com.plim.plimserver.domain.review.dto.DeleteReviewResponse;
-import com.plim.plimserver.domain.review.dto.ReadReviewResponse;
-import com.plim.plimserver.domain.review.dto.ReadSummaryResponse;
-import com.plim.plimserver.domain.review.dto.ReviewRankingResponse;
-import com.plim.plimserver.domain.review.dto.UpdateReviewLikeRequest;
-import com.plim.plimserver.domain.review.dto.UpdateReviewRequest;
-import com.plim.plimserver.domain.review.dto.UpdateReviewResponse;
+import com.plim.plimserver.domain.review.domain.Review;
+import com.plim.plimserver.domain.review.dto.*;
 import com.plim.plimserver.domain.review.service.ReviewService;
 import com.plim.plimserver.global.config.security.auth.PrincipalDetails;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Api(tags = {"Review"})
 @RequiredArgsConstructor
@@ -54,7 +39,7 @@ public class ReviewController {
         Map<String, Object> returnMap = new HashMap<>();
         returnMap.put("readSummaryResponse", readSummaryResponse);
         returnMap.put("readReviewResponse", reviewList);
-        
+
         return returnMap;
     }
 
@@ -62,7 +47,7 @@ public class ReviewController {
     @GetMapping("api/v1/user/readReview")
     public Map<String, Object> readLoggedInReview(@AuthenticationPrincipal PrincipalDetails principal,
                                                   @RequestParam Long foodId, @RequestParam Integer pageNum) {
-        ReadSummaryResponse readSummaryResponse = reviewService.findReviewSummary(foodId);
+    	ReadSummaryResponse readSummaryResponse = reviewService.findReviewSummary(foodId);
         List<ReadReviewResponse> reviewList = reviewService.findReviewByUserIdANDFoodID(principal, foodId, pageNum);
 
         Map<String, Object> returnMap = new HashMap<>();
@@ -94,7 +79,7 @@ public class ReviewController {
     @ApiOperation(value = "리뷰 업데이트", notes = "로그인한 사용자가 작성한 리뷰를 수정한다.")
     @PostMapping("api/v1/user/updateReview")
     public ResponseEntity<UpdateReviewResponse> updateReview(@AuthenticationPrincipal PrincipalDetails principal, @RequestBody UpdateReviewRequest dto) {
-        reviewService.changeReview(principal, dto);
+        Review reivew = reviewService.changeReview(principal, dto);
         return ResponseEntity.ok(UpdateReviewResponse.builder()
                 .message("리뷰 변경 완료")
                 .build());
@@ -103,7 +88,7 @@ public class ReviewController {
     @ApiOperation(value = "리뷰 삭제", notes = "로그인한 사용자가 작성한 리뷰를 삭제한다.")
     @PostMapping("api/v1/user/deleteReview")
     public ResponseEntity<DeleteReviewResponse> deleteReview(@AuthenticationPrincipal PrincipalDetails principal, @RequestBody DeleteReviewRequest dto) {
-        reviewService.removeReview(principal, dto);
+        Review reivew = reviewService.removeReview(principal, dto);
         return ResponseEntity.ok(DeleteReviewResponse.builder()
                 .message("리뷰 삭제 완료")
                 .build());
