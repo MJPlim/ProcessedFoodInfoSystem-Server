@@ -5,6 +5,7 @@ import com.plim.plimserver.domain.food.dto.FindFoodBySortingResponse;
 import com.plim.plimserver.domain.food.dto.FoodDetailResponse;
 import com.plim.plimserver.domain.food.dto.FoodResponse;
 import com.plim.plimserver.domain.food.service.FoodService;
+import com.plim.plimserver.global.config.security.auth.PrincipalDetails;
 import com.plim.plimserver.global.dto.Pagination;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,9 +44,10 @@ public class FoodController {
             @RequestParam(name = "size", defaultValue = "10") int size,
             @RequestParam(name = "sort", required = false) String sortElement,
             @RequestParam(name = "foodName", required = false) String foodName,
-            @RequestParam(name = "manufacturerName", required = false) String manufacturerName) {
+            @RequestParam(name = "manufacturerName", required = false) String manufacturerName,
+            @RequestParam(name = "allergys", required = false) List<String> allergyList) {
         return ResponseEntity.ok(this.foodService.findFoodByPaging(
-                pageNo, size, sortElement, foodName, manufacturerName));
+                pageNo, size, sortElement, foodName, manufacturerName, allergyList));
     }
 
     @ApiOperation(value = "카테고리에 해당하는 제품 조회", notes = "카테고리에 해당하는 제품을 제공한다.")

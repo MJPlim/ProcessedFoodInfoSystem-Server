@@ -23,7 +23,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long>{
 
 //	boolean existsByFoodAndUser(Food food, User user);
 	
-	@Query(value = "select * from review where food_id=12505 and user_id=238 and review_state='NORMAL' limit 1", nativeQuery = true)
+	@Query(value = "select * from review where food_id=:foodId and user_id=:userId and review_state='NORMAL' limit 1", nativeQuery = true)
 	Review existsByFoodIdAndUserId(@Param("foodId") Long foodId, @Param("userId") Long userId);
 
 	@Query(value = "select count(r) from Review r where r.user=:user and r.state = 'NORMAL'")

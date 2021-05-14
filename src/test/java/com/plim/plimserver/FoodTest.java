@@ -1,5 +1,23 @@
 package com.plim.plimserver;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import java.util.Optional;
+
+import javax.persistence.EntityManager;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.test.annotation.Rollback;
+
 import com.plim.plimserver.domain.favorite.domain.Favorite;
 import com.plim.plimserver.domain.favorite.repository.FavoriteRepository;
 import com.plim.plimserver.domain.food.domain.Food;
@@ -15,19 +33,6 @@ import com.plim.plimserver.domain.review.repository.ReviewRepository;
 import com.plim.plimserver.domain.user.domain.User;
 import com.plim.plimserver.domain.user.repository.UserRepository;
 import com.plim.plimserver.global.config.DatabaseConfig;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.Rollback;
-
-import javax.persistence.EntityManager;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @DataJpaTest
 @Import(DatabaseConfig.class)
@@ -52,6 +57,9 @@ public class FoodTest {
 	@Autowired
 	private UserRepository userRepository;
 
+
+	
+	
 	@Test
 	@Rollback(false)
 	public void foodCreateTest() {
