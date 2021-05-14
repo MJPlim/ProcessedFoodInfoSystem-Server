@@ -3,15 +3,9 @@ package com.plim.plimserver.domain.user.service;
 import com.plim.plimserver.domain.favorite.repository.FavoriteRepository;
 import com.plim.plimserver.domain.post.repository.CommentRepository;
 import com.plim.plimserver.domain.review.repository.ReviewRepository;
+import com.plim.plimserver.domain.user.domain.User;
 import com.plim.plimserver.domain.user.dto.*;
 import com.plim.plimserver.domain.user.exception.*;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.plim.plimserver.domain.user.domain.User;
 import com.plim.plimserver.domain.user.repository.UserRepository;
 import com.plim.plimserver.global.config.security.auth.PrincipalDetails;
 import com.plim.plimserver.global.domain.mail.domain.EmailAuthCode;
@@ -19,8 +13,12 @@ import com.plim.plimserver.global.domain.mail.domain.EmailSubject;
 import com.plim.plimserver.global.domain.mail.repository.EmailAuthCodeRepository;
 import com.plim.plimserver.global.domain.mail.util.EmailAuthCodeGenerator;
 import com.plim.plimserver.global.domain.mail.util.EmailUtil;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service

@@ -1,7 +1,5 @@
 package com.plim.plimserver.domain.food.service;
 
-import com.plim.plimserver.domain.allergy.domain.FoodAllergy;
-import com.plim.plimserver.domain.allergy.domain.UserAllergy;
 import com.plim.plimserver.domain.allergy.exception.AllergyExceptionMessage;
 import com.plim.plimserver.domain.allergy.exception.NotFoundAllergyException;
 import com.plim.plimserver.domain.allergy.repository.FoodAllergyRepository;
@@ -16,36 +14,28 @@ import com.plim.plimserver.domain.food.exception.NoFoodListException;
 import com.plim.plimserver.domain.food.repository.FoodRepository;
 import com.plim.plimserver.domain.food.util.SortByReviewCountAndDesc;
 import com.plim.plimserver.domain.food.util.SortByReviewRateAndDesc;
-import com.plim.plimserver.domain.user.domain.User;
-import com.plim.plimserver.domain.user.exception.UserExceptionMessage;
-import com.plim.plimserver.domain.user.repository.UserRepository;
-import com.plim.plimserver.global.config.security.auth.PrincipalDetails;
 import com.plim.plimserver.global.dto.Pagination;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-
 @Service
 public class FoodServiceImpl implements FoodService {
-//    private final ApiKeyRepository apiKeyRepository;
+    //    private final ApiKeyRepository apiKeyRepository;
 //    private final RestTemplate restTemplate;
 //    private String haccpdataURL = "http://apis.data.go.kr/B553748/CertImgListService/getCertImgListService?ServiceKey=fTEm%2FiVcJFgwgjEeDhMET1kFQZduiSF09BedQaKgQRGH7fWSoKITTfTFZH2EzYono62%2BwMlAxdy2Jj64qzpgqQ%3D%3D&returnType=json&numOfRows=100";
     private final FoodRepository foodRepository;
     private final FoodAllergyRepository foodAllergyRepository;
+
     @Autowired
     public FoodServiceImpl(FoodRepository foodRepository, FoodAllergyRepository foodAllergyRepository) {
         this.foodRepository = foodRepository;
@@ -68,30 +58,28 @@ public class FoodServiceImpl implements FoodService {
     }
 
     @Override
-    public FindFoodBySortingResponse findFoodByPaging(int pageNo, int size, String sortElement, String foodName, String manufacturerName, 
-    		List<String> allergyList) {
-    	
-    	String allergys = "";
-    	if(allergyList != null) {
-    		for(String s : allergyList) {
-        		foodAllergyRepository.findByAllergyMaterial(s)
-        				.orElseThrow(() -> new NotFoundAllergyException(AllergyExceptionMessage.NOT_FOUND_ALLERGY_EXCEPTION_MESSAGE));
-        	}
-    		allergys = allergyList.stream().collect(Collectors.joining("|"));
-    	}
-    		System.out.println(allergys);
-    	
+    public FindFoodBySortingResponse findFoodByPaging(int pageNo, int size, String sortElement, String foodName,
+                                                      String manufacturerName, List<String> allergyList) {
+        String allergies = "";
+        if (allergyList != null) {
+            for (String s : allergyList) {
+                foodAllergyRepository.findByAllergyMaterial(s)
+                        .orElseThrow(() -> new NotFoundAllergyException(AllergyExceptionMessage.NOT_FOUND_ALLERGY_EXCEPTION_MESSAGE));
+            }
+            allergies = String.join("|", allergyList);
+        }
+
         if (sortElement == null) {
             Pageable page = PageRequest.of(pageNo - 1, size);
             if (foodName != null && manufacturerName == null) {
-                Page<Food> foodPage = allergyList == null?
-                			this.foodRepository.findAllByFoodNameContaining(foodName, page):
-                			this.foodRepository.findAllByFoodNameContaining(foodName, allergys, page);
+                Page<Food> foodPage = allergyList == null ?
+                        this.foodRepository.findAllByFoodNameContaining(foodName, page) :
+                        this.foodRepository.findAllByFoodNameContaining(foodName, allergies, page);
                 return this.makeFoodResponseByPaging(foodPage);
             } else if (manufacturerName != null && foodName == null) {
-                Page<Food> foodPage = allergyList == null?
-                		this.foodRepository.findAllByManufacturerNameContaining(manufacturerName, page):
-                		this.foodRepository.findAllByManufacturerNameContaining(manufacturerName, allergys, page);
+                Page<Food> foodPage = allergyList == null ?
+                        this.foodRepository.findAllByManufacturerNameContaining(manufacturerName, page) :
+                        this.foodRepository.findAllByManufacturerNameContaining(manufacturerName, allergies, page);
                 return this.makeFoodResponseByPaging(foodPage);
             } else {
                 throw new NoFoodListException(FoodExceptionMessage.NO_FOOD_LIST_EXCEPTION_MESSAGE);
@@ -99,15 +87,15 @@ public class FoodServiceImpl implements FoodService {
         } else {
             if (sortElement.equals(SortElement.RANK.getMessage())) {
                 if (foodName != null && manufacturerName == null) {
-                    List<Food> foodPage = allergyList == null?
-                			this.foodRepository.findAllByFoodNameContaining(foodName):
-                			this.foodRepository.findAllByFoodNameContaining(foodName, allergys);
+                    List<Food> foodPage = allergyList == null ?
+                            this.foodRepository.findAllByFoodNameContaining(foodName) :
+                            this.foodRepository.findAllByFoodNameContaining(foodName, allergies);
                     foodPage.sort(new SortByReviewRateAndDesc().thenComparing(new SortByReviewCountAndDesc()));
                     return this.makeFoodResponse(foodPage, pageNo, size);
                 } else if (manufacturerName != null && foodName == null) {
-                    List<Food> foodPage = allergyList == null?
-                    		this.foodRepository.findAllByManufacturerNameContaining(manufacturerName):
-                        	this.foodRepository.findAllByManufacturerNameContaining(manufacturerName, allergys);
+                    List<Food> foodPage = allergyList == null ?
+                            this.foodRepository.findAllByManufacturerNameContaining(manufacturerName) :
+                            this.foodRepository.findAllByManufacturerNameContaining(manufacturerName, allergies);
                     foodPage.sort(new SortByReviewRateAndDesc().thenComparing(new SortByReviewCountAndDesc()));
                     return this.makeFoodResponse(foodPage, pageNo, size);
                 } else {
@@ -117,29 +105,29 @@ public class FoodServiceImpl implements FoodService {
                 Pageable pageNotAl = PageRequest.of(pageNo - 1, size, Sort.by("manufacturerName"));
                 Pageable pageAl = PageRequest.of(pageNo - 1, size, Sort.by("manufacturer_name"));
                 if (foodName != null && manufacturerName == null) {
-                    Page<Food> foodPage = allergyList == null?
-                			this.foodRepository.findAllByFoodNameContaining(foodName, pageNotAl):
-                			this.foodRepository.findAllByFoodNameContaining(foodName, allergys, pageAl);
+                    Page<Food> foodPage = allergyList == null ?
+                            this.foodRepository.findAllByFoodNameContaining(foodName, pageNotAl) :
+                            this.foodRepository.findAllByFoodNameContaining(foodName, allergies, pageAl);
                     return this.makeFoodResponseByPaging(foodPage);
                 } else if (manufacturerName != null && foodName == null) {
-                    Page<Food> foodPage = allergyList == null?
-                    			this.foodRepository.findAllByManufacturerNameContaining(manufacturerName, pageNotAl):
-                        		this.foodRepository.findAllByManufacturerNameContaining(manufacturerName, allergys, pageAl);
+                    Page<Food> foodPage = allergyList == null ?
+                            this.foodRepository.findAllByManufacturerNameContaining(manufacturerName, pageNotAl) :
+                            this.foodRepository.findAllByManufacturerNameContaining(manufacturerName, allergies, pageAl);
                     return this.makeFoodResponseByPaging(foodPage);
                 } else {
                     throw new NoFoodListException(FoodExceptionMessage.NO_FOOD_LIST_EXCEPTION_MESSAGE);
                 }
             } else if (sortElement.equals(SortElement.REVIEW_COUNT.getMessage())) {
                 if (foodName != null && manufacturerName == null) {
-                    List<Food> foodPage = allergyList == null?
-                			this.foodRepository.findAllByFoodNameContaining(foodName):
-                			this.foodRepository.findAllByFoodNameContaining(foodName, allergys);
+                    List<Food> foodPage = allergyList == null ?
+                            this.foodRepository.findAllByFoodNameContaining(foodName) :
+                            this.foodRepository.findAllByFoodNameContaining(foodName, allergies);
                     foodPage.sort(new SortByReviewCountAndDesc());
                     return this.makeFoodResponse(foodPage, pageNo, size);
                 } else if (manufacturerName != null && foodName == null) {
-                    List<Food> foodPage = allergyList == null?
-                    		this.foodRepository.findAllByManufacturerNameContaining(manufacturerName):
-                            this.foodRepository.findAllByManufacturerNameContaining(manufacturerName, allergys);
+                    List<Food> foodPage = allergyList == null ?
+                            this.foodRepository.findAllByManufacturerNameContaining(manufacturerName) :
+                            this.foodRepository.findAllByManufacturerNameContaining(manufacturerName, allergies);
                     foodPage.sort(new SortByReviewCountAndDesc());
                     return this.makeFoodResponse(foodPage, pageNo, size);
                 } else {
