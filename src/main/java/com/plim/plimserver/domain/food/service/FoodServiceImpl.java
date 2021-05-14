@@ -1,5 +1,8 @@
 package com.plim.plimserver.domain.food.service;
 
+import com.plim.plimserver.domain.allergy.exception.AllergyExceptionMessage;
+import com.plim.plimserver.domain.allergy.exception.NotFoundAllergyException;
+import com.plim.plimserver.domain.allergy.repository.FoodAllergyRepository;
 import com.plim.plimserver.domain.food.domain.Food;
 import com.plim.plimserver.domain.food.domain.SortElement;
 import com.plim.plimserver.domain.food.dto.FindFoodBySortingResponse;
@@ -27,14 +30,16 @@ import java.util.stream.Collectors;
 
 @Service
 public class FoodServiceImpl implements FoodService {
-//    private final ApiKeyRepository apiKeyRepository;
+    //    private final ApiKeyRepository apiKeyRepository;
 //    private final RestTemplate restTemplate;
 //    private String haccpdataURL = "http://apis.data.go.kr/B553748/CertImgListService/getCertImgListService?ServiceKey=fTEm%2FiVcJFgwgjEeDhMET1kFQZduiSF09BedQaKgQRGH7fWSoKITTfTFZH2EzYono62%2BwMlAxdy2Jj64qzpgqQ%3D%3D&returnType=json&numOfRows=100";
     private final FoodRepository foodRepository;
+    private final FoodAllergyRepository foodAllergyRepository;
 
     @Autowired
-    public FoodServiceImpl(FoodRepository foodRepository) {
+    public FoodServiceImpl(FoodRepository foodRepository, FoodAllergyRepository foodAllergyRepository) {
         this.foodRepository = foodRepository;
+        this.foodAllergyRepository = foodAllergyRepository;
     }
 
     @Transactional
@@ -53,14 +58,28 @@ public class FoodServiceImpl implements FoodService {
     }
 
     @Override
-    public FindFoodBySortingResponse findFoodByPaging(int pageNo, int size, String sortElement, String foodName, String manufacturerName) {
+    public FindFoodBySortingResponse findFoodByPaging(int pageNo, int size, String sortElement, String foodName,
+                                                      String manufacturerName, List<String> allergyList) {
+        String allergies = "";
+        if (allergyList != null) {
+            for (String s : allergyList) {
+                foodAllergyRepository.findByAllergyMaterial(s)
+                        .orElseThrow(() -> new NotFoundAllergyException(AllergyExceptionMessage.NOT_FOUND_ALLERGY_EXCEPTION_MESSAGE));
+            }
+            allergies = String.join("|", allergyList);
+        }
+
         if (sortElement == null) {
             Pageable page = PageRequest.of(pageNo - 1, size);
             if (foodName != null && manufacturerName == null) {
-                Page<Food> foodPage = this.foodRepository.findAllByFoodNameContaining(foodName, page);
+                Page<Food> foodPage = allergyList == null ?
+                        this.foodRepository.findAllByFoodNameContaining(foodName, page) :
+                        this.foodRepository.findAllByFoodNameContaining(foodName, allergies, page);
                 return this.makeFoodResponseByPaging(foodPage);
             } else if (manufacturerName != null && foodName == null) {
-                Page<Food> foodPage = this.foodRepository.findAllByManufacturerNameContaining(manufacturerName, page);
+                Page<Food> foodPage = allergyList == null ?
+                        this.foodRepository.findAllByManufacturerNameContaining(manufacturerName, page) :
+                        this.foodRepository.findAllByManufacturerNameContaining(manufacturerName, allergies, page);
                 return this.makeFoodResponseByPaging(foodPage);
             } else {
                 throw new NoFoodListException(FoodExceptionMessage.NO_FOOD_LIST_EXCEPTION_MESSAGE);
@@ -68,34 +87,47 @@ public class FoodServiceImpl implements FoodService {
         } else {
             if (sortElement.equals(SortElement.RANK.getMessage())) {
                 if (foodName != null && manufacturerName == null) {
-                    List<Food> foodPage = this.foodRepository.findAllByFoodNameContaining(foodName);
+                    List<Food> foodPage = allergyList == null ?
+                            this.foodRepository.findAllByFoodNameContaining(foodName) :
+                            this.foodRepository.findAllByFoodNameContaining(foodName, allergies);
                     foodPage.sort(new SortByReviewRateAndDesc().thenComparing(new SortByReviewCountAndDesc()));
                     return this.makeFoodResponse(foodPage, pageNo, size);
                 } else if (manufacturerName != null && foodName == null) {
-                    List<Food> foodPage = this.foodRepository.findAllByManufacturerNameContaining(manufacturerName);
+                    List<Food> foodPage = allergyList == null ?
+                            this.foodRepository.findAllByManufacturerNameContaining(manufacturerName) :
+                            this.foodRepository.findAllByManufacturerNameContaining(manufacturerName, allergies);
                     foodPage.sort(new SortByReviewRateAndDesc().thenComparing(new SortByReviewCountAndDesc()));
                     return this.makeFoodResponse(foodPage, pageNo, size);
                 } else {
                     throw new NoFoodListException(FoodExceptionMessage.NO_FOOD_LIST_EXCEPTION_MESSAGE);
                 }
             } else if (sortElement.equals(SortElement.MANUFACTURER.getMessage())) {
-                Pageable page = PageRequest.of(pageNo - 1, size, Sort.by("manufacturerName"));
+                Pageable pageNotAl = PageRequest.of(pageNo - 1, size, Sort.by("manufacturerName"));
+                Pageable pageAl = PageRequest.of(pageNo - 1, size, Sort.by("manufacturer_name"));
                 if (foodName != null && manufacturerName == null) {
-                    Page<Food> foodPage = this.foodRepository.findAllByFoodNameContaining(foodName, page);
+                    Page<Food> foodPage = allergyList == null ?
+                            this.foodRepository.findAllByFoodNameContaining(foodName, pageNotAl) :
+                            this.foodRepository.findAllByFoodNameContaining(foodName, allergies, pageAl);
                     return this.makeFoodResponseByPaging(foodPage);
                 } else if (manufacturerName != null && foodName == null) {
-                    Page<Food> foodPage = this.foodRepository.findAllByManufacturerNameContaining(manufacturerName, page);
+                    Page<Food> foodPage = allergyList == null ?
+                            this.foodRepository.findAllByManufacturerNameContaining(manufacturerName, pageNotAl) :
+                            this.foodRepository.findAllByManufacturerNameContaining(manufacturerName, allergies, pageAl);
                     return this.makeFoodResponseByPaging(foodPage);
                 } else {
                     throw new NoFoodListException(FoodExceptionMessage.NO_FOOD_LIST_EXCEPTION_MESSAGE);
                 }
             } else if (sortElement.equals(SortElement.REVIEW_COUNT.getMessage())) {
                 if (foodName != null && manufacturerName == null) {
-                    List<Food> foodPage = this.foodRepository.findAllByFoodNameContaining(foodName);
+                    List<Food> foodPage = allergyList == null ?
+                            this.foodRepository.findAllByFoodNameContaining(foodName) :
+                            this.foodRepository.findAllByFoodNameContaining(foodName, allergies);
                     foodPage.sort(new SortByReviewCountAndDesc());
                     return this.makeFoodResponse(foodPage, pageNo, size);
                 } else if (manufacturerName != null && foodName == null) {
-                    List<Food> foodPage = this.foodRepository.findAllByManufacturerNameContaining(manufacturerName);
+                    List<Food> foodPage = allergyList == null ?
+                            this.foodRepository.findAllByManufacturerNameContaining(manufacturerName) :
+                            this.foodRepository.findAllByManufacturerNameContaining(manufacturerName, allergies);
                     foodPage.sort(new SortByReviewCountAndDesc());
                     return this.makeFoodResponse(foodPage, pageNo, size);
                 } else {

@@ -42,9 +42,10 @@ public class FoodController {
             @RequestParam(name = "size", defaultValue = "10") int size,
             @RequestParam(name = "sort", required = false) String sortElement,
             @RequestParam(name = "foodName", required = false) String foodName,
-            @RequestParam(name = "manufacturerName", required = false) String manufacturerName) {
+            @RequestParam(name = "manufacturerName", required = false) String manufacturerName,
+            @RequestParam(name = "allergies", required = false) List<String> allergyList) {
         return ResponseEntity.ok(this.foodService.findFoodByPaging(
-                pageNo, size, sortElement, foodName, manufacturerName));
+                pageNo, size, sortElement, foodName, manufacturerName, allergyList));
     }
 
     @ApiOperation(value = "카테고리에 해당하는 제품 조회", notes = "카테고리에 해당하는 제품을 제공한다.")

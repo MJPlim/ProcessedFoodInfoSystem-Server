@@ -46,9 +46,9 @@ public class ReviewServiceImpl implements ReviewService {
                 UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
         Food food = foodRepository.findById(dto.getFoodId()).orElseThrow(() -> new NoFoodDetailException(
                 FoodExceptionMessage.NO_FOOD_DETAIL_EXCEPTION_MESSAGE));
-        if (reviewRepository.existsByFoodAndUser(food, user))
+        Review duplicatedCheck = reviewRepository.existsByFoodIdAndUserId(food.getId(), user.getId());
+        if (duplicatedCheck != null)
             throw new AlreadyWrittenReivewException(ReviewExceptionMessage.ALREADY_WRITTEN_REVIEW_EXCEPTION_MESSAGE);
-
         food.addReview(reviewRepository.save(Review.of(user, food, dto)));
 
         if (food.getReviewsummary() == null) reviewSummaryRepository.save(ReviewSummary.of(food, dto));
@@ -60,12 +60,12 @@ public class ReviewServiceImpl implements ReviewService {
                 .filter(review -> !review.getState().equals(ReviewStateType.DELETED))
                 .map(review -> {
                     int count = reviewLikeRepository.findReviewLikeCountByReview(review.getId());
-                    if (user == null) return ReadReviewResponse.of(review, foodId, false, false, count);
+                    if (user == null) return ReadReviewResponse.of(review, foodId, review.getFood().getFoodName(), false, false, count);
                     else {
                         ReviewLike findReviewLike = reviewLikeRepository.checkLikeByReview(review.getId(), user.getId());
-                        if (foodId == 0) return ReadReviewResponse.of(review, review.getFood().getId(),
+                        if (foodId == 0) return ReadReviewResponse.of(review, review.getFood().getId(), review.getFood().getFoodName(),
                                 user.getId().equals(review.getUser().getId()), findReviewLike != null, count);
-                        else return ReadReviewResponse.of(review, foodId,
+                        else return ReadReviewResponse.of(review, foodId, review.getFood().getFoodName(),
                                 user.getId().equals(review.getUser().getId()), findReviewLike != null, count);
                     }
                 }).collect(Collectors.toList());
@@ -110,7 +110,11 @@ public class ReviewServiceImpl implements ReviewService {
    	public ReadSummaryResponse findReviewSummary(Long foodId) {
     	int findReviewCount = reviewRepository.findReviewTotalCount(foodId);
         int findReviewPageCount = (findReviewCount % viewCount) == 0 ? (findReviewCount / viewCount) : (findReviewCount / viewCount) + 1;
-       	return ReadSummaryResponse.of(reviewSummaryRepository.findByFoodId(foodId), findReviewCount, findReviewPageCount);
+        ReviewSummary reviewSummary = reviewSummaryRepository.findByFoodId(foodId);
+        if(reviewSummary == null) 
+        	return ReadSummaryResponse.defaultSummary(foodId);
+        else
+       		return ReadSummaryResponse.of(reviewSummaryRepository.findByFoodId(foodId), findReviewCount, findReviewPageCount);
     }
 
     @Transactional
