@@ -116,6 +116,19 @@ public class ReviewServiceImpl implements ReviewService {
         else
        		return ReadSummaryResponse.of(reviewSummaryRepository.findByFoodId(foodId), findReviewCount, findReviewPageCount);
     }
+    
+	@Transactional
+	public ReadReviewIdResponse findReviewByReviewId(PrincipalDetails principal, Long reviewId) {
+		User findUser = userRepository.findByEmail(principal.getUsername()).orElseThrow(() -> new UsernameNotFoundException(
+	                UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
+		Review findReview = reviewRepository.findById(reviewId).orElseThrow(() -> new NotSuchReviewException(
+                ReviewExceptionMessage.NOT_SUCH_REVIEW_EXCEPTION_MESSAGE));
+		
+		if(findReview.getUser().getId() == findUser.getId()) {
+			return ReadReviewIdResponse.of(findReview);
+		}else
+			 throw new NotApproachReviewException(ReviewExceptionMessage.NOT_APPROACH_REVIEW_EXCEPTION_MESSAGE);
+	}
 
     @Transactional
     public Review changeReview(PrincipalDetails principal, UpdateReviewRequest dto) {
@@ -179,6 +192,8 @@ public class ReviewServiceImpl implements ReviewService {
                 .map(ReviewRankingResponse::from)
                 .collect(Collectors.toList());
     }
+
+
 
    
 

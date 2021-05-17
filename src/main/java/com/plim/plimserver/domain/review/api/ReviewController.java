@@ -56,6 +56,12 @@ public class ReviewController {
         return returnMap;
     }
 
+    @ApiOperation(value = "리뷰 정보 불러오기", notes = "로그인한 사용자가 리뷰를 수정할때 정보를 받아올 수 있게")
+    @GetMapping("api/v1/user/readdReviewByReviewID")
+    public ResponseEntity<ReadReviewIdResponse> readReviewByReviewID(@AuthenticationPrincipal PrincipalDetails principal, @RequestParam Long reviewId){
+    	return ResponseEntity.ok(reviewService.findReviewByReviewId(principal, reviewId));
+    }
+    
     @ApiOperation(value = "유저 리뷰들 불러오기", notes = "로그인한 사용자가 작성한 리뷰들을 마이페이지에서 볼 수 있다.")
     @GetMapping("api/v1/user/readReviewByUserID")
     public List<ReadReviewResponse> readReviewByUserID(@AuthenticationPrincipal PrincipalDetails principal) {
