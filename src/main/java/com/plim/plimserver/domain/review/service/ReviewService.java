@@ -29,4 +29,6 @@ public interface ReviewService {
 
 	public ReadSummaryResponse findReviewSummary(Long foodId);
 
+	public ReadReviewIdResponse findReviewByReviewId(PrincipalDetails principal, Long reviewId);
+
 }
