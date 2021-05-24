@@ -37,7 +37,7 @@ public class FoodController {
 
     @ApiOperation(value = "검색결과 조건에 따라 정렬", notes = "검색결과를 조건에 따라 정렬하여 제공한다")
     @GetMapping("/getFoodListBySorting")
-    public ResponseEntity<FindFoodBySortingResponse> getFoodListBySorting(
+    public ResponseEntity<Pagination<List<FoodResponse>>> getFoodListBySorting(
             @RequestParam(name = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(name = "size", defaultValue = "10") int size,
             @RequestParam(name = "sort", required = false) String sortElement,

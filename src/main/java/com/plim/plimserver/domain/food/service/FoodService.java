@@ -16,7 +16,7 @@ public interface FoodService {
 
     FoodDetailResponse findFoodByBarcode(String barcode);
 
-    FindFoodBySortingResponse findFoodByPaging(int pageNo, int size, String sortElement, String foodName, String manufacturerName, List<String> allergyList);
+    Pagination<List<FoodResponse>> findFoodByPaging(int pageNo, int size, String sortElement, String foodName, String manufacturerName, List<String> allergyList);
 
     Pagination<List<FoodResponse>> findFoodByCategory(String categoryList, Pageable pageable);
 
