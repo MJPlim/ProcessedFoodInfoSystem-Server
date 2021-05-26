@@ -59,10 +59,11 @@ public class ReviewServiceImpl implements ReviewService {
         return list.stream()
                 .filter(review -> !review.getState().equals(ReviewStateType.DELETED))
                 .map(review -> {
-                    int count = reviewLikeRepository.findReviewLikeCountByReview(review.getId());
+                    int count = review.reviewLikeCount();
                     if (user == null) return ReadReviewResponse.of(review, foodId, review.getFood().getFoodName(), false, false, count);
                     else {
-                        ReviewLike findReviewLike = reviewLikeRepository.checkLikeByReview(review.getId(), user.getId());
+
+                        ReviewLike findReviewLike = review.checkLike(review.getId(), user.getId());
                         if (foodId == 0) return ReadReviewResponse.of(review, review.getFood().getId(), review.getFood().getFoodName(),
                                 user.getId().equals(review.getUser().getId()), findReviewLike != null, count);
                         else return ReadReviewResponse.of(review, foodId, review.getFood().getFoodName(),
@@ -71,7 +72,7 @@ public class ReviewServiceImpl implements ReviewService {
                 }).collect(Collectors.toList());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ReadReviewResponse> findReview(Long foodId, Integer pageNum) {
         Pageable limitFive;
         if (pageNum != null)
@@ -82,7 +83,7 @@ public class ReviewServiceImpl implements ReviewService {
         return getReadReviewResponseList(reviewList, foodId, null);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ReadReviewResponse> findReviewByUserIdANDFoodID(PrincipalDetails principal, Long foodId, Integer pageNum) {
         Pageable limitFive;
         User findUser = userRepository.findByEmail(principal.getUsername()).orElseThrow(() -> new UsernameNotFoundException(
@@ -91,22 +92,22 @@ public class ReviewServiceImpl implements ReviewService {
         if (pageNum != null)
             limitFive = PageRequest.of(pageNum - 1, viewCount, Sort.by("reviewCreatedDate").descending());
         else throw new NotFoundPageException(ReviewExceptionMessage.NOT_FOUND_PAGE_EXCEPTION_MESSAGE);
-        List<Review> reviewList = reviewRepository.findByFoodId(foodId, limitFive);
+        List<Review> reviewList = reviewRepository.findByFoodIdAndUserId(foodId, findUser.getId(),limitFive);
 
         return getReadReviewResponseList(reviewList, foodId, findUser);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ReadReviewResponse> findReviewByUserId(PrincipalDetails principal) {
         User user = userRepository.findByEmail(principal.getUsername()).orElseThrow(() -> new UsernameNotFoundException(
                 UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
-        List<Review> reviewList = user.getReviewList();
+        List<Review> reviewList = reviewRepository.findByUserId(user.getId());
         return getReadReviewResponseList(reviewList, 0L, user).stream()
                 .sorted(Comparator.comparing(ReadReviewResponse::getReviewCreatedDate))
                 .collect(Collectors.toList());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
    	public ReadSummaryResponse findReviewSummary(Long foodId) {
     	int findReviewCount = reviewRepository.findReviewTotalCount(foodId);
         int findReviewPageCount = (findReviewCount % viewCount) == 0 ? (findReviewCount / viewCount) : (findReviewCount / viewCount) + 1;
@@ -114,10 +115,10 @@ public class ReviewServiceImpl implements ReviewService {
         if(reviewSummary == null) 
         	return ReadSummaryResponse.defaultSummary(foodId);
         else
-       		return ReadSummaryResponse.of(reviewSummaryRepository.findByFoodId(foodId), findReviewCount, findReviewPageCount);
+       		return ReadSummaryResponse.of(reviewSummary, findReviewCount, findReviewPageCount);
     }
     
-	@Transactional
+	@Transactional(readOnly = true)
 	public ReadReviewIdResponse findReviewByReviewId(PrincipalDetails principal, Long reviewId) {
 		User findUser = userRepository.findByEmail(principal.getUsername()).orElseThrow(() -> new UsernameNotFoundException(
 	                UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
@@ -185,10 +186,10 @@ public class ReviewServiceImpl implements ReviewService {
         return findReview;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ReviewRankingResponse> rankedReview() {
         Pageable limitTen = PageRequest.of(0, 10, Sort.by("avgRating").descending());
-        return reviewSummaryRepository.findAll(limitTen).getContent().stream()
+        return reviewSummaryRepository.findReviewRankingTen(limitTen).stream()
                 .map(ReviewRankingResponse::from)
                 .collect(Collectors.toList());
     }

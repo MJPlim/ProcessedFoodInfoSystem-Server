@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -33,6 +35,7 @@ public class Review {
 	@JoinColumn(name = "food_id")				
 	private Food food;
 	
+	@BatchSize(size = 100)
 	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ReviewLike> reviewLikeList = new ArrayList<>();
 	
@@ -81,6 +84,18 @@ public class Review {
 	
 	public void reviewStateUpdate(ReviewStateType state) {
 		this.state = state;
+	}
+	
+	public int reviewLikeCount() {
+		return this.reviewLikeList.size();
+	}
+	public ReviewLike checkLike(Long reviewId, Long userId) {
+		for(ReviewLike rl : getReviewLikeList()) {
+			if (rl.getReview().getId() == reviewId && rl.getUserId() == userId)
+				return rl;	
+		}
+		return null;
+
 	}
 
 }

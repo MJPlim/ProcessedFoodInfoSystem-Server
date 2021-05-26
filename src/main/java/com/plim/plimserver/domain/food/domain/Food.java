@@ -3,7 +3,6 @@ package com.plim.plimserver.domain.food.domain;
 import com.plim.plimserver.domain.favorite.domain.Favorite;
 import com.plim.plimserver.domain.review.domain.Review;
 import com.plim.plimserver.domain.review.domain.ReviewSummary;
-
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 

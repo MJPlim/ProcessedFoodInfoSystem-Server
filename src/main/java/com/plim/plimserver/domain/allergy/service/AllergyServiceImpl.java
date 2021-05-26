@@ -59,7 +59,7 @@ public class AllergyServiceImpl implements AllergyService {
 		return userAllergy;
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<String> findUserAllergy(PrincipalDetails principal) {
 		User findUser = userRepository.findByEmail(principal.getUsername())
 				.orElseThrow(() -> new UsernameNotFoundException(
