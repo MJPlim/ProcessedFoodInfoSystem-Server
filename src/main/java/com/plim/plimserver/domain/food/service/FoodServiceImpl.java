@@ -1,10 +1,7 @@
 package com.plim.plimserver.domain.food.service;
 
-import com.plim.plimserver.domain.allergy.exception.AllergyExceptionMessage;
-import com.plim.plimserver.domain.allergy.exception.NotFoundAllergyException;
 import com.plim.plimserver.domain.allergy.repository.FoodAllergyRepository;
 import com.plim.plimserver.domain.food.domain.Food;
-import com.plim.plimserver.domain.food.dto.FindFoodBySortingResponse;
 import com.plim.plimserver.domain.food.dto.FoodDetailResponse;
 import com.plim.plimserver.domain.food.dto.FoodResponse;
 import com.plim.plimserver.domain.food.exception.FoodExceptionMessage;
@@ -15,10 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -62,12 +59,13 @@ public class FoodServiceImpl implements FoodService {
     }
 
     @Override
-    public Pagination<List<FoodResponse>> findFoodByCategory(String category, Pageable pageable) {
-        Page<Food> page = this.foodRepository.findAllByCategoryContaining(category, pageable);
-        List<FoodResponse> data = page.stream()
+    public Pagination<List<FoodResponse>> findFoodByCategory(String category, int page, String sort, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sort));
+        Page<Food> foodPage = this.foodRepository.findAllByCategoryContaining(category, pageable);
+        List<FoodResponse> data = foodPage.stream()
                 .map(FoodResponse::from)
                 .collect(Collectors.toList());
-        return Pagination.of(page, data);
+        return Pagination.of(foodPage, data);
     }
 
 //    @SneakyThrows
