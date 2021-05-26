@@ -26,12 +26,10 @@ public class FoodServiceImpl implements FoodService {
 //    private final RestTemplate restTemplate;
 //    private String haccpdataURL = "http://apis.data.go.kr/B553748/CertImgListService/getCertImgListService?ServiceKey=fTEm%2FiVcJFgwgjEeDhMET1kFQZduiSF09BedQaKgQRGH7fWSoKITTfTFZH2EzYono62%2BwMlAxdy2Jj64qzpgqQ%3D%3D&returnType=json&numOfRows=100";
     private final FoodRepository foodRepository;
-    private final FoodAllergyRepository foodAllergyRepository;
 
     @Autowired
-    public FoodServiceImpl(FoodRepository foodRepository, FoodAllergyRepository foodAllergyRepository) {
+    public FoodServiceImpl(FoodRepository foodRepository) {
         this.foodRepository = foodRepository;
-        this.foodAllergyRepository = foodAllergyRepository;
     }
 
     @Transactional
