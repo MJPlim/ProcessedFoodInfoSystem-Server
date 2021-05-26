@@ -92,7 +92,7 @@ public class ReviewServiceImpl implements ReviewService {
         if (pageNum != null)
             limitFive = PageRequest.of(pageNum - 1, viewCount, Sort.by("reviewCreatedDate").descending());
         else throw new NotFoundPageException(ReviewExceptionMessage.NOT_FOUND_PAGE_EXCEPTION_MESSAGE);
-        List<Review> reviewList = reviewRepository.findByFoodIdAndUserId(foodId, findUser.getId(),limitFive);
+        List<Review> reviewList = reviewRepository.findByFoodId(foodId, limitFive);
 
         return getReadReviewResponseList(reviewList, foodId, findUser);
     }
