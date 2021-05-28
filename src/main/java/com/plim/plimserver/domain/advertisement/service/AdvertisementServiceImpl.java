@@ -41,14 +41,7 @@ public class AdvertisementServiceImpl implements AdvertisementService{
             AdvertisementFood advertisementFood = onAds.get(i);
             AdvertisementResponse response = AdvertisementResponse.builder()
                                                                   .id(advertisementFood.getId())
-                                                                  .food(FoodResponse.builder()
-                                                                                    .foodId(advertisementFood.getFood().getId())
-                                                                                    .foodName(advertisementFood.getFood().getFoodName())
-                                                                                    .category(advertisementFood.getFood().getCategory())
-                                                                                    .manufacturerName(advertisementFood.getFood().getManufacturerName())
-                                                                                    .foodImageAddress(advertisementFood.getFood().getFoodImage().getFoodImageAddress())
-                                                                                    .foodMeteImageAddress(advertisementFood.getFood().getFoodImage().getFoodMeteImageAddress())
-                                                                                    .build())
+                                                                  .food(FoodResponse.from(advertisementFood.getFood()))
                                                                   .build();
             ads.add(response);
             advertisementFood.setImpressionCount(advertisementFood.getImpressionCount()+1);
@@ -64,18 +57,7 @@ public class AdvertisementServiceImpl implements AdvertisementService{
                 () -> new NoAdvertisementFoodDetailException(AdvertisementExceptionMessage.NO_ADVERTISEMENT_FOOD_DETAIL_EXCEPTION_MESSAGE));
         advertisementFood.setViewCount(advertisementFood.getViewCount()+1);
         advertisementFood.getFood().setViewCount(advertisementFood.getFood().getViewCount()+1);
-        return FoodDetailResponse.builder()
-                                 .foodId(advertisementFood.getFood().getId())
-                                 .foodName(advertisementFood.getFood().getFoodName())
-                                 .category(advertisementFood.getFood().getCategory())
-                                 .manufacturerName(advertisementFood.getFood().getManufacturerName())
-                                 .foodImageAddress(advertisementFood.getFood().getFoodImage().getFoodImageAddress())
-                                 .foodMeteImageAddress(advertisementFood.getFood().getFoodImage().getFoodMeteImageAddress())
-                                 .materials(advertisementFood.getFood().getFoodDetail().getMaterials())
-                                 .nutrient(advertisementFood.getFood().getFoodDetail().getNutrient())
-                                 .allergyMaterials(advertisementFood.getFood().getAllergyMaterials())
-                                 .viewCount(advertisementFood.getFood().getViewCount())
-                                 .build();
+        return FoodDetailResponse.from(advertisementFood.getFood());
     }
 
     @Override

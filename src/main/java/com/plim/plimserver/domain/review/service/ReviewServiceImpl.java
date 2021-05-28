@@ -65,9 +65,9 @@ public class ReviewServiceImpl implements ReviewService {
 
                         ReviewLike findReviewLike = review.checkLike(review.getId(), user.getId());
                         if (foodId == 0) return ReadReviewResponse.of(review, review.getFood().getId(), review.getFood().getFoodName(),
-                                user.getId().equals(review.getUser().getId()), findReviewLike != null, count);
+                                user.getId().equals(review.getUser().getId()), findReviewLike == null?false:true, count);
                         else return ReadReviewResponse.of(review, foodId, review.getFood().getFoodName(),
-                                user.getId().equals(review.getUser().getId()), findReviewLike != null, count);
+                                user.getId().equals(review.getUser().getId()), findReviewLike == null?false:true, count);
                     }
                 }).collect(Collectors.toList());
     }

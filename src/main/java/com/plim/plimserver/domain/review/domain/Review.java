@@ -35,7 +35,7 @@ public class Review {
 	@JoinColumn(name = "food_id")				
 	private Food food;
 	
-	@BatchSize(size = 100)
+	@BatchSize(size = 200)
 	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ReviewLike> reviewLikeList = new ArrayList<>();
 	
@@ -91,7 +91,7 @@ public class Review {
 	}
 	public ReviewLike checkLike(Long reviewId, Long userId) {
 		for(ReviewLike rl : getReviewLikeList()) {
-			if (rl.getReview().getId() == reviewId && rl.getUserId() == userId)
+			if (rl.getReview().getId().equals(reviewId) && rl.getUserId().equals(userId))
 				return rl;	
 		}
 		return null;
