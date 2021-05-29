@@ -67,14 +67,15 @@ public class FoodRepositoryImpl implements FoodRepositoryCustom{
     }
 
     private OrderSpecifier<?>[] orderType(String sortElement) {
-        if (sortElement.equals(SortElement.RANK.getMessage())) {
+        if (sortElement == null) {
+            return new OrderSpecifier[]{food.foodName.asc()};
+        }else if (sortElement.equals(SortElement.RANK.getMessage())) {
             return new OrderSpecifier[]{food.reviewsummary.avgRating.desc(), food.reviewsummary.reviewCount.desc()};
         } else if (sortElement.equals(SortElement.REVIEW_COUNT.getMessage())) {
             return new OrderSpecifier[]{food.reviewsummary.reviewCount.desc()};
         } else if (sortElement.equals(SortElement.MANUFACTURER.getMessage())) {
             return new OrderSpecifier[]{food.manufacturerName.asc()};
-        } else {
-            return new OrderSpecifier[]{food.foodName.asc()};
         }
+        return null;
     }
 }
