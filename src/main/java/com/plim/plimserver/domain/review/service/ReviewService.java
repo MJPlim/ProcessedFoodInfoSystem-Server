@@ -15,7 +15,7 @@ public interface ReviewService {
 
 	public List<ReadReviewResponse> findReview(Long foodId, Integer pageNum);
 
-	public List<ReadReviewResponse> findReviewByUserId(PrincipalDetails principal);
+	public List<ReadReviewResponse> findReviewByUserId(PrincipalDetails principal, Integer pageNo);
 
 	public List<ReadReviewResponse> findReviewByUserIdANDFoodID(PrincipalDetails principal, Long foodId, Integer pageNum);
 
@@ -26,6 +26,8 @@ public interface ReviewService {
 	public Review removeReview(PrincipalDetails principal, DeleteReviewRequest dto);
 	
 	public List<ReviewRankingResponse> rankedReview();
+	
+	public int findUserReviewCount(PrincipalDetails principal);
 
 	public ReadSummaryResponse findReviewSummary(Long foodId);
 
