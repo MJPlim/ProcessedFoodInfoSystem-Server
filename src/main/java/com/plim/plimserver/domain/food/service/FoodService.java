@@ -16,6 +16,8 @@ public interface FoodService {
 
     Pagination<List<FoodResponse>> findFoodByCategory(String categoryList, int page, String sort, int size);
 
+    Pagination<List<FoodResponse>> findFoodByWideCategory(String category, int page, String sort, int size);
+
     //    int makeFoodDatabaseWithoutBarCodeAPI();
 
 }

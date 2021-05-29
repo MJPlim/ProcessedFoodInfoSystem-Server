@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static com.plim.plimserver.domain.food.domain.QFood.food;
@@ -23,11 +24,21 @@ public class FoodRepositoryImpl implements FoodRepositoryCustom{
     @Override
     public Page<Food> search(String sortElement, String foodName, String manufacturerName, List<String> allergyList, Pageable pageable) {
         QueryResults<Food> result = queryFactory.selectFrom(food)
-                                                          .where(eqFoodName(foodName), eqManufacturerName(manufacturerName), eqAllergies(allergyList))
-                                                          .orderBy(orderType(sortElement))
-                                                          .offset(pageable.getOffset())
-                                                          .limit(pageable.getPageSize())
-                                                          .fetchResults();
+                                                .where(eqFoodName(foodName), eqManufacturerName(manufacturerName), eqAllergies(allergyList))
+                                                .orderBy(orderType(sortElement))
+                                                .offset(pageable.getOffset())
+                                                .limit(pageable.getPageSize())
+                                                .fetchResults();
+        return new PageImpl<>(result.getResults(), pageable, result.getTotal());
+    }
+
+    @Override
+    public Page<Food> findByWideCategory(String[] categories, Pageable pageable) {
+        QueryResults<Food> result = queryFactory.selectFrom(food)
+                                                .where(eqCategories(categories))
+                                                .offset(pageable.getOffset())
+                                                .limit(pageable.getPageSize())
+                                                .fetchResults();
         return new PageImpl<>(result.getResults(), pageable, result.getTotal());
     }
 
@@ -45,6 +56,14 @@ public class FoodRepositoryImpl implements FoodRepositoryCustom{
 
     private BooleanExpression isFilteredAllergy(String allergy) {
         return food.allergyMaterials.contains(allergy).not();
+    }
+
+    private BooleanExpression eqCategories(String[] categories) {
+        return categories != null ? Expressions.anyOf(Arrays.stream(categories).map(this::isFilteredCategory).toArray(BooleanExpression[]::new)) : null;
+    }
+
+    private BooleanExpression isFilteredCategory(String category) {
+        return food.category.contains(category);
     }
 
     private OrderSpecifier<?>[] orderType(String sortElement) {

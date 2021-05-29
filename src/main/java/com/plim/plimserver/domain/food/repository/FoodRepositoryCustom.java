@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface FoodRepositoryCustom {
     Page<Food> search(String sortElement, String foodName, String manufacturerName, List<String> allergyList, Pageable pageable);
+
+    Page<Food> findByWideCategory(String[] categories, Pageable pageable);
 }

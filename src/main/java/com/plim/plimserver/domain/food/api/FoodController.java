@@ -53,6 +53,14 @@ public class FoodController {
         return ResponseEntity.ok(this.foodService.findFoodByCategory(category, page, sort, size));
     }
 
+    @ApiOperation(value = "대분류 카테고리에 해당하는 제품 조회", notes = "대분류 카테고리에 해당하는 제품을 제공한다.")
+    @GetMapping("/list/widecategory")
+    public ResponseEntity<Pagination<List<FoodResponse>>> getFoodListByWideCategory(@RequestParam String category
+            , @RequestParam(defaultValue = "1") int page, @RequestParam(required = false) String sort
+            , @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(this.foodService.findFoodByWideCategory(category, page, sort, size));
+    }
+
     //    @ApiOperation(value = "HACCP API를 이용한 food 테이블 생성", notes = "HACCP API로 데이터를 제공받아 데이터베이스의 food 테이블에 데이터를 생성")
 //    @GetMapping("/makeFoodDB")
 //    public int makeFoodDB() {
