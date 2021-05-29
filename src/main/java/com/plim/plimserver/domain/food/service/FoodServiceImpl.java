@@ -1,7 +1,7 @@
 package com.plim.plimserver.domain.food.service;
 
-import com.plim.plimserver.domain.allergy.repository.FoodAllergyRepository;
 import com.plim.plimserver.domain.food.domain.Food;
+import com.plim.plimserver.domain.food.domain.FoodCategory;
 import com.plim.plimserver.domain.food.dto.FoodDetailResponse;
 import com.plim.plimserver.domain.food.dto.FoodResponse;
 import com.plim.plimserver.domain.food.exception.FoodExceptionMessage;
@@ -16,15 +16,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class FoodServiceImpl implements FoodService {
-    //    private final ApiKeyRepository apiKeyRepository;
+//    private final ApiKeyRepository apiKeyRepository;
 //    private final RestTemplate restTemplate;
-//    private String haccpdataURL = "http://apis.data.go.kr/B553748/CertImgListService/getCertImgListService?ServiceKey=fTEm%2FiVcJFgwgjEeDhMET1kFQZduiSF09BedQaKgQRGH7fWSoKITTfTFZH2EzYono62%2BwMlAxdy2Jj64qzpgqQ%3D%3D&returnType=json&numOfRows=100";
     private final FoodRepository foodRepository;
 
     @Autowired
@@ -58,11 +58,37 @@ public class FoodServiceImpl implements FoodService {
 
     @Override
     public Pagination<List<FoodResponse>> findFoodByCategory(String category, int page, String sort, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sort));
+        Pageable pageable = sort != null ? PageRequest.of(page - 1, size, Sort.by(sort)) : PageRequest.of(page - 1, size);
         Page<Food> foodPage = this.foodRepository.findAllByCategoryContaining(category, pageable);
         List<FoodResponse> data = foodPage.stream()
                 .map(FoodResponse::from)
                 .collect(Collectors.toList());
+        return Pagination.of(foodPage, data);
+    }
+
+    @Override
+    public Pagination<List<FoodResponse>> findFoodByWideCategory(String category, int page, String sort, int size) {
+        Pageable pageable = sort != null ? PageRequest.of(page - 1, size, Sort.by(sort)) : PageRequest.of(page - 1, size);
+        String[] categories;
+        if (category.equals(FoodCategory.SNACK.getMessage())) {
+            categories = new String[]{"과자", "떡", "빵", "사탕/껌/젤리", "아이스크림", "초콜릿"};
+        } else if (category.equals(FoodCategory.TEA.getMessage())) {
+            categories = new String[]{"음료", "커피", "커피/차"};
+        }else if (category.equals(FoodCategory.DAIRY.getMessage())) {
+            categories = new String[]{"유제품"};
+        }else if (category.equals(FoodCategory.AGRICULTURAL_FISHERY.getMessage())) {
+            categories = new String[]{"계란", "과일/채소", "김", "수산물", "견과", "곡류"};
+        }else if (category.equals(FoodCategory.KIMCHI.getMessage())) {
+            categories = new String[]{"김치", "젓갈"};
+        }else if (category.equals(FoodCategory.SEASONING.getMessage())) {
+            categories = new String[]{"설탕", "소금", "소스", "장류"};
+        }else if (category.equals(FoodCategory.INSTANT.getMessage())) {
+            categories = new String[]{"즉석조리식품", "국수", "두부", "식용유", "어묵"};
+        }else {
+            categories = new String[]{"기타가공품"};
+        }
+        Page<Food> foodPage = this.foodRepository.findByWideCategory(categories, pageable);
+        List<FoodResponse> data = foodPage.stream().map(FoodResponse::from).collect(Collectors.toList());
         return Pagination.of(foodPage, data);
     }
 
