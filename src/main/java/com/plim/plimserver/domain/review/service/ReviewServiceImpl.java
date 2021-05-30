@@ -117,7 +117,7 @@ public class ReviewServiceImpl implements ReviewService {
     public int findUserReviewCount(PrincipalDetails principal) {
     	User user = userRepository.findByEmail(principal.getUsername()).orElseThrow(() -> new UsernameNotFoundException(
                 UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
-    	return user.getReviewList().size();
+    	return reviewRepository.findUserReviewCount(user.getId());
     }
 
     @Transactional(readOnly = true)
