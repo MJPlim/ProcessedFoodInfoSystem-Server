@@ -64,8 +64,15 @@ public class ReviewController {
     
     @ApiOperation(value = "유저 리뷰들 불러오기", notes = "로그인한 사용자가 작성한 리뷰들을 마이페이지에서 볼 수 있다.")
     @GetMapping("api/v1/user/readReviewByUserID")
-    public List<ReadReviewResponse> readReviewByUserID(@AuthenticationPrincipal PrincipalDetails principal) {
-        return reviewService.findReviewByUserId(principal);
+    public Map<String, Object> readReviewByUserID(@AuthenticationPrincipal PrincipalDetails principal,
+    		@RequestParam(name = "pageNum", required = false) Integer pageNo) {
+    	Map<String, Object> returnMap = new HashMap<>();
+    	
+    	List<ReadReviewResponse> userReviewList = reviewService.findReviewByUserId(principal, pageNo);
+    	int userReviewCount = reviewService.findUserReviewCount(principal);
+    	returnMap.put("userReviewList", userReviewList);
+    	returnMap.put("userReviewCount", userReviewCount);
+    	return returnMap;
     }
 
     @ApiOperation(value = "리뷰에 좋아요 누르기", notes = "로그인한 사용자가 리뷰들에 좋아요를 누를 수 있다.")
