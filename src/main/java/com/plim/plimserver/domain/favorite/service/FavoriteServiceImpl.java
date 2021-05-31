@@ -45,14 +45,7 @@ public class FavoriteServiceImpl implements FavoriteService{
         for (Favorite favorite : favoriteList) {
             FavoriteResponse response = FavoriteResponse.builder()
                                                         .favoriteId(favorite.getId())
-                                                        .food(FoodResponse.builder()
-                                                                          .foodId(favorite.getFood().getId())
-                                                                          .foodName(favorite.getFood().getFoodName())
-                                                                          .category(favorite.getFood().getCategory())
-                                                                          .manufacturerName(favorite.getFood().getManufacturerName())
-                                                                          .foodImageAddress(favorite.getFood().getFoodImage().getFoodImageAddress())
-                                                                          .foodMeteImageAddress(favorite.getFood().getFoodImage().getFoodMeteImageAddress())
-                                                                          .build())
+                                                        .food(FoodResponse.from(favorite.getFood()))
                                                         .build();
             responses.add(response);
         }
