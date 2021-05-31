@@ -29,4 +29,8 @@ public class FoodDetail {
 	
 	@Column(name = "capacity")
 	private String capacity;
+	
+	public void newNutrient(String nutrient) {
+		this.nutrient = nutrient;
+	}
 }

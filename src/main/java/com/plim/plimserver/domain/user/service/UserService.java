@@ -135,4 +135,9 @@ public class UserService {
         return userRepository.findByEmail(principal.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException(UserExceptionMessage.USERNAME_NOT_FOUND_EXCEPTION_MESSAGE.getMessage()));
     }
+
+    public ResponseEntity<GetSecondEmailResponse> getSecondEmail(PrincipalDetails principalDetails) {
+        User user = getUser(principalDetails);
+        return ResponseEntity.ok(GetSecondEmailResponse.builder().secondEmail(user.getSecondEmail()).build());
+    }
 }
