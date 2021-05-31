@@ -13,6 +13,9 @@ import java.util.Optional;
 public interface FoodRepository extends JpaRepository<Food, Long>, FoodRepositoryCustom{
 
     Optional<Food> findByBarcodeNumber(String barcodeNumber);
+    
+    @Query("Select f from Food f where f.manufacturerName like '%농심%'")
+    Optional<List<Food>> findByManufacturerName(String manufacturerName);
 
     Page<Food> findAllByCategoryContaining(String category, Pageable pageable);
 
