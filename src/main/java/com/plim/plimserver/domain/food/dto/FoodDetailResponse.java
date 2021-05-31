@@ -1,6 +1,8 @@
 package com.plim.plimserver.domain.food.dto;
 
 import com.plim.plimserver.domain.food.domain.Food;
+import com.plim.plimserver.domain.review.domain.Review;
+import com.plim.plimserver.domain.review.domain.ReviewStateType;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -18,6 +20,8 @@ public class FoodDetailResponse {
     private final String nutrient;
     private final String allergyMaterials;
     private final Long viewCount;
+    private final int reviewCount;
+    private final String reviewRate;
 
     public static FoodDetailResponse from(Food food) {
         return FoodDetailResponse.builder()
@@ -31,6 +35,10 @@ public class FoodDetailResponse {
                 .nutrient(food.getFoodDetail().getNutrient())
                 .allergyMaterials(food.getAllergyMaterials())
                 .viewCount(food.getViewCount())
+                .reviewCount((int)food.getReviewList().stream().filter(f -> f.getState().equals(ReviewStateType.NORMAL)).count())
+                .reviewRate(String.format("%.2f",
+                        food.getReviewList().stream().filter(f -> f.getState().equals(ReviewStateType.NORMAL))
+                            .mapToInt(Review::getReviewRating).average().orElse(0)))
                 .build();
     }
 

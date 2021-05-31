@@ -56,6 +56,12 @@ public class UserController {
                 .build());
     }
 
+    @ApiOperation(value = "복구 이메일 반환", notes = "토큰을 받아 해당하는 복구 이메일을 반환해준다")
+    @GetMapping("api/v1/user/get-secondEmail")
+    public ResponseEntity<GetSecondEmailResponse> getSecondEmail(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+        return this.userService.getSecondEmail(principalDetails);
+    }
+
     @ApiOperation(value = "아이디 찾기", notes = "2차보안으로 설정한 이메일로 기존 이메일을 전송한다")
     @PostMapping("find-email")
     public ResponseEntity<FindEmailResponse> findEmail(@Valid @RequestBody FindEmailRequest request) {
