@@ -30,6 +30,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long>{
 
 	@Query(value = "select r from Review r join fetch r.food as rf join fetch r.user join fetch rf.reviewsummary where r.user.id=:userId and r.state = 'NORMAL'")
 	List<Review> findByUserId(@Param("userId")Long userId, Pageable pagable);
+
+	@Query(value = "select count(r) from Review r where r.user.id=:userId and r.state = 'NORMAL'")
+	int findUserReviewCount(@Param("userId") Long UserId);
 	
 	@Query(value = "select * from review where food_id=:foodId and user_id=:userId and review_state='NORMAL' limit 1", nativeQuery = true)
 	Review existsByFoodIdAndUserId(@Param("foodId") Long foodId, @Param("userId") Long userId);

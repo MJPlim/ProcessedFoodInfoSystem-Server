@@ -3,6 +3,7 @@ package com.plim.plimserver;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
@@ -12,17 +13,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.plim.plimserver.domain.favorite.domain.Favorite;
 import com.plim.plimserver.domain.favorite.repository.FavoriteRepository;
 import com.plim.plimserver.domain.food.domain.Food;
 import com.plim.plimserver.domain.food.domain.FoodDetail;
 import com.plim.plimserver.domain.food.domain.FoodImage;
+import com.plim.plimserver.domain.food.exception.FoodExceptionMessage;
+import com.plim.plimserver.domain.food.exception.NoFoodDetailException;
 import com.plim.plimserver.domain.food.repository.FoodRepository;
 import com.plim.plimserver.domain.review.domain.Review;
 import com.plim.plimserver.domain.review.domain.ReviewLike;
@@ -34,7 +39,7 @@ import com.plim.plimserver.domain.user.domain.User;
 import com.plim.plimserver.domain.user.repository.UserRepository;
 import com.plim.plimserver.global.config.DatabaseConfig;
 
-@DataJpaTest
+@SpringBootTest
 @Import(DatabaseConfig.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 public class FoodTest {
@@ -57,9 +62,27 @@ public class FoodTest {
 	@Autowired
 	private UserRepository userRepository;
 
+//	@Test
+//	@Rollback(false)
+//	@Transactional
+//	public void dataProcessing() {
+//		List<Food> food = foodRepository.findByManufacturerName("농심")
+//				.orElseThrow(() -> new NoFoodDetailException(FoodExceptionMessage.NO_FOOD_EXCEPTION_MESSAGE));
+//
+//		for(Food f : food) {
+//			String s = f.getFoodDetail().getNutrient().replace(",", "`");
+//			s.replace("•", "`");
+//			f.getFoodDetail().newNutrient(s.toString());
+//		}
+//
+//		String[] str = food.get(18).getFoodDetail().getNutrient().split("`");
+//
+//		for (String st : str) {
+//			System.out.println(st.trim());
+//		}
+//
+//	}
 
-	
-	
 	@Test
 	@Rollback(false)
 	public void foodCreateTest() {
@@ -70,14 +93,13 @@ public class FoodTest {
 				.manufacturerName("테스트제조사").foodDetail(foodDetail).foodImage(foodImage).allergyMaterials("알러지 재료테스트")
 				.barcodeNumber("바코드 번호0ㅑ09ㅑ090").build();
 		foodRepository.save(food);
-		
+
 		Optional<User> user = userRepository.findById(120L);
 
 //		Review review = Review.builder().user(user.get()).food(food).reviewRating(4).reviewDescription("리뷰테스트")
 //				.state(ReviewStateType.NORMAL).build();
 		Review review = Review.of(user.get(), food, new CreateReviewRequest());
 		reviewRepository.save(review);
-
 
 //		Favorite favorite = Favorite.builder().userId(120L).food(food).build();
 //		favoriteRepository.save(favorite);
@@ -102,7 +124,6 @@ public class FoodTest {
 		assertThat(findFood.get().getCategory()).isEqualTo("테스트카테고리");
 		assertThat(findFood.get().getManufacturerName()).isEqualTo("테스트제조사");
 		assertThat(findFood.get().getAllergyMaterials()).isEqualTo("알러지 재료테스트");
-
 
 		assertThat(findFood.get().getFoodDetail().getCapacity()).isEqualTo("용량테스트");
 		assertThat(findFood.get().getFoodDetail().getExpriationDate()).isEqualTo("유통기한테스트");
@@ -155,15 +176,15 @@ public class FoodTest {
 	public void reviewUpdateTest() {
 		em.flush();
 		em.clear();
-		
+
 		Optional<Review> findReview = reviewRepository.findById(6L);
 		findReview.get().reviewUpdate(3, "맛이 바뀌었네요ㅎㅎ");
 		findReview.get().reviewStateUpdate(ReviewStateType.DELETED);
 	}
-	
+
 	@Test
 	@Rollback(false)
-	public void foodDeleteTest() {						//사실상 식품이 지워질일은 없겠지만 만들어봄 식품을 지우면 하위 리뷰, 즐찾, 좋아요 다 지워짐
+	public void foodDeleteTest() { // 사실상 식품이 지워질일은 없겠지만 만들어봄 식품을 지우면 하위 리뷰, 즐찾, 좋아요 다 지워짐
 		em.flush();
 		em.clear();
 
