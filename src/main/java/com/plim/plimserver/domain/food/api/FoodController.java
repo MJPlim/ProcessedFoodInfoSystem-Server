@@ -32,25 +32,19 @@ public class FoodController {
         return ResponseEntity.ok(this.foodService.findFoodByBarcode(request.getBarcode()));
     }
 
-    @ApiOperation(value = "검색결과 조건에 따라 정렬", notes = "검색결과를 조건에 따라 정렬하여 제공한다")
-    @GetMapping("/getFoodListBySorting")
-    public ResponseEntity<Pagination<List<FoodResponse>>> getFoodListBySorting(
+    @ApiOperation(value = "조건에 맞는 제품 목록을 반환", notes = "조건에 맞는 제품을 검색하여 해당하는 제품 목록을 반환해준다")
+    @GetMapping("/searchFood")
+    public ResponseEntity<Pagination<List<FoodResponse>>> searchFood(
             @RequestParam(name = "pageNo", defaultValue = "1") int pageNo,
             @RequestParam(name = "size", defaultValue = "10") int size,
             @RequestParam(name = "sort", required = false) String sortElement,
+            @RequestParam(name = "order", defaultValue = "asc") String order,
+            @RequestParam(name = "category", required = false) String category,
             @RequestParam(name = "foodName", required = false) String foodName,
             @RequestParam(name = "manufacturerName", required = false) String manufacturerName,
             @RequestParam(name = "allergies", required = false) List<String> allergyList) {
-        return ResponseEntity.ok(this.foodService.findFoodByPaging(
-                pageNo, size, sortElement, foodName, manufacturerName, allergyList));
-    }
-
-    @ApiOperation(value = "카테고리에 해당하는 제품 조회", notes = "카테고리에 해당하는 제품을 제공한다.")
-    @GetMapping("/list/category")
-    public ResponseEntity<Pagination<List<FoodResponse>>> getFoodListByCategory(@RequestParam String category
-            , @RequestParam(defaultValue = "1") int page, @RequestParam(required = false) String sort
-            , @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(this.foodService.findFoodByCategory(category, page, sort, size));
+        return ResponseEntity.ok(this.foodService.searchFood(
+                pageNo, size, sortElement, order, category, foodName, manufacturerName, allergyList));
     }
 
     @ApiOperation(value = "대분류 카테고리에 해당하는 제품 조회", notes = "대분류 카테고리에 해당하는 제품을 제공한다.")
