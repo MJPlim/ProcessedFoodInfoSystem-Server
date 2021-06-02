@@ -59,12 +59,15 @@ public class FavoriteServiceImpl implements FavoriteService{
         User user = this.userRepository.findByEmail(principalDetails.getUsername())
                                        .orElseThrow(NoSuchElementException::new);
 
-        this.favoriteRepository.save(Favorite.builder()
-                                             .user(user)
-                                             .food(food)
-                                             .build());
-
-        return true;
+        if(this.favoriteRepository.existsByUserAndFood(user, food)){
+            return false;
+        }else{
+            this.favoriteRepository.save(Favorite.builder()
+                                                 .user(user)
+                                                 .food(food)
+                                                 .build());
+            return true;
+        }
     }
 
     @Transactional
