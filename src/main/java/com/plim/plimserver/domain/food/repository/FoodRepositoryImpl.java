@@ -22,10 +22,12 @@ public class FoodRepositoryImpl implements FoodRepositoryCustom{
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<Food> search(String sortElement, String foodName, String manufacturerName, List<String> allergyList, Pageable pageable) {
+    public Page<Food> search(String sortElement, String category, String foodName, String manufacturerName
+            , List<String> allergyList, String order, Pageable pageable) {
         QueryResults<Food> result = queryFactory.selectFrom(food)
-                                                .where(eqFoodName(foodName), eqManufacturerName(manufacturerName), eqAllergies(allergyList))
-                                                .orderBy(orderType(sortElement))
+                                                .where(eqFoodName(foodName), eqManufacturerName(manufacturerName)
+                                                        , eqAllergies(allergyList), eqCategory(category))
+                                                .orderBy(orderType(sortElement, order))
                                                 .offset(pageable.getOffset())
                                                 .limit(pageable.getPageSize())
                                                 .fetchResults();
@@ -35,11 +37,15 @@ public class FoodRepositoryImpl implements FoodRepositoryCustom{
     @Override
     public Page<Food> findByWideCategory(String[] categories, Pageable pageable) {
         QueryResults<Food> result = queryFactory.selectFrom(food)
-                                                .where(eqCategories(categories))
+                                                .where(eqCategoriesForWideCategory(categories))
                                                 .offset(pageable.getOffset())
                                                 .limit(pageable.getPageSize())
                                                 .fetchResults();
         return new PageImpl<>(result.getResults(), pageable, result.getTotal());
+    }
+
+    private BooleanExpression eqCategory(String category) {
+        return category != null ? food.category.contains(category) : null;
     }
 
     private BooleanExpression eqFoodName(String foodName) {
@@ -58,24 +64,30 @@ public class FoodRepositoryImpl implements FoodRepositoryCustom{
         return food.allergyMaterials.contains(allergy).not();
     }
 
-    private BooleanExpression eqCategories(String[] categories) {
-        return categories != null ? Expressions.anyOf(Arrays.stream(categories).map(this::isFilteredCategory).toArray(BooleanExpression[]::new)) : null;
+    private BooleanExpression eqCategoriesForWideCategory(String[] categories) {
+        return categories != null ? Expressions.anyOf(Arrays.stream(categories).map(this::isFilteredCategoryForWideCategory)
+                                                            .toArray(BooleanExpression[]::new)) : null;
     }
 
-    private BooleanExpression isFilteredCategory(String category) {
+    private BooleanExpression isFilteredCategoryForWideCategory(String category) {
         return food.category.contains(category);
     }
 
-    private OrderSpecifier<?>[] orderType(String sortElement) {
+    private OrderSpecifier<?>[] orderType(String sortElement, String order) {
         if (sortElement == null) {
-            return new OrderSpecifier[]{food.foodName.asc()};
+            return order.equals("asc") ? new OrderSpecifier[]{food.foodName.asc()}
+                    : new OrderSpecifier[]{food.foodName.desc()};
         }else if (sortElement.equals(SortElement.RANK.getMessage())) {
-            return new OrderSpecifier[]{food.reviewsummary.avgRating.desc(), food.reviewsummary.reviewCount.desc()};
+            return order.equals("asc") ? new OrderSpecifier[]{food.reviewsummary.avgRating.asc(), food.reviewsummary.reviewCount.asc()}
+                    : new OrderSpecifier[]{food.reviewsummary.avgRating.desc(), food.reviewsummary.reviewCount.desc()};
         } else if (sortElement.equals(SortElement.REVIEW_COUNT.getMessage())) {
-            return new OrderSpecifier[]{food.reviewsummary.reviewCount.desc()};
+            return order.equals("asc") ? new OrderSpecifier[]{food.reviewsummary.reviewCount.asc()}
+                    : new OrderSpecifier[]{food.reviewsummary.reviewCount.desc()};
         } else if (sortElement.equals(SortElement.MANUFACTURER.getMessage())) {
-            return new OrderSpecifier[]{food.manufacturerName.asc()};
+            return order.equals("asc") ? new OrderSpecifier[]{food.manufacturerName.asc()}
+                    : new OrderSpecifier[]{food.manufacturerName.desc()};
+        }else {
+            return null;
         }
-        return null;
     }
 }

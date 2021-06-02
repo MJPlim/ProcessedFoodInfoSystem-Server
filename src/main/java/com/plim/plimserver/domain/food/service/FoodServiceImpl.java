@@ -48,22 +48,12 @@ public class FoodServiceImpl implements FoodService {
     }
 
     @Override
-    public Pagination<List<FoodResponse>> findFoodByPaging(int pageNo, int size, String sortElement, String foodName,
-                                                      String manufacturerName, List<String> allergyList) {
-        Pageable pageable = PageRequest.of(pageNo - 1, size);
-        Page<Food> page = this.foodRepository.search(sortElement, foodName, manufacturerName, allergyList, pageable);
+    public Pagination<List<FoodResponse>> searchFood(int pageNo, int size, String sortElement, String order, String category,
+                                                     String foodName, String manufacturerName, List<String> allergyList) {
+        Pageable pageable = PageRequest.of(pageNo-1, size);
+        Page<Food> page = this.foodRepository.search(sortElement, category, foodName, manufacturerName, allergyList, order, pageable);
         List<FoodResponse> data = page.stream().map(FoodResponse::from).collect(Collectors.toList());
         return Pagination.of(page, data);
-    }
-
-    @Override
-    public Pagination<List<FoodResponse>> findFoodByCategory(String category, int page, String sort, int size) {
-        Pageable pageable = sort != null ? PageRequest.of(page - 1, size, Sort.by(sort)) : PageRequest.of(page - 1, size);
-        Page<Food> foodPage = this.foodRepository.findAllByCategoryContaining(category, pageable);
-        List<FoodResponse> data = foodPage.stream()
-                .map(FoodResponse::from)
-                .collect(Collectors.toList());
-        return Pagination.of(foodPage, data);
     }
 
     @Override
