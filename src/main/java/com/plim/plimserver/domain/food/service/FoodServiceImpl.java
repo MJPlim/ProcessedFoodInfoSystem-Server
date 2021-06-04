@@ -16,7 +16,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,6 +25,16 @@ public class FoodServiceImpl implements FoodService {
 //    private final ApiKeyRepository apiKeyRepository;
 //    private final RestTemplate restTemplate;
     private final FoodRepository foodRepository;
+    private static final String[] snackList = new String[]{"과자", "떡", "빵", "사탕/껌/젤리", "아이스크림", "초콜릿"};
+    private static final String[] drinkList = new String[]{"음료", "커피", "커피/차"};
+    private static final String[] dairyList = new String[]{"유제품"};
+    private static final String[] meatList = new String[]{"육류", "햄/소시지"};
+    private static final String[] agriculturalFisheryList = new String[]{"계란", "과일/채소", "김", "수산물", "견과", "곡류"};
+    private static final String[] kimchiList = new String[]{"김치", "젓갈"};
+    private static final String[] seasoningList = new String[]{"설탕", "소금", "소스", "장류"};
+    private static final String[] instantList = new String[]{"즉석조리식품"};
+    private static final String[] materialList = new String[]{"국수", "두부", "식용유", "어묵"};
+    private static final String[] etcList = new String[]{"기타가공품"};
 
     @Autowired
     public FoodServiceImpl(FoodRepository foodRepository) {
@@ -61,21 +70,25 @@ public class FoodServiceImpl implements FoodService {
         Pageable pageable = sort != null ? PageRequest.of(page - 1, size, Sort.by(sort)) : PageRequest.of(page - 1, size);
         String[] categories;
         if (category.equals(FoodCategory.SNACK.getMessage())) {
-            categories = new String[]{"과자", "떡", "빵", "사탕/껌/젤리", "아이스크림", "초콜릿"};
-        } else if (category.equals(FoodCategory.TEA.getMessage())) {
-            categories = new String[]{"음료", "커피", "커피/차"};
+            categories = snackList;
+        } else if (category.equals(FoodCategory.DRINK.getMessage())) {
+            categories = drinkList;
         }else if (category.equals(FoodCategory.DAIRY.getMessage())) {
-            categories = new String[]{"유제품"};
+            categories = dairyList;
         }else if (category.equals(FoodCategory.AGRICULTURAL_FISHERY.getMessage())) {
-            categories = new String[]{"계란", "과일/채소", "김", "수산물", "견과", "곡류"};
+            categories = agriculturalFisheryList;
         }else if (category.equals(FoodCategory.KIMCHI.getMessage())) {
-            categories = new String[]{"김치", "젓갈"};
+            categories = kimchiList;
         }else if (category.equals(FoodCategory.SEASONING.getMessage())) {
-            categories = new String[]{"설탕", "소금", "소스", "장류"};
+            categories = seasoningList;
         }else if (category.equals(FoodCategory.INSTANT.getMessage())) {
-            categories = new String[]{"즉석조리식품", "국수", "두부", "식용유", "어묵"};
+            categories = instantList;
+        }else if(category.equals(FoodCategory.MEAT.getMessage())){
+            categories = meatList;
+        }else if(category.equals(FoodCategory.MATERIAL.getMessage())){
+            categories = materialList;
         }else {
-            categories = new String[]{"기타가공품"};
+            categories = etcList;
         }
         Page<Food> foodPage = this.foodRepository.findByWideCategory(categories, pageable);
         List<FoodResponse> data = foodPage.stream().map(FoodResponse::from).collect(Collectors.toList());
